@@ -27,7 +27,6 @@ lint = [
   "ruff"
 ]
 [tool.hatch.envs.dev]
-# Evitamos que Hatch cree su propio env si preferimos usar .venv de uv
 skip-install = true
 scripts = { test = "pytest", lint = "ruff check ." }
 
