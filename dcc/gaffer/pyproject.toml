@@ -1,0 +1,11 @@
+[project]
+name = "xolo-gaffer"
+version = "0.1.0"
+requires-python = "==3.11.*"
+description = "Integrations / scripts for Gaffer 1.6"
+dependencies = [
+  "xolo-pipeline @ {root}/../..",
+]
+
+[dependency-groups]
+dev = ["pytest", "ruff"]
