@@ -21,11 +21,18 @@ docs = ["mkdocs"]
 dev = [
   "typer>=0.19.2",
   "pytest>=7.0",
-  "ruff>=0.1"
+  "ruff>=0.1",
+  "ty"
 ]
 lint = [
   "ruff"
 ]
+
+[project.scripts]
+xolo = "cli.main:app"
+
+
+
 [tool.hatch.envs.dev]
 skip-install = true
 scripts = { test = "pytest", lint = "ruff check ." }
