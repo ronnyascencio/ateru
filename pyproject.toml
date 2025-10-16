@@ -22,7 +22,9 @@ dev = [
   "typer>=0.19.2",
   "pytest>=7.0",
   "ruff>=0.1",
-  "ty"
+  "ty",
+  "pyside2>=5.15.2.1",
+  "pyside6>=6.10.0",
 ]
 lint = [
   "ruff"
@@ -40,3 +42,10 @@ scripts = { test = "pytest", lint = "ruff check ." }
 
 [tool.hatch.build.targets.wheel]
 include = ["cli/**/*", "core/**/*", "dcc/**/*", "tests/**/*", "config.yaml"]
+
+[tool.uv.workspace]
+members = [
+    "xolo-desktop",
+    "core/xolo_core",
+    "gui",
+]
