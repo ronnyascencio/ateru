@@ -15,7 +15,7 @@ body:
     id: motivation
     attributes:
       label: Motivation / Use case
-      description: Why is this feature needed?
+      description: Why is this feature neededor want?
       required: true
 
   - type: input
