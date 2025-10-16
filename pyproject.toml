@@ -21,11 +21,20 @@ docs = ["mkdocs"]
 dev = [
   "typer>=0.19.2",
   "pytest>=7.0",
-  "ruff>=0.1"
+  "ruff>=0.1",
+  "ty",
+  "pyside2>=5.15.2.1",
+  "pyside6>=6.10.0",
 ]
 lint = [
   "ruff"
 ]
+
+[project.scripts]
+xolo = "cli.main:app"
+
+
+
 [tool.hatch.envs.dev]
 skip-install = true
 scripts = { test = "pytest", lint = "ruff check ." }
@@ -33,3 +42,10 @@ scripts = { test = "pytest", lint = "ruff check ." }
 
 [tool.hatch.build.targets.wheel]
 include = ["cli/**/*", "core/**/*", "dcc/**/*", "tests/**/*", "config.yaml"]
+
+[tool.uv.workspace]
+members = [
+    "xolo-desktop",
+    "core/xolo_core",
+    "gui",
+]

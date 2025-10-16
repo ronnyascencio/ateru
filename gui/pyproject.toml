@@ -1,0 +1,7 @@
+[project]
+name = "gui"
+version = "0.1.0"
+description = "UI stand alone app for Xolo Pipeline"
+readme = "README.md"
+requires-python = ">=3.11, <4.0"
+dependencies = []
