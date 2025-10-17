@@ -31,7 +31,7 @@ lint = [
 ]
 
 [project.scripts]
-xolo = "cli.main:app"
+xolo = "cli.xolo_cli.main:app"
 
 
 

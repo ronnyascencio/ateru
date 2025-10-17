@@ -2,6 +2,13 @@ version = 1
 revision = 3
 requires-python = ">=3.11, <4.0"
 
+[manifest]
+members = [
+    "gui",
+    "xolo-core",
+    "xolo-pipeline",
+]
+
 [[package]]
 name = "click"
 version = "8.3.0"
@@ -34,6 +41,11 @@ sdist = { url = "https://files.pythonhosted.org/packages/d9/29/d40217cbe2f6b1359
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f7/ec/67fbef5d497f86283db54c22eec6f6140243aae73265799baaaa19cd17fb/ghp_import-2.1.0-py3-none-any.whl", hash = "sha256:8337dd7b50877f163d4c0289bc1f1c7f127550241988d568c1db512c4324a619", size = 11034, upload-time = "2022-05-02T15:47:14.552Z" },
 ]
+
+[[package]]
+name = "gui"
+version = "0.1.0"
+source = { virtual = "gui" }
 
 [[package]]
 name = "iniconfig"
@@ -560,6 +572,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/db/d9/c495884c6e548fce18a8f40568ff120bc3a4b7b99813081c8ac0c936fa64/watchdog-6.0.0-py3-none-win_amd64.whl", hash = "sha256:cbafb470cf848d93b5d013e2ecb245d4aa1c8fd0504e863ccefa32445359d680", size = 79070, upload-time = "2024-11-01T14:07:10.686Z" },
     { url = "https://files.pythonhosted.org/packages/33/e8/e40370e6d74ddba47f002a32919d91310d6074130fe4e17dabcafc15cbf1/watchdog-6.0.0-py3-none-win_ia64.whl", hash = "sha256:a1914259fa9e1454315171103c6a30961236f508b9b623eae470268bbcc6a22f", size = 79067, upload-time = "2024-11-01T14:07:11.845Z" },
 ]
+
+[[package]]
+name = "xolo-core"
+version = "0.1.0"
+source = { virtual = "core/xolo_core" }
 
 [[package]]
 name = "xolo-pipeline"

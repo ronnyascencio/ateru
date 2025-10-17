@@ -1,5 +1,5 @@
 import typer
-from cli.commands import settings, launch, project
+from cli.xolo_cli.commands import settings, launch, project
 
 app = typer.Typer()
 
