@@ -1,6 +1,6 @@
 # tests/test_cli.py
 from typer.testing import CliRunner
-from cli.main import app
+from cli.xolo_cli.main import app
 
 runner = CliRunner()
 
