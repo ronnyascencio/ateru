@@ -91,6 +91,3 @@ def find_dcc_path(dcc_name: str) -> Path:
         raise print(f"No permisions{apps_root}.")
     except Exception as e:
         raise print(f"Error searching  DCC '{dcc_name}': {e}")
-
-
-print(find_dcc_path("nuke"))
