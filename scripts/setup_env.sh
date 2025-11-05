@@ -4,7 +4,7 @@ export PIPELINE_ROOT
 echo "PIPELINE_ROOT set to: $PIPELINE_ROOT"
 
 # adding PATH temporal
-export PATH="$PIPELINE_ROOT/cli:$PATH"
+export PATH="$PIPELINE_ROOT/cli/xolo_cli:$PATH"
 
 # make it permanent  ~/.bashrc if not exist
 if ! grep -q "PIPELINE_ROOT" ~/.bashrc; then
