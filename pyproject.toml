@@ -5,50 +5,35 @@ build-backend = "hatchling.build"
 [project]
 name = "xolo-pipeline"
 version = "0.1.0"
-description = "VFX/animation pipeline for freelancers "
-authors = [{name = "Ronny Ascencio"}]
+description = "Open source VFX/Animation pipeline for freelancers and small studios."
+authors = [{ name = "Ronny Ascencio" }]
 readme = "README.md"
-requires-python = ">=3.12, <4.0"
-dependencies = [
-]
+license = { text = "MIT" }
+requires-python = ">=3.11"
 
+dependencies = [
+    "typer>=0.12",
+    "pyyaml>=6.0",
+    "rich>=13.7",
+    "platformdirs>=4.2",
+    "requests>=2.32"
+]
 
 [project.optional-dependencies]
-docs = ["mkdocs"]
-
-[dependency-groups]
 dev = [
-  "typer>=0.19.2",
-  "pytest>=7.0",
-  "ruff>=0.1",
-  "ty",
-  "pyside2>=5.15.2.1",
-  "pyside6>=6.10.0",
-  "requests>=2.32.5",
-  "sqlmodel>=0.0.27",
-  "dataclasses>=0.8",
-  "pyyaml>=6.0.3",
-]
-lint = [
-  "ruff"
+    "pytest>=8.0",
+    "black>=24.0",
+    "ruff>=0.5.0",
+    "mypy>=1.10.0"
 ]
 
 [project.scripts]
 xolo = "cli.xolo_cli.main:app"
 
-
-
-[tool.hatch.envs.dev]
-skip-install = true
-scripts = { test = "pytest", lint = "ruff check ." }
-
-
 [tool.hatch.build.targets.wheel]
-include = ["cli/**/*", "core/**/*", "dcc/**/*", "tests/**/*", "config.yaml"]
-
-[tool.uv.workspace]
-members = [
-    "xolo-desktop",
-    "core/xolo_core",
+packages = [
+    "cli",
+    "core",
     "gui",
+    "dcc"
 ]
