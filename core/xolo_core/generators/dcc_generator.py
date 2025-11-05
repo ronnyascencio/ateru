@@ -1,93 +1,61 @@
 from pathlib import Path
+import yaml
+import os
 from core.xolo_core.extractors.system_extractor import get_os_type
-
-"""Global DCC generator functions."""
 
 
 def get_system_root() -> Path:
-    """
-    Returns root path depending of OS:
-    - Windows → C:\
-    - macOS → /Applications/
-    - Linux → /opt/
-
-    """
+    """root acording OS"""
     try:
-        system = get_os_type().lower()
-
-        if system == "windows":
-            # look for the system drive (normally C:)
-            drive = Path.home().drive
-            if not drive:
-                raise RuntimeError("Can't determine system drive in  Windows.")
-            root = Path(drive + "\\")
-        elif system == "darwin":
-            root = Path("/Applications")
-        elif system == "linux":
+        os_type = get_os_type().lower()
+        if os_type == "windows":
+            root = Path(Path.home().drive + "\\")
+        elif os_type == "darwin":
+            root = Path("/Aplications")
+        elif os_type == "linux":
             root = Path("/opt")
-        else:
-            raise OSError(f"Unsuported system: {system}")
-
-        # Root Validation
-        if not root.exists():
-            raise FileNotFoundError(f"Root Path does not exist: {root}")
-
         return root
 
     except Exception as e:
-        print(f"⚠️ Error to optain root system: {e}")
-        # home path secure return as fallback
+        print(f"⚠️ Error obtaining system root: {e}")
         return Path.home()
 
 
-def find_dcc_path(dcc_name: str) -> Path:
-    """
-    Search for a DCC by name in the system's app root.
-    Special case for Nuke: searches inside 'nuke_installs/' for latest version.
-    """
-    apps_root = get_system_root()
-    dcc_name = dcc_name.lower()
-    candidates = [dcc_name, dcc_name.capitalize(), dcc_name.upper()]
+def dcc_finder_root(dcc_name: str):
+    """get the list of directorys to search in for get dcc name"""
+    root_path = get_system_root()
 
-    try:
-        # --- Special case: Nuke autodiscovery ---
-        if dcc_name == "nuke":
-            nuke_root = apps_root / "nuke_installs"
-            if not nuke_root.exists():
-                raise print(f"Folder not found: {nuke_root}")
+    dcc_name = dcc_name
 
-            # lookfor versions
-            versions = [
-                d
-                for d in nuke_root.iterdir()
-                if d.is_dir() and d.name.lower().startswith("nuke")
-            ]
-            if not versions:
-                raise print(f"No versions found of Nuke in {nuke_root}")
+    list = os.listdir(root_path)
+    for name in list:
+        if name.startswith(dcc_name):
+            print(name)
 
-            # lastest verssion
-            latest = sorted(versions, reverse=True)[0]
-            print(f"✅ Nuke Found: {latest}")
-            return latest
+    print(list)
 
-        # --- Generic DCC search ---
-        for sub in apps_root.iterdir():
-            for name in candidates:
-                if name in sub.name.lower():
-                    print(f"✅ Found: {name}")
-                    return sub.resolve()
 
-        # --- Check PATH as fallback ---
-        dcc_exe = which(dcc_name)
-        if dcc_exe:
-            print(f"✅ Found: {dcc_exe}")
-            return Path(dcc_exe).resolve()
+def dcc_root_path(dcc_name: str):
+    pipeline_path = Path(__file__).parent.parent.parent.parent.resolve()
+    config_path = Path(pipeline_path, "dcc/config.yml").resolve()
+    # print(config_path)
+    with open(config_path, "r") as f:
+        data = yaml.safe_load(f)
 
-        raise print(f"App doesn't found'{dcc_name}' en {apps_root}")
+    dccs = data.get("dcc")
+    dcc_name = dcc_name
+    dcc_version = dccs[dcc_name]
+    version = dcc_version.get("default")
 
-    except FileNotFoundError:
-        raise print(f"root path {apps_root} not exists.")
-    except PermissionError:
-        raise print(f"No permisions{apps_root}.")
-    except Exception as e:
-        raise print(f"Error searching  DCC '{dcc_name}': {e}")
+    if dcc_name == "nuke":
+        exce_name = str(dcc_name.title() + version)
+        dcc_compile = Path(get_system_root(), "nuke/", exce_name)
+    elif dcc_name == "gaffer":
+        dcc_compile = Path(get_system_root(), dcc_name, version, "bin", dcc_name)
+    elif dcc_name == "blender":
+        dcc_compile = Path(get_system_root(), dcc_name, version, dcc_name)
+
+    return Path(dcc_compile)
+
+
+print(dcc_root_path("gaffer"))
