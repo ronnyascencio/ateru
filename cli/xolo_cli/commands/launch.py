@@ -1,12 +1,20 @@
-import typer
 import os
 import subprocess
 from pathlib import Path
-from core.xolo_core.generators.variables_generator import project_root_variable
-from core.xolo_core.generators.dcc_generator import dcc_root_path
 
+import typer
+from rich.console import Console
 
-app = typer.Typer(help="Launch DCCs or pipeline tasks")
+from core.xolo_core.generators.variables_generator import (
+    ocio_variable,
+    project_root_variable,
+)
+
+from .settings import load_config
+
+app = typer.Typer(help="Launch DCCs")
+
+console = Console()
 
 
 @app.command()
@@ -17,24 +25,39 @@ def gaffer():
 
 
 @app.command()
-def nuke(project_root: str = typer.Argument(..., help="Path base de proyectos.")):
-    project_path = project_root_variable(
-        project_root,
-    )
-    typer.echo(f"PROJECT_ROOT set to: {project_path}")
-    dcc_path = dcc_root_path("nuke")
-    print(f"Debug dcc path: {dcc_path}")
+def nuke(project_name: str = typer.Argument(..., help="Project base name.")):
+    config = load_config()
+    projects_root = config["global"]["projects_root"]
+    project_path = Path(projects_root, project_name)
+
+    ocio_variable("Nuke")
+    project_root_variable(str(project_path))
+    dcc_path = config["software"]["Nuke"]["path"]
+    console.print(f"DEBUG: DCC path  {dcc_path}", style="yellow")
     if not dcc_path:
-        typer.echo("❌ DCC 'Nuke' no está configurado.")
+        typer.echo("❌ DCC 'Nuke' no configurated.")
         raise typer.Exit(code=1)
 
     # Launch  DCC eredated env
-    nuke_path = Path(dcc_path, "Nuke16.0").resolve()
-    typer.echo("🚀 Launching Nuke...")
+    nuke_path = Path(dcc_path).resolve()
+    console.rule("🚀 Launching Nuke...")
     subprocess.Popen([nuke_path, "--nukex"], env=os.environ)
-    typer.echo("Launching Nuke... (here will be integrate with /dcc/nuke)")
 
 
 @app.command()
-def blender():
-    typer.echo("Launching Blender... (here will be integrate with /dcc/blender)")
+def blender(project_name: str = typer.Argument(..., help="Project  base name.")):
+    config = load_config()
+    projects_root = config["global"]["projects_root"]
+    project_path = Path(projects_root, project_name)
+    ocio_variable("Blender")
+    project_root_variable(str(project_path))
+    dcc_path = config["software"]["Blender"]["path"]
+    console.print(f"DEBUG: DCC path  {dcc_path}", style="#F54927")
+    if not dcc_path:
+        typer.echo("❌ DCC 'Blender' not configurated.")
+        raise typer.Exit(code=1)
+
+    # Launch  DCC eredated env
+    blender_path = Path(dcc_path).resolve()
+    console.rule("🚀 Launching Blender...")
+    subprocess.Popen([blender_path], env=os.environ)
