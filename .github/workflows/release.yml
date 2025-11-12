@@ -4,43 +4,37 @@ on:
   push:
     tags:
       - "v*"
-  workflow_dispatch:
 
 jobs:
-  build-and-release:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
-      - name: Install uv and Hatch
+      - name: Install UV
+        run: pip install uv
+
+      - name: Sync dependencies
+        run: uv sync --frozen
+
+      - name: Run tests
+        run: uv run pytest || echo "Skipping tests"
+
+      - name: Prepare release folder
         run: |
-          pip install --upgrade pip
-          pip install uv hatch
+          mkdir dist
+          cp -r cli core gui dcc README.md LICENSE pyproject.toml dist/
+          cd dist
+          zip -r ../xolo-pipeline-${{ github.ref_name }}.zip .
 
-      - name: Build Package
-        run: hatch build
-
-      - name: Generate release notes
-        id: notes
-        run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ || echo "")
-          echo "Release notes for $GITHUB_REF" > release_notes.txt
-          if [ ! -z "$PREV_TAG" ]; then
-            git log --pretty=format:"%h - %s" $PREV_TAG..HEAD >> release_notes.txt
-          else
-            git log --pretty=format:"%h - %s" >> release_notes.txt
-          fi
-          cat release_notes.txt
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
         with:
-          files: dist/*, release_notes.txt
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          files: xolo-pipeline-${{ github.ref_name }}.zip

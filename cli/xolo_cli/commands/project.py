@@ -1,6 +1,6 @@
 import typer
 
-from core.actions import get_home_directory
+from core.xolo_core.extractors.system_extractor import get_home_directory
 
 app = typer.Typer(help="Create and manage projects")
 
@@ -12,3 +12,8 @@ def create(
     home_dir = get_home_directory().get("home")
 
     typer.echo(f"variables DEBUG: {home_dir}, {project}")
+
+
+@app.command()
+def delete(project: str):
+    typer.echo(f"Deleting project: {project}")
