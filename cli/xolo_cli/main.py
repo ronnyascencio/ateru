@@ -1,7 +1,7 @@
 import typer
-from cli.xolo_cli.commands import settings, launch, project
-import requests
-import importlib.metadata
+
+from cli.xolo_cli.commands import launch, project, settings
+from core.xolo_core.utils.version_manager import check_for_updates, get_version
 
 app = typer.Typer()
 
@@ -9,46 +9,26 @@ app = typer.Typer()
 app.add_typer(settings.app, name="settings")
 app.add_typer(launch.app, name="launch")
 app.add_typer(project.app, name="project")
-# app.add_typer(version.app, name="version")
 
 
 GITHUB_API_URL = "https://api.github.com/xololab/xolo-pipeline/releases/tags/lastest"
 
 
-def get_local_version() -> str:
-    try:
-        return importlib.metadata.version("xolo-pipeline")
-    except importlib.metadata.PackageNotFoundError:
-        return "unknown"
-
-
-def get_remote_version() -> None:
-    """Obtiene la última versión publicada en GitHub."""
-    try:
-        payload = dict(key1="value1", key2="value2")
-        response = requests.get(GITHUB_API_URL, data=payload)
-        # response.raise_for_status()
-        # data = response.json()
-        return print(response.text)  # data.get("tag_name", "unknown")
-    except Exception:
-        return  # "unknown"
-
-
 @app.command()
 def version(
-    remote: bool = typer.Option(
-        False, "--remote", "-r", help="Fetch version from GitHub"
+    refresh: bool = typer.Option(
+        False, "--refresh", "-r", help="Force update from GitHub"
     ),
 ):
-    """Muestra la versión del pipeline."""
-    local = get_local_version()
-    typer.echo(f"Local version: {local}")
+    """Show current installed version and check for updates."""
+    current = get_version(force_refresh=refresh)
+    typer.echo(f"📦 Xolo Pipeline version: {current}")
 
-    if remote:
-        remote_ver = get_remote_version()
-        typer.echo(f"Latest GitHub release: {remote_ver}")
-        if remote_ver != "unknown" and remote_ver != local:
-            typer.echo(f"⚠️  Your version is out of date (latest is {remote_ver}).")
+    latest = check_for_updates(current)
+    if latest and latest != current:
+        typer.echo(f"⚠️  A new version is available: {latest}")
+    else:
+        typer.echo("✅ You are using the latest version.")
 
 
 if __name__ == "__main__":
