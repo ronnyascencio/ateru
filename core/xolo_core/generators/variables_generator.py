@@ -1,3 +1,5 @@
+# Description: This module sets up environment variables for project root, assets root, OCIO configuration, and RenderMan path.
+
 import os
 from pathlib import Path
 
