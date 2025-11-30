@@ -6,6 +6,7 @@ import typer
 from rich.console import Console
 
 from core.xolo_core.generators.variables_generator import (
+    core_path,
     ocio_variable,
     prman_variable,
     project_root_variable,
@@ -19,26 +20,34 @@ console = Console()
 
 
 @app.command()
-def gaffer(project_name: str = typer.Argument(..., help="Project  base name.")):
+def gaffer(project_name: str = typer.Argument(..., help="Project base name.")):
     config = load_config()
     projects_root = config["global"]["projects_root"]
     project_path = Path(projects_root, project_name)
-    project_root_variable(str(project_path))
-    dcc_path = config["software"]["Gaffer"]["path"]
-    console.print(f"DEBUG: DCC path  {dcc_path}", style="#F54927")
-    if not dcc_path:
-        typer.echo("❌ DCC 'Gaffer' not configurated.")
-        raise typer.Exit(code=1)
 
-    # Launch  DCC eredated env
+    dcc_path = config["software"]["Gaffer"]["path"]
+
     gaffer_path = Path(dcc_path, "gaffer").resolve()
-    # 🔧 Asegurar entorno gráfico
+
+    # startup root path
+    custom_root = Path(core_path()).resolve() / "dcc" / "gaffer" / "startup"
+
+    # env context
     env = os.environ.copy()
     env.pop("PYTHONPATH", None)
     env.pop("PYTHONHOME", None)
     env.setdefault("DISPLAY", ":0")
-    console.print(f"DEBUG: DCC path resolved  {gaffer_path}", style="#F54927")
-    console.rule("🚀 Launching Gaffer...")
+
+    # PROJECT_ROOT variable inyection
+    env["PROJECT_ROOT"] = str(project_path)
+
+    #  Setiing up gaffer start up variable
+    env["GAFFER_STARTUP_PATHS"] = str(custom_root)
+
+    console.print(f"DEBUG: Startup Path: {custom_root}", style="green")
+    console.print(f"DEBUG: Project Root: {env['PROJECT_ROOT']}", style="green")
+
+    # launching
     proc = subprocess.Popen([str(gaffer_path)], env=env, start_new_session=True)
     print(f"Launched Gaffer with PID {proc.pid}")
 
