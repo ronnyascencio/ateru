@@ -47,7 +47,8 @@ def gaffer(project_name: str = typer.Argument(..., help="Project base name.")):
     console.print(f"DEBUG: Startup Path: {custom_root}", style="green")
     console.print(f"DEBUG: Project Root: {env['PROJECT_ROOT']}", style="green")
 
-    # launching
+    # Launch  DCC eredated env
+    console.rule("🚀 Launching Gaffer...")
     proc = subprocess.Popen([str(gaffer_path)], env=env, start_new_session=True)
     print(f"Launched Gaffer with PID {proc.pid}")
 
@@ -79,10 +80,7 @@ def blender(
 ):
     config = load_config()
     projects_root = config["global"]["projects_root"]
-    # TEMPLATE_DIR = f"{PIPELINE_ROOT}/dcc/blender/templates"
-    # os.environ["XOLO_TEMPLATE_DIR"] = TEMPLATE_DIR
     project_path = Path(projects_root, project_name)
-    # os.environ["BLENDER_USER_SCRIPTS"] = f"{PIPELINE_ROOT}/dcc/blender/addons"
     project_root_variable(str(project_path))
     if render == "pixar":
         ocio_file = "lib/ocio/ACES-1.3/config.ocio"

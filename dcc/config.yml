@@ -1,9 +1,0 @@
-# dcc config set up for versions supported
-
-dcc:
-  nuke:
-    default: 16.0v6
-  blender:
-    default: 4.5.3
-  gaffer:
-    default: 1.6.6.0

@@ -1,5 +1,4 @@
-# Archivo: /ruta/a/tu/pipeline/dcc/gaffer/startup/gui/config.py
-
+# Global variables configuration for Gaffer scripts
 import os
 
 import Gaffer
@@ -24,7 +23,7 @@ try:
             print("❌ ERROR: PROJECT_ROOT env var not found!")
             return
 
-        # 1.get  NameValuePlug (context variable)
+        # get  NameValuePlug (context variable)
 
         root_dir_plug = variables["projectRootDirectory"]
         project_name_plug = variables["projectName"]
@@ -40,16 +39,16 @@ try:
             f"✅ Variable set: project:projectName -> {project_name_plug['value'].getValue()}"
         )
 
-        # 3. Bloquear la variable para que el artista no la cambie.
+        # blocking variable editing
         Gaffer.MetadataAlgo.setReadOnly(root_dir_plug, True)
         Gaffer.MetadataAlgo.setReadOnly(project_name_plug, True)
 
-    # Conectar señal: __scriptAdded se ejecuta cada vez que se abre un nuevo script (o al iniciar Gaffer)
+    # signal connection: __scriptAdded it runs when gaffer starts
     app_root["scripts"].childAddedSignal().connect(__scriptAdded)
     print("✅ Signal connected successfully.")
 
 except NameError:
-    # Esto ocurre si el script no está en la carpeta 'gui' o si se lanza en modo headless
+    # handle if there is no script in gui directory
     print(
         "❌ ERROR: Object 'application' not found. looking in folder of pipeline and dcc  /startup/gui/"
     )
