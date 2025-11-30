@@ -45,3 +45,8 @@ def prman_variable():
     opt_path = "/opt/pixar/RenderManProServer-27.0"
     prman_path = Path(opt_path).resolve()
     return str(prman_path)
+
+
+def core_path():
+    core_root = Path(__file__).resolve().parent.parent.parent.parent
+    return str(core_root)
