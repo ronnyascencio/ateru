@@ -67,10 +67,15 @@ def nuke(project_name: str = typer.Argument(..., help="Project base name.")):
         typer.echo("❌ DCC 'Nuke' no configurated.")
         raise typer.Exit(code=1)
 
+    # env context
+    env = os.environ.copy()
+    env.pop("PYTHONPATH", None)
+    env.pop("PYTHONHOME", None)
+
     # Launch  DCC eredated env
     nuke_path = Path(dcc_path).resolve()
     console.rule("🚀 Launching Nuke...")
-    subprocess.Popen([nuke_path, "--nukex"], env=os.environ)
+    subprocess.Popen([nuke_path, "--nukex"], env=env)
 
 
 @app.command()
@@ -97,13 +102,36 @@ def blender(
     else:
         ocio_variable("Blender")
 
+    blender_scripts_path = (
+        Path(__file__).parent.parent.parent.parent / "dcc" / "blender" / "scripts"
+    )
+
+    # 2. Preparar el entorno LIMPIO
+    env = os.environ.copy()
+    env.pop("PYTHONPATH", None)  # Importante: Limpiar para evitar conflictos de Python
+    env.pop("PYTHONHOME", None)
+
+    # Agregar variables ESPECÍFICAS al entorno limpio
+    env["BLENDER_USER_SCRIPTS"] = str(blender_scripts_path)
+    env["OCIO"] = os.environ.get("OCIO", "")  # Asegurar que OCIO pase si existe
+
+    # Contexto del Pipeline (XOLO_PROJECT, etc. ya deben estar seteados antes o aquí)
+    # env["XOLO_PROJECT"] = project_name
+
     dcc_path = config["software"]["Blender"]["path"]
-    console.print(f"DEBUG: DCC path  {dcc_path}", style="#F54927")
     if not dcc_path:
         typer.echo("❌ DCC 'Blender' not configurated.")
         raise typer.Exit(code=1)
 
-    # Launch  DCC eredated env
     blender_path = Path(dcc_path).resolve()
     console.rule("🚀 Launching Blender...")
-    subprocess.Popen([blender_path], env=os.environ)
+
+    # 3. Comando de lanzamiento con AUTO-ACTIVACIÓN del addon
+    # Esto fuerza a Blender a activar 'xolo_tools' al iniciar
+    cmd = [
+        str(blender_path),
+        "--python-expr",
+        "import bpy; bpy.ops.preferences.addon_enable(module='xolo_tools')",
+    ]
+
+    subprocess.Popen(cmd, env=env)
