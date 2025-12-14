@@ -19,6 +19,7 @@ dependencies = [
     "requests>=2.32",
     "typing>=3.10.0.0",
     "pathlib>=1.0.1",
+    "pyside6>=6.10.1",
 ]
 
 [project.optional-dependencies]
