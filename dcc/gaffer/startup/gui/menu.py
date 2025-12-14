@@ -4,30 +4,31 @@ import subprocess
 import sys
 from pathlib import Path
 
-import Gaffer
 import GafferUI
+try:
+    PIPELINE_ROOT = os.environ.get("PIPELINE_ROOT")
+    venv_path = Path(str(PIPELINE_ROOT)) / ".venv" / "lib" / "python3.11" / "site-packages"
+    venv_site_packages = os.path.expanduser(venv_path)
 
-PIPELINE_ROOT = os.environ.get("PIPELINE_ROOT")
-venv_path = Path(str(PIPELINE_ROOT)) / ".venv" / "lib" / "python3.11" / "site-packages"
-venv_site_packages = os.path.expanduser(venv_path)
-
-if venv_site_packages not in sys.path:
-    sys.path.insert(0, venv_site_packages)
+    if venv_site_packages not in sys.path:
+        sys.path.insert(0, venv_site_packages)
 
 
-from rich.console import Console
+    from rich.console import Console
 
-console = Console()
+    console = Console()
+    console
+except Exception as e:
+    console.print(f" Rich not loaded : {e}", style="red")
 
 
 # -----------------------------
 # Function menu command
 # -----------------------------
 def launchTextureGenerator(menu):
-    PIPELINE_ROOT = os.environ.get("PIPELINE_ROOT")
-    XOLO_GENERATOR_PATH = os.path.join(
-        PIPELINE_ROOT, "core", "xolo_core", "generators", "texture_generator.py"
-    )
+    # PIPELINE_ROOT = os.environ.get("PIPELINE_ROOT")
+    XOLO_GENERATOR_PATH = Path(str(PIPELINE_ROOT)) / "core" / "xolo_core" / "generators" / "texture_generator.py"
+
 
     if not os.path.exists(XOLO_GENERATOR_PATH):
         print(
