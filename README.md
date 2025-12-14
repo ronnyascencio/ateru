@@ -12,7 +12,7 @@ This project is still **early-stage** and evolving, but the core ideas and direc
 
 Xolo is built around a few simple principles:
 
-* **Simple over clever** – clear structure beats over‑engineering
+* **Simple over clever** – clear structure beats over-engineering
 * **Pipeline as glue** – the pipeline connects tools, it does not fight them
 * **Artist-friendly** – minimal setup, predictable behavior
 * **Modular by design** – features can be added or removed without breaking everything
@@ -38,7 +38,7 @@ This is not yet a production-ready pipeline, but a solid technical foundation.
 
 ## Dependency Management
 
-Xolo uses **[`uv`](https://github.com/astral-sh/uv)** as its only dependency and environment manager.
+Xolo uses **[`uv`](https://github.com/astral-sh/uv)** as its primary dependency and environment manager.
 
 Reasons for choosing `uv`:
 
@@ -121,13 +121,14 @@ This avoids one of the most common sources of inconsistency in small teams.
 * Launched through the pipeline
 * Startup path injected by the CLI
 * Designed to run independently of where Gaffer is installed
+* Renderman as a render engine 
 
 ### Nuke (planned)
 
-* Support for Non‑Commercial and Commercial versions
+* Support for Non-Commercial and Commercial versions
 * Shared startup logic with Gaffer where possible
 
----
+some of the features are already implemented.
 
 ## What Xolo Is *Not*
 
@@ -156,19 +157,51 @@ Everything is intentionally incremental.
 
 ---
 
-## Installation (Current)
+## Installation (Linux only)
+
+This pipeline currently supports installation only on **Linux**. There are two main ways to set up Xolo:
+
+### Recommended: Run the install script
+
+The repository includes a full installer script `setup_env.sh` that:
+
+* Sets up key environment variables
+* Persists them in your shell rc (`.bashrc`/`.zshrc`)
+* Installs `uv` if missing
+* Syncs pipeline dependencies
+* Installs a global `xolo` command wrapper
 
 ```bash
-uv sync
+chmod +x scripts/setup_env.sh
+./scripts/setup_env.sh
 ```
 
-Then:
+Restart your terminal (or run `source ~/.bashrc` / `source ~/.zshrc`) so the new environment variables and PATH changes take effect.
+
+Verify the installation with:
 
 ```bash
 xolo --help
 ```
 
-More detailed installation instructions will come as the pipeline stabilizes.
+### 🐍 Alternative: Manual with `uv`
+
+If you prefer to manage environments manually:
+
+1. Create and sync the virtual environment:
+
+```bash
+uv venv
+uv sync
+```
+
+2. Register environment variables:
+
+```bash
+source scripts/setup_env.sh
+```
+
+> This sets `PIPELINE_ROOT`, `SYSTEM_ROOT`, and modifies your shell rc so Xolo tools work as expected.
 
 ---
 
@@ -177,8 +210,6 @@ More detailed installation instructions will come as the pipeline stabilizes.
 This project is under **active development**.
 
 Expect breaking changes, refactors, and experimentation.
-
-If you are a freelancer or small studio looking for a clean pipeline base — this project is for you.
 
 ---
 
