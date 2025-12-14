@@ -38,3 +38,6 @@ uv_env/
 # System
 .DS_Store
 Thumbs.db
+
+# cache
+version_cache.json
