@@ -1,8 +1,8 @@
 # Global variables configuration for Gaffer scripts
+
 import os
 
 import Gaffer
-import IECore
 
 # Print Debug Info
 print("\n" + "=" * 50)
