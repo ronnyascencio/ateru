@@ -1,7 +1,11 @@
 import os
 import re
 from pathlib import Path
+from core.xolo_core.extractors.dcc import load_map
 
+"""Global Variables"""
+
+ASSETS_DIR = os.environ.get("ASSETS_ROOT")
 
 class VersionManager:
     @staticmethod
@@ -21,11 +25,11 @@ class VersionManager:
     def get_version(shot: str, dcc: str):
         """returns list of versions available for a given shot"""
 
-        dcc_map = {"blender": ".blend", "nuke": ".nk", "gaffer": ".gfr"}
+        dcc_map = load_map(dcc)
         if dcc not in dcc_map:
             return "DCC not supported"
 
-        extension = dcc_map[dcc]
+        extension = dcc_map
         versions = []
 
         versions = []
@@ -45,3 +49,10 @@ class VersionManager:
                     versions.append(file_path.name)
 
         return sorted(versions)
+    @staticmethod
+    def get_work_asset(department: str, asset_name: str):
+        """returns list of assets available in the assets directory"""
+
+        asset_work_dir = Path(str(ASSETS_DIR)) / "work"
+        assets = []
+        return print(asset_work_dir)

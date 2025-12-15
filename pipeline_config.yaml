@@ -6,7 +6,7 @@ software:
     path: /opt/nuke/Nuke16.0v6/Nuke16.0
   Blender:
     version: 4.5.3
-    path: /opt/blender/4.5.3/blender
+    path: /opt/blender/5.0.0/blender
   Gaffer:
     version: 1.6.6.0
     path: /opt/gaffer/1.6.6.0/bin
