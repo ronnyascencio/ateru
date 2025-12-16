@@ -1,18 +1,42 @@
 import yaml
+import os
+import sys
 from pathlib import Path
 
+pipeline_root = os.getenv("PIPELINE_ROOT")
+yaml_path = Path(str(pipeline_root))/ "core" / "xolo_core" / "utils" / "dcc_map.yml"
 
-yaml_path = Path(__file__).parent / "utils" / "dcc_map.yml"
+def load_map(dcc: str) -> list[str]:
+    dcc = dcc.lower().strip()
 
-def load_map(dcc: str):
-    # load YAML
+    if not yaml_path.exists():
+        raise FileNotFoundError(f"dcc_map.yml not found: {yaml_path}")
+
     with open(yaml_path, "r") as f:
-        dcc_map = yaml.safe_load(f)  # esto será un dict
+        dcc_map = yaml.safe_load(f)
 
-    # check if exists
-    if dcc not in dcc_map:
-        return "DCC not supported"
+    software = dcc_map.get("software", {})
 
-    # load the list of the formats
-    formats = dcc_map["software"][dcc]["format"]
-    return formats
+    if dcc not in software:
+        raise ValueError(
+            f"DCC not supported: '{dcc}'. Available: {list(software.keys())}"
+        )
+
+    return software[dcc].get("format", [])
+
+
+
+
+
+
+def detect_dcc() -> str:
+    exe = sys.executable.lower()
+
+    if "blender" in exe:
+        return "blender"
+    if "nuke" in exe:
+        return "nuke"
+    if "gaffer" in exe:
+        return "gaffer"
+
+    return "standalone"
