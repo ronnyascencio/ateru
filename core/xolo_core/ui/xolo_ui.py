@@ -5,7 +5,7 @@ from PySide6 import QtWidgets
 from PySide6.QtUiTools import QUiLoader
 
 
-UI_PATH = Path(__file__).parent / "xolo.ui"
+UI_PATH = Path(__file__).parent / "xolo_saver.ui"
 
 
 class XoloUI(QtWidgets.QWidget):

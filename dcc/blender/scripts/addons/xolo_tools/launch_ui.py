@@ -1,75 +1,65 @@
-# launch_ui.py
+
 import sys
 import threading
 from PySide6 import QtWidgets, QtCore
-from pathlib import Path
 
-# ----- Debug helper -----
-def debug(msg):
-    print(f"[Xolo UI] {msg}")
+from xolo_core.extractors.dcc import detect_dcc
+from xolo_core.utils.logging import log_core, log_ui, log_error
 
-# ----- Importar tu UI real -----
-# Opción 1: tu clase Python
+
+""" ui loader"""
 try:
-    from core.xolo_core.ui.xolo_window import XoloMainWindow
-    debug("XoloMainWindow importado ✅")
+    from xolo_core.ui.xolo_window import XoloMainWindow
+    log_ui("ui imported ")
 except ModuleNotFoundError as e:
-    debug(f"No se pudo importar XoloMainWindow ❌: {e}")
+    log_error(f"could not import: {e}")
 
-# Opción 2: si quieres cargar un .ui en lugar de clase Python
-# from PySide6 import QtUiTools, QtCore
-# def load_ui(ui_path):
-#     loader = QtUiTools.QUiLoader()
-#     ui_file = QtCore.QFile(ui_path)
-#     ui_file.open(QtCore.QFile.ReadOnly)
-#     window = loader.load(ui_file)
-#     ui_file.close()
-#     return window
 
-# ----- Función que corre Qt en un hilo -----
+""" Qt thread """
 def _qt_thread():
-    debug("Starting Qt thread")
+    log_core("Starting Qt thread")
 
-    # Crear QApplication si no existe
+    """build app if not exists"""
     app = QtWidgets.QApplication.instance()
     if not app:
-        debug("No QApplication found, creando nuevo")
+        log_ui("No QApplication found, build")
         app = QtWidgets.QApplication(sys.argv)
     else:
-        debug("QApplication ya existe")
+        log_ui("QApplication exists")
 
-    # Crear instancia de tu UI
+    """ instace """
     try:
-        window_instance = XoloMainWindow()  # reemplaza si usas load_ui("path/to/ui.ui")
-        debug("Ventana creada correctamente")
+        current_dcc = detect_dcc()
+        window_instance = XoloMainWindow(dcc=current_dcc)
+        log_ui("window build correctly")
     except Exception as e:
-        debug(f"Error creando ventana: {e}")
+        log_error(f"Error building window: {e}")
         return
 
-    # Mostrar ventana
+    """ show window """
     try:
         window_instance.show()
-        debug("Ventana mostrada ✅")
+        log_ui("window shown")
     except Exception as e:
-        debug(f"Error mostrando ventana: {e}")
+        log_error(f"Error showing window: {e}")
         return
 
-    # Integrar con event loop de Blender usando QTimer
+    """ event loop with QTimer"""
     timer = QtCore.QTimer()
-    timer.start(100)  # 100ms, puede ajustarse
-    timer.timeout.connect(lambda: None)  # evita que Blender se bloquee
-    debug("QTimer configurado para integración con Blender")
+    timer.start(100)  # 100ms
+    timer.timeout.connect(lambda: None)  # blender not get blocked
+    log_core("QTimer configured")
 
-    # Ejecutar event loop
+    """ execute event loop"""
     try:
         app.exec()
-        debug("Event loop terminado")
+        log_core("Event loop finished")
     except Exception as e:
-        debug(f"Error en event loop: {e}")
+        log_error(f"Error event loop: {e}")
 
-# ----- Función pública para lanzar UI -----
+""" function to launch ui"""
 def launch_window():
-    debug("launch_window() llamado")
+    log_core("launch_window() called")
     qt_thread = threading.Thread(target=_qt_thread, daemon=True)
     qt_thread.start()
-    debug("Hilo Qt iniciado")
+    log_core("Hilo Qt started")

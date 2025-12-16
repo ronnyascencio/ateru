@@ -6,4 +6,4 @@ class XOLO_MT_Menu(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("xolo.open_ui", text="Open Xolo UI")
+        layout.operator("xolo.open_ui", text="Saver")
