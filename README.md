@@ -221,4 +221,4 @@ MIT License
 
 ## Author
 
-Xolo Pipeline is developed and maintained by **Ronny Ascencio**, with a strong focus on real-world VFX and animation workflows.
+Xolo Pipeline is developed and maintained by **[`Ronny Ascencio`](https://github.com/ronnyascencio)**, with a strong focus on real-world VFX and animation workflows.
