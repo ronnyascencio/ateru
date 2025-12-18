@@ -11,13 +11,15 @@ from core.xolo_core.generators.variables_generator import (
     prman_variable,
     project_root_variable,
 )
-
-from .settings import load_config
+from core.xolo_core.generators.declare_generator import populate_environment
+from .settings import PIPELINE_ROOT, load_config
 
 app = typer.Typer(help="Launch DCCs")
 
 console = Console()
 
+
+PIPELINE_ROOT, CORE_PATH, VENV_SITE = populate_environment()
 
 @app.command()
 def gaffer(project_name: str = typer.Argument(..., help="Project base name.")):
@@ -43,6 +45,13 @@ def gaffer(project_name: str = typer.Argument(..., help="Project base name.")):
 
     #  Setiing up gaffer start up variable
     env["GAFFER_STARTUP_PATHS"] = str(custom_root)
+
+    # changed python path
+    venv_path = Path(str(os.environ.get("PIPELINE_ROOT"))) / ".venv" / "lib" / "python3.11" / "site-packages"
+
+    env["PYTHONPATH"] = str(os.environ.get("PIPELINE_ROOT"))
+
+
 
     console.print(f"DEBUG: Startup Path: {custom_root}", style="green")
     console.print(f"DEBUG: Project Root: {env['PROJECT_ROOT']}", style="green")
@@ -71,11 +80,22 @@ def nuke(project_name: str = typer.Argument(..., help="Project base name.")):
     env = os.environ.copy()
     env.pop("PYTHONPATH", None)
     env.pop("PYTHONHOME", None)
+    env["PROJECT_ROOT"] = str(project_path)
+    env["NUKE_PATH"] = os.pathsep.join([
+        str(Path(PIPELINE_ROOT) / "dcc" / "nuke"),
+        str(CORE_PATH),
+    ])
+
+    env["PYTHONPATH"] = os.pathsep.join([
+        str(CORE_PATH),
+        str(Path(PIPELINE_ROOT) / ".venv" / "lib" / "python3.11" / "site-packages"),
+        env.get("PYTHONPATH", ""),
+    ])
 
     # Launch  DCC eredated env
     nuke_path = Path(dcc_path).resolve()
     console.rule("🚀 Launching Nuke...")
-    subprocess.Popen([nuke_path, "--nukex"], env=env)
+    subprocess.Popen([nuke_path, "--nukex", "--nc"], env=env)
 
 
 @app.command()
@@ -131,7 +151,15 @@ def blender(
     cmd = [
         str(blender_path),
         "--python-expr",
-        "import bpy; bpy.ops.preferences.addon_enable(module='xolo_tools')",
+        (
+            "import sys, os;"
+            "root=os.environ['PIPELINE_ROOT'];"
+            "sys.path.insert(0, root);"
+            "sys.path.insert(0, os.path.join(root, 'core'));"
+            "sys.path.insert(0, os.path.join(root, '.venv', 'lib', 'python3.11', 'site-packages'));"
+        ),
+        "--addons",
+        "xolo_tools",
     ]
 
     subprocess.Popen(cmd, env=env)
