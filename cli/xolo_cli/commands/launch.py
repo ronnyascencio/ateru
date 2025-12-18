@@ -80,11 +80,22 @@ def nuke(project_name: str = typer.Argument(..., help="Project base name.")):
     env = os.environ.copy()
     env.pop("PYTHONPATH", None)
     env.pop("PYTHONHOME", None)
+    env["PROJECT_ROOT"] = str(project_path)
+    env["NUKE_PATH"] = os.pathsep.join([
+        str(Path(PIPELINE_ROOT) / "dcc" / "nuke"),
+        str(CORE_PATH),
+    ])
+
+    env["PYTHONPATH"] = os.pathsep.join([
+        str(CORE_PATH),
+        str(Path(PIPELINE_ROOT) / ".venv" / "lib" / "python3.11" / "site-packages"),
+        env.get("PYTHONPATH", ""),
+    ])
 
     # Launch  DCC eredated env
     nuke_path = Path(dcc_path).resolve()
     console.rule("🚀 Launching Nuke...")
-    subprocess.Popen([nuke_path, "--nukex"], env=env)
+    subprocess.Popen([nuke_path, "--nukex", "--nc"], env=env)
 
 
 @app.command()
