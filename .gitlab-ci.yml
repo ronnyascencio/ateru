@@ -1,12 +1,13 @@
+
 image: python:3.11-slim
 
 variables:
   UV_VERSION: "0.9.16"
-  UV_CACHE_DIR: ".cache/uv"
 
 stages:
   - test
   - lint
+
 
 cache:
   paths:
@@ -14,12 +15,12 @@ cache:
 
 before_script:
   - pip install uv
-  - uv sync --extra dev
+  - uv sync
 
 test_cli:
   stage: test
   script:
-    - uv run pytest -q tests
+    - uv run pytest test/test_cli.py
 
 test_ui:
   stage: test
@@ -29,5 +30,6 @@ test_ui:
 linting:
   stage: lint
   script:
-    - uv run ruff check cli core dcc gui
+    - pip install flake8
+    - flake8 cli core dcc gui --exclude=__pycache__
   allow_failure: true
