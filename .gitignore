@@ -41,3 +41,10 @@ Thumbs.db
 
 # cache
 version_cache.json
+*$py.class
+.pytest_cache/
+uv.lock (opcional, pero recomendado con uv)
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/

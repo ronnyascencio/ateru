@@ -1,0 +1,35 @@
+
+image: python:3.11-slim
+
+variables:
+  UV_VERSION: "0.9.16"
+
+stages:
+  - test
+  - lint
+
+
+cache:
+  paths:
+    - .cache/uv
+
+before_script:
+  - pip install uv
+  - uv sync
+
+test_cli:
+  stage: test
+  script:
+    - uv run pytest test/test_cli.py
+
+test_ui:
+  stage: test
+  script:
+    - uv run python -m compileall gui/xolo_gui
+
+linting:
+  stage: lint
+  script:
+    - pip install flake8
+    - flake8 cli core dcc gui --exclude=__pycache__
+  allow_failure: true
