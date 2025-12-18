@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Black">
+    <option name="sdkName" value="uv (xolo-pipeline)" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="uv (xolo-pipeline)" project-jdk-type="Python SDK" />
+  <component name="PyreflyConfiguration">
+    <option name="enabled" value="true" />
+    <option name="executableDiscoveryMode" value="PATH" />
+  </component>
+  <component name="PyrightConfiguration">
+    <option name="enabled" value="true" />
+    <option name="executableDiscoveryMode" value="PATH" />
+  </component>
+  <component name="RuffConfiguration">
+    <option name="enabled" value="true" />
+    <option name="executableDiscoveryMode" value="PATH" />
+  </component>
+  <component name="TyConfiguration">
+    <option name="executableDiscoveryMode" value="PATH" />
+  </component>
+</project>
