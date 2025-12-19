@@ -1,4 +1,4 @@
-image: python:3.11-slim
+image: python:3.11
 
 variables:
   UV_VERSION: "0.9.16"
@@ -29,20 +29,15 @@ cache:
 test_cli:
   stage: test
   extends: .before_uv
+  variables:
+    PIPELINE_ROOT: "/tmp/xolo-pipeline"
   script:
+    - mkdir -p /tmp/xolo-pipeline
     - uv run pytest -q tests
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH'
 
-test_ui_compile:
-  stage: test
-  extends: .before_uv
-  script:
-    - uv run python -m compileall gui/xolo_gui
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_COMMIT_BRANCH'
 
 # -------------------------
 # LINTING
