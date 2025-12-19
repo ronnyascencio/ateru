@@ -1,27 +1,22 @@
 import typer
 
 from cli.xolo_cli.commands import launch, project, settings
-from core.xolo_core.utils.version_manager import check_for_updates, get_version
+from core.xolo_core.utils.version_manager import (
+    check_for_updates,
+    get_version,
+)
 
 app = typer.Typer()
 
-# Sub commands registred
-
-app = typer.Typer()
 app.add_typer(launch.app, name="launch")
 app.add_typer(settings.app, name="settings")
 app.add_typer(project.app, name="project")
 
 
-
-
-GITHUB_API_URL = "https://api.github.com/xololab/xolo-pipeline/releases/tags/lastest"
-
-
 @app.command()
 def version(
     refresh: bool = typer.Option(
-        False, "--refresh", "-r", help="Force update from GitHub"
+        False, "--refresh", "-r", help="Force update from remote"
     ),
 ):
     """Show current installed version and check for updates."""

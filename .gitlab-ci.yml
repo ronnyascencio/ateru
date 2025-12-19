@@ -1,0 +1,63 @@
+image: python:3.11-slim
+
+variables:
+  UV_VERSION: "0.9.16"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONUNBUFFERED: "1"
+
+stages:
+  - setup
+  - test
+  - lint
+
+cache:
+  key: uv-cache
+  paths:
+    - .cache/uv
+    - .venv
+
+before_script:
+  # System deps (minimal but safe)
+  - apt-get update && apt-get install -y --no-install-recommends
+      git
+      curl
+    && rm -rf /var/lib/apt/lists/*
+
+  # Install uv
+  - pip install --no-cache-dir uv==${UV_VERSION}
+
+  # Sync deps (creates .venv)
+  - uv sync
+
+# -----------------------
+# Tests
+# -----------------------
+
+test_cli:
+  stage: test
+  script:
+    - uv run pytest tests/test_cli.py
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+test_ui:
+  stage: test
+  script:
+    - uv run python -m compileall gui/xolo_gui
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+# -----------------------
+# Linting
+# -----------------------
+
+linting:
+  stage: lint
+  script:
+    - uv run flake8 cli core dcc gui --exclude=__pycache__
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
