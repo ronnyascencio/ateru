@@ -32,8 +32,8 @@ test_cli:
   script:
     - uv run pytest -q tests
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
 
 test_ui_compile:
   stage: test
@@ -41,8 +41,8 @@ test_ui_compile:
   script:
     - uv run python -m compileall gui/xolo_gui
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
 
 # -------------------------
 # LINTING
@@ -54,8 +54,8 @@ lint:
     - uv run ruff check cli core dcc gui
   allow_failure: true
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
 
 # -------------------------
 # REVIEW (Merge Requests)
@@ -63,9 +63,9 @@ lint:
 review_pipeline:
   stage: review
   script:
-    - echo "✅ Review pipeline passed for MR: $CI_MERGE_REQUEST_TITLE"
+    - echo "Review pipeline passed"
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
 # -------------------------
 # RELEASE (Tags)
@@ -75,9 +75,9 @@ release:
   extends: .before_uv
   script:
     - uv run python -m build
-    - echo "📦 Release build created for tag $CI_COMMIT_TAG"
+    - echo "Release build created for tag $CI_COMMIT_TAG"
   artifacts:
     paths:
       - dist/
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_TAG'
