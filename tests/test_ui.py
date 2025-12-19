@@ -1,14 +1,34 @@
-# tests/test_ui.py
+# tools/test_ui.py
+
+import os
+import sys
 import pytest
-from unittest.mock import patch, MagicMock
 
-@pytest.fixture
-def mock_qt(monkeypatch):
-    mock_app = MagicMock()
-    monkeypatch.setattr("PySide6.QtWidgets.QApplication", lambda *args, **kwargs: mock_app)
-    return mock_app
+from PySide6.QtWidgets import QApplication
 
-def test_xolo_main_window_can_instantiate(mock_qt):
+# Import lazy (importante)
+@pytest.fixture(scope="session")
+def qapp():
+    """
+    Ensure a QApplication exists.
+    Does NOT start event loop.
+    """
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+    yield app
+
+
+def test_xolo_main_window_instantiates(qapp):
+    """
+    UI smoke test:
+    - Can import window
+    - Can instantiate it
+    - No rendering / no exec
+    """
     from core.xolo_core.ui.xolo_window import XoloMainWindow
+
     win = XoloMainWindow()
+
     assert win is not None
+    assert win.windowTitle() != ""
