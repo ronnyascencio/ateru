@@ -1,43 +1,7 @@
-# Python
 __pycache__/
-*.py[cod]
+*.pyc
+.pytest_cache/
+.venv/
 *.pyo
-*.pyd
-*.env
-*.venv
-env/
-venv/
-*.egg-info/
-
-# IDEs
-.vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
-
-# Blender
-*.blend1
-*.blend2
-*.blend@
-*.blend_backup
-
-# Maya
-*.ma
-*.mb~
-*.pyc
-*.mel~
-
-# Nuke
-*.nk~
-*.pyc
-
-# Hatch / uv env
-.hatch/
-uv_env/
-
-# System
-.DS_Store
-Thumbs.db
-
-# cache
-version_cache.json
+__pycache__/
