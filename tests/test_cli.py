@@ -8,4 +8,4 @@ runner = CliRunner()
 def test_settings_show():
     result = runner.invoke(app, ["settings", "show"])
     assert result.exit_code == 0
-    assert "Showing pipeline" in result.output
+    assert "Pipeline Configuration" in result.output
