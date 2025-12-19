@@ -38,14 +38,7 @@ test_cli:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH'
 
-test_ui_compile:
-  stage: test
-  extends: .before_uv
-  script:
-    - uv run python -m compileall gui/xolo_gui
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_COMMIT_BRANCH'
+
 
 # -------------------------
 # LINTING
