@@ -1,35 +1,83 @@
-
 image: python:3.11-slim
 
 variables:
   UV_VERSION: "0.9.16"
+  UV_CACHE_DIR: ".cache/uv"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
 
 stages:
   - test
   - lint
-
+  - review
+  - release
 
 cache:
   paths:
     - .cache/uv
 
-before_script:
-  - pip install uv
-  - uv sync
+# -------------------------
+# Base setup
+# -------------------------
+.before_uv:
+  before_script:
+    - pip install uv
+    - uv sync --extra dev
 
+# -------------------------
+# TESTS
+# -------------------------
 test_cli:
   stage: test
+  extends: .before_uv
   script:
-    - uv run pytest test/test_cli.py
+    - uv run pytest -q tests
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
 
-test_ui:
+test_ui_compile:
   stage: test
+  extends: .before_uv
   script:
     - uv run python -m compileall gui/xolo_gui
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
 
-linting:
+# -------------------------
+# LINTING
+# -------------------------
+lint:
   stage: lint
+  extends: .before_uv
   script:
-    - pip install flake8
-    - flake8 cli core dcc gui --exclude=__pycache__
+    - uv run ruff check cli core dcc gui
   allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+# -------------------------
+# REVIEW (Merge Requests)
+# -------------------------
+review_pipeline:
+  stage: review
+  script:
+    - echo "✅ Review pipeline passed for MR: $CI_MERGE_REQUEST_TITLE"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+# -------------------------
+# RELEASE (Tags)
+# -------------------------
+release:
+  stage: release
+  extends: .before_uv
+  script:
+    - uv run python -m build
+    - echo "📦 Release build created for tag $CI_COMMIT_TAG"
+  artifacts:
+    paths:
+      - dist/
+  rules:
+    - if: $CI_COMMIT_TAG
