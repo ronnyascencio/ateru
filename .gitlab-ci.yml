@@ -33,7 +33,7 @@ test_cli:
     PIPELINE_ROOT: "/tmp/xolo-pipeline"
   script:
     - mkdir -p /tmp/xolo-pipeline
-    - uv run pytest -q tests
+    - uv run --dev pytest -q tests
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH'
