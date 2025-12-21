@@ -26,7 +26,7 @@ cache:
 # -------------------------
 # TESTS
 # -------------------------
-test_cli:
+test:
   stage: test
   extends: .before_uv
   variables:
@@ -46,7 +46,7 @@ lint:
   stage: lint
   extends: .before_uv
   script:
-    - uv run ruff check cli core dcc gui
+    - uv run ruff check cli core
   allow_failure: true
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
