@@ -5,7 +5,7 @@ from PySide6 import QtWidgets
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 from core.xolo_core.ui.xolo_ui import XoloUI
 from core.xolo_core.generators.version_generator import VersionManager
-from core.xolo_core.utils.logging import log_core, log_ui, log_error
+from core.xolo_core.utils.logging import log_core
 
 class XoloMainWindow(QtWidgets.QMainWindow):
     def __init__(self, dcc: str,  parent=None):

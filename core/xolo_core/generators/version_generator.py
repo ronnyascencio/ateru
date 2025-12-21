@@ -1,5 +1,5 @@
 import os
-import re
+
 from pathlib import Path
 from core.xolo_core.extractors.dcc import load_map
 from core.xolo_core.utils.logging import log_core, log_error
@@ -8,7 +8,7 @@ from core.xolo_core.utils.logging import log_core, log_error
 
 
 class VersionManager:
-    ASSETS_DIR = os.environ.get("ASSETS_ROOT")
+
 
     @staticmethod
     def get_shots(path: str):
@@ -28,7 +28,7 @@ class VersionManager:
         """returns list of versions available for a given shot"""
 
         try:
-            extensions = load_map(dcc)  # 👈 lista de extensiones
+            extensions = load_map(dcc)  # list extensions
         except Exception as e:
             log_error(f"error in extensions loader {e}")
             return []
@@ -55,7 +55,8 @@ class VersionManager:
     @staticmethod
     def get_work_asset_version(department: str, asset_name: str):
         """returns list of assets available in the assets directory"""
+        ASSETS_DIR = os.environ.get("ASSETS_ROOT")
 
         asset_work_dir = Path(str(ASSETS_DIR)) / "work"
-        assets = []
+        # assets = []
         return print(asset_work_dir)

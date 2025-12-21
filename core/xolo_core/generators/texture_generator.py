@@ -1,17 +1,12 @@
-#!/usr/bin/env python3
-# rman_batch_tx_converter.py
-# Requiere: Python 3.11+, PySide6
-# Opcional: txmake (RenderMan) en PATH, o maketx (OpenImageIO)
 
 import json
-import os
+
 import subprocess
 import sys
-from functools import partial
 from pathlib import Path
 
 try:
-    from PySide6.QtCore import Qt, QThread, Signal
+    from PySide6.QtCore import QThread, Signal
     from PySide6.QtWidgets import (
         QApplication,
         QCheckBox,
@@ -27,7 +22,7 @@ try:
         QWidget,
     )
 except Exception as e:
-    print("PySide6 no está instalado. Instálalo con: pip install PySide6")
+    print(f"PySide6 not installed{e}")
     raise
 
 # Heurística simple para detectar tipos de mapa por nombre de archivo

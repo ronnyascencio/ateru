@@ -12,7 +12,7 @@ from core.xolo_core.generators.variables_generator import (
     project_root_variable,
 )
 from core.xolo_core.generators.declare_generator import populate_environment
-from .settings import PIPELINE_ROOT, load_config
+from .settings import load_config
 
 app = typer.Typer(help="Launch DCCs")
 
@@ -47,7 +47,7 @@ def gaffer(project_name: str = typer.Argument(..., help="Project base name.")):
     env["GAFFER_STARTUP_PATHS"] = str(custom_root)
 
     # changed python path
-    venv_path = Path(str(os.environ.get("PIPELINE_ROOT"))) / ".venv" / "lib" / "python3.11" / "site-packages"
+    # venv_path = Path(str(os.environ.get("PIPELINE_ROOT"))) / ".venv" / "lib" / "python3.11" / "site-packages"
 
     env["PYTHONPATH"] = str(os.environ.get("PIPELINE_ROOT"))
 
