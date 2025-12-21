@@ -20,6 +20,7 @@ dependencies = [
     "typing>=3.10.0.0",
     "pathlib>=1.0.1",
     "pyside6>=6.10.1",
+    "pydantic>=2.12.5",
 ]
 
 [project.optional-dependencies]
