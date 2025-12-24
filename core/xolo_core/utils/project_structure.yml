@@ -1,0 +1,9 @@
+directories:
+  - assets
+  - shots
+  - usd
+  - usd/assets
+  - usd/shots
+  - config
+  - publish
+  - logs

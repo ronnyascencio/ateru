@@ -1,6 +1,6 @@
 import bpy
 from .launch_ui import launch_window
-from xolo_core.utils.logging import log_core
+from core.xolo_core.utils.logging import log_core
 class XOLO_OT_OpenUI(bpy.types.Operator):
     bl_idname = "xolo.open_ui"
     bl_label = "Open Xolo UI"

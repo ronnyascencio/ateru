@@ -5,14 +5,14 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
+from core.xolo_core.generators.declare_generator import populate_environment
 from core.xolo_core.generators.variables_generator import (
     core_path,
     ocio_variable,
     prman_variable,
     project_root_variable,
 )
-from core.xolo_core.generators.declare_generator import populate_environment
-from .settings import load_config
+from core.xolo_core.utils.settings import load_config
 
 app = typer.Typer(help="Launch DCCs")
 
@@ -20,6 +20,7 @@ console = Console()
 
 
 PIPELINE_ROOT, CORE_PATH, VENV_SITE = populate_environment()
+
 
 @app.command()
 def gaffer(project_name: str = typer.Argument(..., help="Project base name.")):
@@ -36,8 +37,8 @@ def gaffer(project_name: str = typer.Argument(..., help="Project base name.")):
 
     # env context
     env = os.environ.copy()
-    env.pop("PYTHONPATH", None)
-    env.pop("PYTHONHOME", None)
+    _ = env.pop("PYTHONPATH", None)
+    _ = env.pop("PYTHONHOME", None)
     env.setdefault("DISPLAY", ":0")
 
     # PROJECT_ROOT variable inyection
@@ -45,13 +46,7 @@ def gaffer(project_name: str = typer.Argument(..., help="Project base name.")):
 
     #  Setiing up gaffer start up variable
     env["GAFFER_STARTUP_PATHS"] = str(custom_root)
-
-    # changed python path
-    # venv_path = Path(str(os.environ.get("PIPELINE_ROOT"))) / ".venv" / "lib" / "python3.11" / "site-packages"
-
     env["PYTHONPATH"] = str(os.environ.get("PIPELINE_ROOT"))
-
-
 
     console.print(f"DEBUG: Startup Path: {custom_root}", style="green")
     console.print(f"DEBUG: Project Root: {env['PROJECT_ROOT']}", style="green")
@@ -78,19 +73,23 @@ def nuke(project_name: str = typer.Argument(..., help="Project base name.")):
 
     # env context
     env = os.environ.copy()
-    env.pop("PYTHONPATH", None)
-    env.pop("PYTHONHOME", None)
+    _ = env.pop("PYTHONPATH", None)
+    _ = env.pop("PYTHONHOME", None)
     env["PROJECT_ROOT"] = str(project_path)
-    env["NUKE_PATH"] = os.pathsep.join([
-        str(Path(PIPELINE_ROOT) / "dcc" / "nuke"),
-        str(CORE_PATH),
-    ])
+    env["NUKE_PATH"] = os.pathsep.join(
+        [
+            str(Path(PIPELINE_ROOT) / "dcc" / "nuke"),
+            str(CORE_PATH),
+        ]
+    )
 
-    env["PYTHONPATH"] = os.pathsep.join([
-        str(CORE_PATH),
-        str(Path(PIPELINE_ROOT) / ".venv" / "lib" / "python3.11" / "site-packages"),
-        env.get("PYTHONPATH", ""),
-    ])
+    env["PYTHONPATH"] = os.pathsep.join(
+        [
+            str(CORE_PATH),
+            str(Path(PIPELINE_ROOT) / ".venv" / "lib" / "python3.11" / "site-packages"),
+            env.get("PYTHONPATH", ""),
+        ]
+    )
 
     # Launch  DCC eredated env
     nuke_path = Path(dcc_path).resolve()
@@ -126,17 +125,13 @@ def blender(
         Path(__file__).parent.parent.parent.parent / "dcc" / "blender" / "scripts"
     )
 
-    # 2. Preparar el entorno LIMPIO
+    # env context
     env = os.environ.copy()
-    env.pop("PYTHONPATH", None)  # Importante: Limpiar para evitar conflictos de Python
-    env.pop("PYTHONHOME", None)
+    _ = env.pop("PYTHONPATH", None)
+    _ = env.pop("PYTHONHOME", None)
 
-    # Agregar variables ESPECÍFICAS al entorno limpio
     env["BLENDER_USER_SCRIPTS"] = str(blender_scripts_path)
-    env["OCIO"] = os.environ.get("OCIO", "")  # Asegurar que OCIO pase si existe
-
-    # Contexto del Pipeline (XOLO_PROJECT, etc. ya deben estar seteados antes o aquí)
-    # env["XOLO_PROJECT"] = project_name
+    env["OCIO"] = os.environ.get("OCIO", "")
 
     dcc_path = config["software"]["Blender"]["path"]
     if not dcc_path:
@@ -146,8 +141,7 @@ def blender(
     blender_path = Path(dcc_path).resolve()
     console.rule("🚀 Launching Blender...")
 
-    # 3. Comando de lanzamiento con AUTO-ACTIVACIÓN del addon
-    # Esto fuerza a Blender a activar 'xolo_tools' al iniciar
+    # Force Blender to activate addons
     cmd = [
         str(blender_path),
         "--python-expr",

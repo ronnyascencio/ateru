@@ -5,3 +5,10 @@ __pycache__/
 *.pyo
 .idea/
 __pycache__/
+.vscode/
+.DS_Store
+*.log
+.env
+.env.*
+coverage/
+basedpyrightconfig.json

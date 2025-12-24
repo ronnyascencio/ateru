@@ -1,4 +1,4 @@
-# Description: This module sets up environment variables for project root, assets root, OCIO configuration, and RenderMan path.
+
 
 import os
 from pathlib import Path
@@ -39,7 +39,7 @@ def ocio_variable(dcc: str):
         )
 
     os.environ["OCIO"] = str(ocio_path)
-    console.print(f"DEBUG: Set OCO to {os.environ['OCIO']}", style="green")
+    console.print(f"[XOLO CORE] OCIO: Set OCO to {os.environ['OCIO']}", style="green")
     return os.environ.get("OCIO")
 
 
