@@ -21,6 +21,8 @@ console = Console()
 
 PIPELINE_ROOT, CORE_PATH, VENV_SITE = populate_environment()
 
+""" Commands to launch DCCs """
+
 
 @app.command()
 def gaffer(project_name: str = typer.Argument(..., help="Project base name.")):
