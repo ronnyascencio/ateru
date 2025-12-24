@@ -65,7 +65,6 @@ review_pipeline:
 # -------------------------
 # RELEASE (Tags + Changelog automarically)
 # -------------------------
-
 release:
   stage: release
   extends: .before_uv
@@ -76,30 +75,46 @@ release:
     - pip install uv
     - uv sync --dev
 
+    # 1. Sincronización de Git (igual que antes)
     - git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
     - git config user.name "$GITLAB_USER_NAME"
     - git config user.email "$GITLAB_USER_EMAIL"
-
     - git reset --hard HEAD
     - git checkout -B $CI_COMMIT_BRANCH
     - git pull origin $CI_COMMIT_BRANCH
 
+    # 2. Bump y Build
     - uv run cz bump --yes --changelog || echo "Skipping bump"
     - git push https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git HEAD:$CI_COMMIT_BRANCH --tags
-
     - rm -rf .venv .cache
-
     - uv build
 
-    # Crear el release en GitLab
-    - NEW_VERSION=$(uv run cz version --project)
+    - VERSION=$(uv run cz version --project)
+    - RELEASE_NOTES=$(sed -n "/## $VERSION/,/##/p" CHANGELOG.md | sed '$d')
+
     - |
       curl --request POST \
         --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
         --header "Content-Type: application/json" \
         --data "{
-          \"name\": \"Release $NEW_VERSION\",
-          \"tag_name\": \"v$NEW_VERSION\",
-          \"description\": \"Release generado automáticamente por Commitizen\"
+          \"name\": \"Release $VERSION\",
+          \"tag_name\": \"v$VERSION\",
+          \"description\": \"$RELEASE_NOTES\",
+          \"assets\": {
+            \"links\": [
+              {
+                \"name\": \"Python Wheel (.whl)\",
+                \"url\": \"${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/dist/xolo_pipeline-${VERSION}-py3-none-any.whl\"
+              },
+              {
+                \"name\": \"Source Distribution (.tar.gz)\",
+                \"url\": \"${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/dist/xolo_pipeline-${VERSION}.tar.gz\"
+              }
+            ]
+          }
         }" \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases"
+  artifacts:
+    paths:
+      - dist/
+    expire_in: never
