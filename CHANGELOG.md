@@ -1,3 +1,9 @@
+## v0.3.0 (2025-12-24)
+
+### Feat
+
+- finalize automated release workflow
+
 ## v0.2.0 (2025-12-24)
 
 ### Feat
