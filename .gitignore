@@ -1,16 +1,37 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.db
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+
+# UV y Herramientas (IMPORTANTE)
+.cache/
+.uv_cache/
 .pytest_cache/
 .ruff_cache/
-.uv_cache/
-.venv/
-*.pyo
+.ipynb_checkpoints/
+
+# IDEs
 .idea/
-__pycache__/
 .vscode/
 .DS_Store
+
+# Logs y Env
 *.log
 .env
 .env.*
+
+# Construcción y Distribución
+dist/
+build/
+*.egg-info/
+
+# Misc
 coverage/
 basedpyrightconfig.json

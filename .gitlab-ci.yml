@@ -76,25 +76,19 @@ release:
     - pip install uv
     - uv sync --dev
 
-    # Configuración de Git
     - git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
     - git config user.name "$GITLAB_USER_NAME"
     - git config user.email "$GITLAB_USER_EMAIL"
 
-    # Limpieza y Sincronización
     - git reset --hard HEAD
     - git checkout -B $CI_COMMIT_BRANCH
     - git pull origin $CI_COMMIT_BRANCH
 
-    # Bump de versión (esto crea el commit y el tag v0.4.0 localmente)
     - uv run cz bump --yes --changelog || echo "Skipping bump"
-
-    # Push de los cambios al repositorio
     - git push https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git HEAD:$CI_COMMIT_BRANCH --tags
 
-    # --- SOLUCIÓN DEFINITIVA AL BUILD ---
-    # Usamos 'uv build' en lugar de 'python -m build'.
-    # Es nativo, más rápido y evita el error de AbsoluteLinkError.
+    - rm -rf .venv .cache
+
     - uv build
 
     # Crear el release en GitLab
@@ -109,9 +103,3 @@ release:
           \"description\": \"Release generado automáticamente por Commitizen\"
         }" \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases"
-  artifacts:
-    paths:
-      - dist/
-  rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE !~ /chore\(release\):/'
-      when: manual
