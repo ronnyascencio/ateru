@@ -69,8 +69,10 @@ release:
   stage: release
   extends: .before_uv
   script:
-    - uv run python -m build
+    - uv sync --dev
+    - uv run hatch build
     - echo "Release build created for tag $CI_COMMIT_TAG"
+
   artifacts:
     paths:
       - dist/
