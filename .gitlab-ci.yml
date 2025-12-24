@@ -23,7 +23,7 @@ cache:
     - pip install uv
     - uv sync --dev
     - uv sync
-
+    - pip install build
 # -------------------------
 # TESTS
 # -------------------------
@@ -70,9 +70,8 @@ release:
   extends: .before_uv
   script:
     - uv sync --dev
-    - uv run hatch build
+    - uv run python -m build
     - echo "Release build created for tag $CI_COMMIT_TAG"
-
   artifacts:
     paths:
       - dist/

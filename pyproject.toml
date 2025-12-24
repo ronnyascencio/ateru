@@ -23,8 +23,6 @@ dependencies = [
     "pydantic>=2.12.5",
 ]
 
-
-
 [project.scripts]
 xolo = "cli.xolo_cli.main:app"
 
