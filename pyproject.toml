@@ -38,6 +38,14 @@ packages = [
 
 [dependency-groups]
 dev = [
+    "commitizen>=4.10.1",
     "pytest>=9.0.2",
     "ruff>=0.14.10",
 ]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.0-alpha"
+tag_format = "v$version"
+update_changelog_on_bump = true
+changelog_file = "CHANGELOG.md"
