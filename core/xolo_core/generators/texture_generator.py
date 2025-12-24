@@ -1,9 +1,8 @@
-
 import json
-
 import subprocess
 import sys
 from pathlib import Path
+from typing import Optional
 
 try:
     from PySide6.QtCore import QThread, Signal
@@ -207,7 +206,7 @@ class MainWindow(QWidget):
         layout.addWidget(self.log_widget, 1)
 
         self.setLayout(layout)
-        self.current_folder = None
+        self.current_folder = Path(".")
         self.files = []
 
     def select_folder(self):

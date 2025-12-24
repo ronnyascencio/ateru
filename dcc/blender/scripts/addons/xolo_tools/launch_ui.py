@@ -3,13 +3,13 @@ import sys
 import threading
 from PySide6 import QtWidgets, QtCore
 
-from xolo_core.extractors.dcc import detect_dcc
-from xolo_core.utils.logging import log_core, log_ui, log_error
+from core.xolo_core.extractors.dcc import detect_dcc
+from core.xolo_core.utils.logging import log_core, log_ui, log_error
 
 
 """ ui loader"""
 try:
-    from xolo_core.ui.xolo_window import XoloMainWindow
+    from core.xolo_core.ui.xolo_window import XoloMainWindow
     log_ui("ui imported ")
 except ModuleNotFoundError as e:
     log_error(f"could not import: {e}")

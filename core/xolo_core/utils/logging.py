@@ -1,10 +1,18 @@
-""" logger for terminal """
-def log_core(msg):
-    print(f"[XOLO CORE] {msg}")
-
-def log_ui(msg):
-    print(f"[XOLO UI] {msg}")
+"""logger for terminal"""
 
 
-def log_error(msg):
-    print(f"[XOLO ERROR] ❌ {msg}")
+def log_core(msg: str):
+    message: str = f"[XOLO CORE] {msg}"
+
+    return print(message)
+
+
+def log_ui(msg: str):
+    message: str = f"[XOLO UI] {msg}"
+
+    return print(message)
+
+
+def log_error(msg: str):
+    message: str = f"[XOLO ERROR] ❌ {msg}"
+    return print(message)

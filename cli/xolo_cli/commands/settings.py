@@ -1,5 +1,4 @@
-from pathlib import Path
-
+from core.xolo_core.utils.settings import load_config, save_config
 import typer
 import yaml
 from rich.console import Console
@@ -8,21 +7,9 @@ console = Console()
 
 app = typer.Typer(help="Manage pipeline settings")
 
-# Piepline root and pipeline_config.yaml
-PIPELINE_ROOT = Path(__file__).parent.parent.parent.parent.resolve()
-CONFIG_PATH = PIPELINE_ROOT / "pipeline_config.yaml"
 
 
-def load_config():
-    if CONFIG_PATH.exists():
-        with open(CONFIG_PATH, "r") as f:
-            return yaml.safe_load(f) or {}
-    return {}
 
-
-def save_config(data):
-    with open(CONFIG_PATH, "w") as f:
-        yaml.safe_dump(data, f, sort_keys=False)
 
 
 @app.command()
@@ -39,7 +26,7 @@ def show():
 def set_projects(projects_root: str):
     """
     Set projects_root
-    Examble:
+    Example:
     set-projects "/home/projects"
     """
     config = load_config()

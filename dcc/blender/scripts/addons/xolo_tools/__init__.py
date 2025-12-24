@@ -1,6 +1,6 @@
 import bpy
-from xolo_core.ui.xolo_window import XoloMainWindow
-from xolo_core.utils.logging import log_core, log_ui, log_error
+from core.xolo_core.ui.xolo_window import XoloMainWindow
+from core.xolo_core.utils.logging import log_core, log_ui, log_error
 
 from .operators import XOLO_OT_OpenUI
 from .menu import XOLO_MT_Menu

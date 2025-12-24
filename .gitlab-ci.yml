@@ -21,7 +21,8 @@ cache:
 .before_uv:
   before_script:
     - pip install uv
-    - uv sync --extra dev
+    - uv sync --dev
+    - uv sync
 
 # -------------------------
 # TESTS
@@ -36,8 +37,7 @@ test:
     - uv run --dev pytest -q tests
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_COMMIT_BRANCH'
-
+    - if: "$CI_COMMIT_BRANCH"
 
 # -------------------------
 # LINTING
@@ -50,7 +50,7 @@ lint:
   allow_failure: true
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_COMMIT_BRANCH'
+    - if: "$CI_COMMIT_BRANCH"
 
 # -------------------------
 # REVIEW (Merge Requests)
@@ -75,4 +75,4 @@ release:
     paths:
       - dist/
   rules:
-    - if: '$CI_COMMIT_TAG'
+    - if: "$CI_COMMIT_TAG"
