@@ -90,6 +90,7 @@ release:
 
     # 4. Push de los cambios creados por CZ (el commit de release y el tag)
     - git push origin $CI_COMMIT_BRANCH --tags
+    - rm -rf .cache/uv
 
     # 5. Build y API Release
     - uv run python -m build
