@@ -93,25 +93,29 @@ release:
     - rm -rf .venv .cache
     - uv build
 
+    # ... (después de uv build)
     - VERSION=$(uv run cz version --project)
+    - export VERSION # <--- IMPORTANTE: Exportar para que Python la vea
 
-      # 4. Extracción de Changelog (Corregido: comillas triples y variable real)
+
+      # 4. Extracción de Changelog (Nivel Profesional)
     - |
       RELEASE_NOTES=$(python3 -c "
       import pathlib, re, os
-      version = os.environ['VERSION']
+      version = os.getenv('VERSION', '')
       try:
-          content = pathlib.Path('CHANGELOG.md').read_text()
-          # Buscamos la sección de la versión actual
+          content = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8')
+          # Buscamos la sección que empieza con la versión hasta la siguiente o el fin de archivo
           pattern = r'## (v?)' + re.escape(version) + r'.*?(?=\n## |$)'
           match = re.search(pattern, content, re.DOTALL)
           if match:
-              notes = match.group(0).replace('\"', '\\\"').replace('\n', '\\n')
+              # Limpiamos y escapamos para el JSON del curl
+              notes = match.group(0).strip().replace('\"', '\\\"').replace('\n', '\\n')
               print(notes)
           else:
-              print(f'Release {version}\\n\\nNuevas mejoras y correcciones.')
-      except Exception as e:
-          print(f'Release {version}')
+              print(f'### Release {version}\\n\\nNuevas mejoras y correcciones aplicadas.')
+      except Exception:
+          print(f'### Release {version}')
       ")
 
       # 5. Publicación en GitLab
