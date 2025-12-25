@@ -93,53 +93,50 @@ release:
     - rm -rf .venv .cache
     - uv build
 
-    # ... (después de uv build)
     - VERSION=$(uv run cz version --project)
-    - export VERSION # <--- IMPORTANTE: Exportar para que Python la vea
+    - export VERSION
 
-
-      # 4. Extracción de Changelog (Nivel Profesional)
     - |
-      RELEASE_NOTES=$(python3 -c "
-      import pathlib, re, os
+      python3 -c "
+      import pathlib, re, os, json
       version = os.getenv('VERSION', '')
+      description = f'### Release {version}\n\nMejoras generales.'
       try:
           content = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8')
-          # Buscamos la sección que empieza con la versión hasta la siguiente o el fin de archivo
           pattern = r'## (v?)' + re.escape(version) + r'.*?(?=\n## |$)'
           match = re.search(pattern, content, re.DOTALL)
           if match:
-              # Limpiamos y escapamos para el JSON del curl
-              notes = match.group(0).strip().replace('\"', '\\\"').replace('\n', '\\n')
-              print(notes)
-          else:
-              print(f'### Release {version}\\n\\nNuevas mejoras y correcciones aplicadas.')
-      except Exception:
-          print(f'### Release {version}')
-      ")
+              description = match.group(0).strip()
+      except:
+          pass
 
-      # 5. Publicación en GitLab
+      # Construimos el objeto del Release
+      payload = {
+          'name': f'Release {version}',
+          'tag_name': f'v{version}',
+          'description': description,
+          'assets': {
+              'links': [
+                  {
+                      'name': '📦 Python Wheel (.whl)',
+                      'url': f'${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/dist/xolo_pipeline-{version}-py3-none-any.whl'
+                  },
+                  {
+                      'name': 'Source Distribution (.tar.gz)',
+                      'url': f'${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/dist/xolo_pipeline-{version}.tar.gz'
+                  }
+              ]
+          }
+      }
+      with open('release_data.json', 'w') as f:
+          json.dump(payload, f)
+      "
+
     - |
       curl --request POST \
         --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
         --header "Content-Type: application/json" \
-        --data "{
-          \"name\": \"Release $VERSION\",
-          \"tag_name\": \"v$VERSION\",
-          \"description\": \"$RELEASE_NOTES\",
-          \"assets\": {
-            \"links\": [
-              {
-                \"name\": \"📦 Python Wheel (.whl)\",
-                \"url\": \"${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/dist/xolo_pipeline-${VERSION}-py3-none-any.whl\"
-              },
-              {
-                \"name\": \"Source Distribution (.tar.gz)\",
-                \"url\": \"${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/dist/xolo_pipeline-${VERSION}.tar.gz\"
-              }
-            ]
-          }
-        }" \
+        --data @release_data.json \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases"
 
   artifacts:
