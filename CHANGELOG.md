@@ -1,3 +1,9 @@
+## v0.3.4 (2025-12-25)
+
+### Fix
+
+- fix release in the automatization
+
 ## v0.3.3 (2025-12-25)
 
 ### Fix
