@@ -143,3 +143,7 @@ release:
     paths:
       - dist/
     expire_in: never
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE !~ /chore\(release\):/'
+      when: manual

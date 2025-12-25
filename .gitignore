@@ -10,7 +10,7 @@ __pycache__/
 venv/
 ENV/
 
-# UV y Herramientas (IMPORTANTE)
+# UV and tools
 .cache/
 .uv_cache/
 .pytest_cache/
@@ -27,7 +27,7 @@ ENV/
 .env
 .env.*
 
-# Construcción y Distribución
+# build and release
 dist/
 build/
 *.egg-info/
@@ -35,3 +35,4 @@ build/
 # Misc
 coverage/
 basedpyrightconfig.json
+version_cache.json
