@@ -90,8 +90,24 @@ release:
     - uv build
 
     - VERSION=$(uv run cz version --project)
-    - RELEASE_NOTES=$(sed -n "/## $VERSION/,/##/p" CHANGELOG.md | sed '$d')
 
+    # 2. EXTRAER NOTAS (Forma robusta)
+    # Buscamos la línea que empieza con la versión y copiamos hasta la siguiente versión
+    - |
+      RELEASE_NOTES=$(python3 -c "
+      import pathlib, re
+      content = pathlib.Path('CHANGELOG.md').read_text()
+      # Buscamos la sección de la versión actual hasta la siguiente o el final
+      pattern = rf'## (v?){re.escape(VERSION)}.*?(?=\n## |$)'
+      match = re.search(pattern, content, re.DOTALL)
+      if match:
+          notes = match.group(0).replace('\"', '\\\"').replace('\n', '\\n')
+          print(notes)
+      else:
+          print('Release notes not found in CHANGELOG.md')
+      ")
+
+    # 3. CREAR EL RELEASE (Con notas reales)
     - |
       curl --request POST \
         --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
@@ -103,7 +119,7 @@ release:
           \"assets\": {
             \"links\": [
               {
-                \"name\": \"Python Wheel (.whl)\",
+                \"name\": \"📦 Python Wheel (.whl)\",
                 \"url\": \"${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/dist/xolo_pipeline-${VERSION}-py3-none-any.whl\"
               },
               {
