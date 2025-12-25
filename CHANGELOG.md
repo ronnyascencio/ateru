@@ -1,3 +1,9 @@
+## v0.3.5 (2025-12-25)
+
+### Fix
+
+- fix version variable in workflow
+
 ## v0.3.4 (2025-12-25)
 
 ### Fix
