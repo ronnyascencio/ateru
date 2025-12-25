@@ -1,3 +1,9 @@
+## v0.3.2 (2025-12-25)
+
+### Fix
+
+- **fix**: fix in autorelease notes
+
 ## v0.3.1 (2025-12-24)
 
 ### Fix
