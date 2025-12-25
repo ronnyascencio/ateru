@@ -92,27 +92,29 @@ release:
     # 3. Construcción Limpia (Evita AbsoluteLinkError)
     - rm -rf .venv .cache
     - uv build
+
     - VERSION=$(uv run cz version --project)
 
-    # 4. Extracción de Changelog para el cuerpo del Release (Estilo Zed)
+      # 4. Extracción de Changelog (Corregido: comillas triples y variable real)
     - |
       RELEASE_NOTES=$(python3 -c "
-      import pathlib, re
+      import pathlib, re, os
+      version = os.environ['VERSION']
       try:
           content = pathlib.Path('CHANGELOG.md').read_text()
-          # Busca la sección de la versión actual hasta la siguiente o el final
-          pattern = rf'## (v?){re.escape('$VERSION')}.*?(?=\n## |$)'
+          # Buscamos la sección de la versión actual
+          pattern = r'## (v?)' + re.escape(version) + r'.*?(?=\n## |$)'
           match = re.search(pattern, content, re.DOTALL)
           if match:
               notes = match.group(0).replace('\"', '\\\"').replace('\n', '\\n')
               print(notes)
           else:
-              print('Release $VERSION\\n\\nGenerado automáticamente por Commitizen.')
-      except Exception:
-          print('Release $VERSION')
+              print(f'Release {version}\\n\\nNuevas mejoras y correcciones.')
+      except Exception as e:
+          print(f'Release {version}')
       ")
 
-    # 5. Publicación en GitLab con Assets y Notas
+      # 5. Publicación en GitLab
     - |
       curl --request POST \
         --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
