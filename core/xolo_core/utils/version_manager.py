@@ -10,7 +10,7 @@ def _project_id() -> str:
 
 def fetch_gitlab_version() -> str | None:
     """
-    Fetch latest GitLab release version (without leading 'v').
+    Fetch latest GitLab release version.
     """
     try:
         url = f"{GITLAB_API}/projects/{_project_id()}/releases"
