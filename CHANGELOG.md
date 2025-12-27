@@ -1,3 +1,10 @@
+## v0.4.0 (2025-12-27)
+
+### Feat
+
+- **context**: implement pipeline context system
+- **core**: add version detection and update workflow
+
 ## v0.3.7 (2025-12-25)
 
 ### Refactor
