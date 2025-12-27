@@ -9,4 +9,4 @@ software:
     path: /opt/blender/5.0.0/blender
   Gaffer:
     version: 1.6.6.0
-    path: /opt/gaffer/1.6.6.0/bin
+    path: /opt/gaffer/1.6.6.0/bin/gaffer

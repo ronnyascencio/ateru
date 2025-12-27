@@ -12,6 +12,8 @@ from core.xolo_core.generators.variables_generator import (
     prman_variable,
     project_root_variable,
 )
+from core.xolo_core.models.context import ContextResolver
+from core.xolo_core.utils.logging import log_core
 from core.xolo_core.utils.settings import load_config
 
 app = typer.Typer(help="Launch DCCs")
@@ -21,18 +23,49 @@ console = Console()
 
 PIPELINE_ROOT, CORE_PATH, VENV_SITE = populate_environment()
 
+
+def _prepare_dcc_launch(project_name: str, software_name: str):
+    config = load_config()
+    projects_root = Path(config["global"]["projects_root"])
+
+    # 1. Resolvemos el Contexto (Carga el YAML)
+    ctx = ContextResolver.from_project_yaml(project_name, projects_root)
+
+    # 2. Preparamos el entorno
+    env = os.environ.copy()
+    _ = env.pop("PYTHONPATH", None)
+    _ = env.pop("PYTHONHOME", None)
+
+    # Inyectamos variables XOLO_ del modelo
+    env.update(ctx.get_env_map())
+
+    # Mantenemos PROJECT_ROOT original para scripts internos
+    env["PROJECT_ROOT"] = str(ctx.project.root_path)
+    env["PIPELINE_ROOT"] = str(PIPELINE_ROOT)
+
+    software_data = config["software"].get(software_name)
+    if not software_data or "path" not in software_data:
+        raise ValueError(
+            f"No path found for {software_name} in pipeline configuration."
+        )
+
+    dcc_path = Path(software_data["path"])
+
+    return env, dcc_path, ctx
+
+
 """ Commands to launch DCCs """
 
 
 @app.command()
 def gaffer(project_name: str = typer.Argument(..., help="Project base name.")):
-    config = load_config()
-    projects_root = config["global"]["projects_root"]
-    project_path = Path(projects_root, project_name)
+    env, path, ctx = _prepare_dcc_launch(project_name, "Gaffer")
 
-    dcc_path = config["software"]["Gaffer"]["path"]
+    project_path = env["XOLO_PROJECT_ROOT"]
 
-    gaffer_path = Path(dcc_path, "gaffer").resolve()
+    log_core(f" config_data from context class : {path}")
+
+    gaffer_path = path / "gaffer"
 
     # startup root path
     custom_root = Path(core_path()).resolve() / "dcc" / "gaffer" / "startup"
@@ -44,30 +77,30 @@ def gaffer(project_name: str = typer.Argument(..., help="Project base name.")):
     env.setdefault("DISPLAY", ":0")
 
     # PROJECT_ROOT variable inyection
-    env["PROJECT_ROOT"] = str(project_path)
+    env["XOLO_PROJECT_ROOT"] = str(project_path)
 
     #  Setiing up gaffer start up variable
     env["GAFFER_STARTUP_PATHS"] = str(custom_root)
     env["PYTHONPATH"] = str(os.environ.get("PIPELINE_ROOT"))
 
-    console.print(f"DEBUG: Startup Path: {custom_root}", style="green")
-    console.print(f"DEBUG: Project Root: {env['PROJECT_ROOT']}", style="green")
-
     # Launch  DCC eredated env
     console.rule("🚀 Launching Gaffer...")
-    proc = subprocess.Popen([str(gaffer_path)], env=env, start_new_session=True)
-    print(f"Launched Gaffer with PID {proc.pid}")
+    subprocess.Popen([str(gaffer_path)], env=env, start_new_session=True)
+    log_core(f"DEBUG: Startup Path: {custom_root}")
+    log_core(f"DEBUG: Project Root: {env['XOLO_PROJECT_ROOT']}")
 
 
 @app.command()
 def nuke(project_name: str = typer.Argument(..., help="Project base name.")):
-    config = load_config()
-    projects_root = config["global"]["projects_root"]
-    project_path = Path(projects_root, project_name)
+    env, path, ctx = _prepare_dcc_launch(project_name, "Nuke")
+
+    project_path = env["XOLO_PROJECT_ROOT"]
+
+    log_core(f" config_data from context class : {path}")
 
     ocio_variable("Nuke")
     project_root_variable(str(project_path))
-    dcc_path = config["software"]["Nuke"]["path"]
+    dcc_path = path
     console.print(f"DEBUG: DCC path  {dcc_path}", style="yellow")
     if not dcc_path:
         typer.echo("❌ DCC 'Nuke' no configurated.")
@@ -77,7 +110,7 @@ def nuke(project_name: str = typer.Argument(..., help="Project base name.")):
     env = os.environ.copy()
     _ = env.pop("PYTHONPATH", None)
     _ = env.pop("PYTHONHOME", None)
-    env["PROJECT_ROOT"] = str(project_path)
+    env["XOLO_PROJECT_ROOT"] = str(project_path)
     env["NUKE_PATH"] = os.pathsep.join(
         [
             str(Path(PIPELINE_ROOT) / "dcc" / "nuke"),
@@ -104,9 +137,11 @@ def blender(
     project_name: str = typer.Argument(..., help="Project  base name."),
     render: str = typer.Option(None, help="Render engine to use."),
 ):
-    config = load_config()
-    projects_root = config["global"]["projects_root"]
-    project_path = Path(projects_root, project_name)
+    env, path, ctx = _prepare_dcc_launch(project_name, "Blender")
+
+    project_path = env["XOLO_PROJECT_ROOT"]
+
+    log_core(f" config_data from context class : {path}")
     project_root_variable(str(project_path))
     if render == "pixar":
         ocio_file = "lib/ocio/ACES-1.3/config.ocio"
@@ -135,7 +170,7 @@ def blender(
     env["BLENDER_USER_SCRIPTS"] = str(blender_scripts_path)
     env["OCIO"] = os.environ.get("OCIO", "")
 
-    dcc_path = config["software"]["Blender"]["path"]
+    dcc_path = path
     if not dcc_path:
         typer.echo("❌ DCC 'Blender' not configurated.")
         raise typer.Exit(code=1)

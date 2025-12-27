@@ -3,8 +3,8 @@
 import os
 
 import Gaffer
-from core.xolo_core.utils.logging import log_core, log_ui, log_error
 
+from core.xolo_core.utils.logging import log_core, log_error, log_ui
 
 log_core("GAFFER CUSTOM STARTUP: loading  config.py...")
 log_core("Looking for PROJECT_ROOT in environment...")
@@ -16,11 +16,11 @@ try:
         log_core(f" Configuring script: {script.getName()}")
 
         variables = script["variables"]
-        project_root = os.environ.get("PROJECT_ROOT")
-        project_name = project_root.split("/")[-1]
+        project_root = os.environ.get("XOLO_PROJECT_ROOT")
+        project_name = str(project_root).split("/")[-1]
 
         if not project_root:
-            log_error(" PROJECT_ROOT env var not found!")
+            log_error(" XOLO_PROJECT_ROOT env var not found!")
             return
 
         """ get  NameValuePlug (context variable)"""
