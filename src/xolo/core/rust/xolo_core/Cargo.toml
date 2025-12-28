@@ -1,6 +1,6 @@
 [package]
 name = "xolo_core"
-version = "0.1.0"
+version = "0.1.0a0"
 edition = "2024"
 resolver = "3"
 

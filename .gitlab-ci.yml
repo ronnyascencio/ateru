@@ -13,17 +13,11 @@ cache:
   paths:
     - .cache/uv
 
-# -------------------------
-# Base setup
-# -------------------------
 .before_uv:
   before_script:
     - pip install uv
     - uv sync --dev
 
-# -------------------------
-# LINTING
-# -------------------------
 lint:
   stage: lint
   extends: .before_uv
@@ -34,9 +28,6 @@ lint:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
 
-# -------------------------
-# RELEASE (Auto-Versioning & Build)
-# -------------------------
 release:
   stage: release
   extends: .before_uv
@@ -53,57 +44,64 @@ release:
     - git checkout -B $TARGET_BRANCH
     - git pull origin $TARGET_BRANCH
 
-
-    - uv run cz bump --prerelease alpha --yes --changelog || (echo "No hay cambios suficientes para incrementar versión" && exit 0)
+    - uv run cz bump --prerelease alpha --yes --changelog
     
 
     - NEW_VERSION=$(uv run cz version --project)
     - git add .
     - |
       if git diff --cached --quiet; then
-        echo "No hay cambios detectados para commitear."
+        echo "No changes to commit"
       else
         git commit -m "chore(release): v$NEW_VERSION [skip ci]"
       fi
-    
-
-    - git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION" || echo "El tag ya existe"
+    - git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION" || echo "Tag exists"
     - git push origin $TARGET_BRANCH --tags --force
+
 
     - rm -rf dist/
     - uv build
 
-
+  
     - |
       python3 -c "
       import pathlib, re, os, json
       version = os.getenv('NEW_VERSION', '')
       dist_path = pathlib.Path('dist')
       
+      # 1. Buscar binarios
       whl_file = next(dist_path.glob('*.whl')).name if list(dist_path.glob('*.whl')) else ''
-      tar_file = next(dist_path.glob('*.tar.gz')).name if list(dist_path.glob('*.tar.gz')) else ''
+
+      # 2. Extraer notas del CHANGELOG.md automáticamente
+      changelog_notes = 'No release notes provided.'
+      try:
+          content = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8')
+
+          pattern = r'## (v?)' + re.escape(version) + r'(.*?)(?=\n## |$)'
+          match = re.search(pattern, content, re.DOTALL)
+          if match:
+              changelog_notes = match.group(2).strip()
+      except Exception as e:
+          print(f'Error reading changelog: {e}')
 
       payload = {
           'name': f'Release {version}',
           'tag_name': f'v{version}',
           'ref': os.getenv('CI_COMMIT_SHA'),
-          'description': f'Xolo Pipeline Alpha v{version}\n\nActualización automática de la rama principal.',
+          'description': changelog_notes, 
           'assets': {
               'links': [
                   {
                       'name': '📦 Python Wheel',
                       'url': f'{os.getenv(\"CI_PROJECT_URL\")}/-/jobs/{os.getenv(\"CI_JOB_ID\")}/artifacts/raw/dist/{whl_file}'
-                  },
-                  {
-                      'name': 'Source Tarball',
-                      'url': f'{os.getenv(\"CI_PROJECT_URL\")}/-/jobs/{os.getenv(\"CI_JOB_ID\")}/artifacts/raw/dist/{tar_file}'
                   }
               ]
           }
       }
       with open('release_data.json', 'w') as f:
-          json.dump(payload, f)
+          json.dump(payload, f, indent=4)
       "
+
 
     - sleep 5
     - |
@@ -111,7 +109,7 @@ release:
         --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
         --header "Content-Type: application/json" \
         --data @release_data.json \
-        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases"
+        \"$CI_API_V4_URL/projects/$CI_PROJECT_ID/releases\"
 
   artifacts:
     paths:
