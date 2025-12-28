@@ -13,11 +13,17 @@ cache:
   paths:
     - .cache/uv
 
+# -------------------------
+# Base setup
+# -------------------------
 .before_uv:
   before_script:
     - pip install uv
     - uv sync --dev
 
+# -------------------------
+# LINTING
+# -------------------------
 lint:
   stage: lint
   extends: .before_uv
@@ -28,6 +34,9 @@ lint:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
 
+# -------------------------
+# RELEASE (Auto-Versioning & Build)
+# -------------------------
 release:
   stage: release
   extends: .before_uv
@@ -45,24 +54,30 @@ release:
     - git pull origin $TARGET_BRANCH
 
 
-    - uv run cz bump --prerelease alpha --yes --changelog
-    
+    - |
+      echo "Ejecutando bump de versión..."
+      if ! uv run cz bump --prerelease alpha --yes --changelog; then
+        echo "Aviso: Falló el bump automático. Forzando incremento tipo PATCH..."
+        uv run cz bump --prerelease alpha --increment PATCH --yes --changelog
+      fi
 
     - NEW_VERSION=$(uv run cz version --project)
+    - echo "Nueva versión detectada -> $NEW_VERSION"
     - git add .
     - |
       if git diff --cached --quiet; then
-        echo "No changes to commit"
+        echo "No hay cambios para commitear."
       else
         git commit -m "chore(release): v$NEW_VERSION [skip ci]"
       fi
-    - git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION" || echo "Tag exists"
+    
+
+    - git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION" || echo "Tag ya existe localmente"
     - git push origin $TARGET_BRANCH --tags --force
 
- 
+
     - rm -rf dist/
     - uv build
-
 
     - |
       python3 -c "
@@ -70,21 +85,21 @@ release:
       version = os.getenv('NEW_VERSION', '')
       dist_path = pathlib.Path('dist')
       
-      # 1. Buscar binario Wheel
+ 
       whl_file = next(dist_path.glob('*.whl')).name if list(dist_path.glob('*.whl')) else ''
 
-      # 2. Extraer notas del CHANGELOG.md (Automático)
-      changelog_notes = 'New alpha release.'
+ 
+      changelog_notes = 'Release alpha version ' + version
       try:
-          content = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8')
-          # Regex para capturar solo la sección de la versión actual
-          pattern = r'## (v?)' + re.escape(version) + r'.*?(?=\n## |$)'
-          match = re.search(pattern, content, re.DOTALL)
-          if match:
-              # Limpiamos el título ## v0.x.x para dejar solo el contenido
-              changelog_notes = match.group(0).split('\n', 1)[1].strip()
+          if pathlib.Path('CHANGELOG.md').exists():
+              content = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8')
+              
+              pattern = r'## (v?)' + re.escape(version) + r'(.*?)(?=\n## |$)'
+              match = re.search(pattern, content, re.DOTALL)
+              if match:
+                  changelog_notes = match.group(2).strip()
       except Exception as e:
-          print(f'Error reading changelog: {e}')
+          print(f'Error procesando CHANGELOG: {e}')
 
       payload = {
           'name': f'Release {version}',
@@ -103,7 +118,6 @@ release:
       with open('release_data.json', 'w') as f:
           json.dump(payload, f, indent=4)
       "
-
 
     - sleep 5
     - |
