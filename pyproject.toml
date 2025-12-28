@@ -45,10 +45,10 @@ dev = [
 [tool.commitizen]
 name = "cz_conventional_commits"
 version = "0.1.0a1"
-version_files = [
-    "pyproject.toml:version"
-]
 tag_format = "v$version"
+version_files = ["pyproject.toml:version"]
 major_version_zero = true
 update_changelog_on_bump = true
-changelog_file = "CHANGELOG.md"
+changelog_incremental = true
+change_type_order = ["Feat", "Fix", "Docs", "Style", "Refactor", "Perf", "Test"]
+change_type_map = { "feat" = "Features", "fix" = "Bug Fixes", "perf" = "Performance Improvements", "docs" = "Documentation" }
