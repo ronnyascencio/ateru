@@ -1,4 +1,5 @@
-name: Release System 
+name: Release System
+
 on:
   push:
     branches:
@@ -44,12 +45,17 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.RELEASE_TOKEN }}@github.com/${{ github.repository }}
 
 
-          uv run cz bump --prerelease alpha --yes --changelog --force || \
-          uv run cz bump --prerelease alpha --increment PATCH --yes --changelog --force
+          VERSION_ACTUAL=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
+          git tag -d "v$VERSION_ACTUAL" 2>/dev/null || true
+          git push origin --delete "v$VERSION_ACTUAL" 2>/dev/null || true
+
+
+          uv run cz bump --prerelease alpha --yes --changelog || \
+          uv run cz bump --prerelease alpha --increment PATCH --yes --changelog
           
 
-          VERSION=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
-          echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
+          NEW_VER=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
+          echo "NEW_VERSION=$NEW_VER" >> $GITHUB_ENV
           
 
           git push origin main --tags --force
