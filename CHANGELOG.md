@@ -1,3 +1,9 @@
+## v0.1.0a3 (2025-12-28)
+
+### Features
+
+- **feat**: feat: testing protected branch automation
+
 ## v0.1.0a2 (2025-12-28)
 
 ### Bug Fixes
