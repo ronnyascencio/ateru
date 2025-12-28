@@ -1,8 +1,8 @@
 import typer
 
-from core.xolo_core.runtime import app_version
-from core.xolo_core.updater.checker import has_update
-from core.xolo_core.updater.installer import run_update
+from src.xolo.core.python.runtime import app_version
+from src.xolo.core.python.updater.checker import has_update
+from src.xolo.core.python.updater.installer import run_update
 
 app = typer.Typer(help="Xolo version and updates")
 

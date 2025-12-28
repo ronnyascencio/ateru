@@ -2,10 +2,10 @@ from pathlib import Path
 
 import yaml
 
-from core.xolo_core.generators.variables_generator import ocio_variable
-from core.xolo_core.models.base import XoloBaseModel
-from core.xolo_core.models.project import Project
-from core.xolo_core.utils.logging import log_core
+from src.xolo.core.python.generators.variables_generator import ocio_variable
+from src.xolo.core.python.models.base import XoloBaseModel
+from src.xolo.core.python.models.project import Project
+from src.xolo.core.python.utils.logging import log_core
 
 """ global variables """
 

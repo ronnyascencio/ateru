@@ -1,6 +1,6 @@
 import typer
 
-from cli.xolo_cli.commands import launch, project, settings, version
+from src.xolo.cli.python.commands import launch, project, settings, version
 
 app = typer.Typer()
 

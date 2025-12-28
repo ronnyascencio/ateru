@@ -5,16 +5,16 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
-from core.xolo_core.generators.declare_generator import populate_environment
-from core.xolo_core.generators.variables_generator import (
+from src.xolo.core.python.generators.declare_generator import populate_environment
+from src.xolo.core.python.generators.variables_generator import (
     core_path,
     ocio_variable,
     prman_variable,
     project_root_variable,
 )
-from core.xolo_core.models.context import ContextResolver
-from core.xolo_core.utils.logging import log_core
-from core.xolo_core.utils.settings import load_config
+from src.xolo.core.python.models.context import ContextResolver
+from src.xolo.core.python.utils.logging import log_core
+from src.xolo.core.python.utils.settings import load_config
 
 app = typer.Typer(help="Launch DCCs")
 

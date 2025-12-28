@@ -24,7 +24,7 @@ dependencies = [
 ]
 
 [project.scripts]
-xolo = "cli.xolo_cli.main:app"
+xolo = "src.xolo.cli.python.main:app"
 
 [tool.hatch.build.targets.wheel]
 packages = [

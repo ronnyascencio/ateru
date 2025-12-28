@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 def test_project_model_creation(tmp_path):
-    from core.xolo_core.models.project import Project
+    from src.xolo.core.python.models.project import Project
 
     project = Project(
         name="reel",

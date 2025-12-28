@@ -1,4 +1,4 @@
-from core.xolo_core.models.base import XoloBaseModel
+from src.xolo.core.python.models.base import XoloBaseModel
 
 
 class Asset(XoloBaseModel):

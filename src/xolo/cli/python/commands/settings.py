@@ -1,15 +1,12 @@
-from core.xolo_core.utils.settings import load_config, save_config
 import typer
 import yaml
 from rich.console import Console
 
+from src.xolo.core.python.utils.settings import load_config, save_config
+
 console = Console()
 
 app = typer.Typer(help="Manage pipeline settings")
-
-
-
-
 
 
 @app.command()

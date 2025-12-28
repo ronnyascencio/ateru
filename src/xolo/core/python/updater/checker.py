@@ -1,5 +1,5 @@
-from core.xolo_core.runtime import app_version
-from core.xolo_core.utils.version_manager import fetch_gitlab_version
+from src.xolo.core.python.runtime import app_version
+from src.xolo.core.python.utils.version_manager import fetch_gitlab_version
 
 
 def has_update() -> tuple[bool, str | None]:

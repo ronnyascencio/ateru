@@ -1,15 +1,13 @@
 import os
-
 from pathlib import Path
-from core.xolo_core.extractors.dcc import load_map
-from core.xolo_core.utils.logging import log_core, log_error
+
+from src.xolo.core.python.extractors.dcc import load_map
+from src.xolo.core.python.utils.logging import log_core, log_error
+
 """Global Variables"""
 
 
-
 class VersionManager:
-
-
     @staticmethod
     def get_shots(path: str):
         """return a list of shots available in the shots directory"""
@@ -33,7 +31,6 @@ class VersionManager:
             log_error(f"error in extensions loader {e}")
             return []
 
-
         versions_dir = Path(str(project_root)) / "shots" / shot / "work" / dcc
         debug_print = Path() / "PROJECT_ROOT" / "shots" / shot / "work" / dcc
 
@@ -50,7 +47,6 @@ class VersionManager:
                 scenes.append(file_path.name)
 
         return sorted(scenes)
-
 
     @staticmethod
     def get_work_asset_version(department: str, asset_name: str):

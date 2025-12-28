@@ -8,10 +8,10 @@ from typing import Optional
 import yaml
 from pydantic import BaseModel, Field
 
-from core.xolo_core.models.asset import Asset
-from core.xolo_core.models.project import Project
-from core.xolo_core.models.shot import Shot
-from core.xolo_core.utils.logging import log_core
+from src.xolo.core.python.models.asset import Asset
+from src.xolo.core.python.models.project import Project
+from src.xolo.core.python.models.shot import Shot
+from src.xolo.core.python.utils.logging import log_core
 
 
 class Context(BaseModel):

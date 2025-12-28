@@ -2,10 +2,10 @@ from pathlib import Path
 
 import typer
 
-from core.xolo_core.models.base import XoloBaseModel
-from core.xolo_core.utils.format_show import format_project_info
-from core.xolo_core.utils.logging import log_core
-from core.xolo_core.utils.settings import (
+from src.xolo.core.python.models.base import XoloBaseModel
+from src.xolo.core.python.utils.format_show import format_project_info
+from src.xolo.core.python.utils.logging import log_core
+from src.xolo.core.python.utils.settings import (
     create_project_config,
     create_project_directories,
     get_projects_root,
