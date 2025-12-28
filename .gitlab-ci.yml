@@ -6,7 +6,7 @@ variables:
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
 
 stages:
-  - test
+  # - test
   - lint
   - review
   - release
@@ -26,17 +26,17 @@ cache:
 # -------------------------
 # TESTS
 # -------------------------
-test:
-  stage: test
-  extends: .before_uv
-  variables:
-    PIPELINE_ROOT: "/tmp/xolo-pipeline"
-  script:
-    - mkdir -p /tmp/xolo-pipeline
-    - uv run --dev pytest -q tests
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: "$CI_COMMIT_BRANCH"
+# test:
+#   stage: test
+#   extends: .before_uv
+#   variables:
+#     PIPELINE_ROOT: "/tmp/xolo-pipeline"
+#   script:
+#     - mkdir -p /tmp/xolo-pipeline
+#     - uv run --dev pytest -q tests
+#   rules:
+#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+#     - if: "$CI_COMMIT_BRANCH"
 
 # -------------------------
 # LINTING

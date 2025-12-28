@@ -1,0 +1,11 @@
+[workspace]
+members = ["src/xolo/cli/rust/xolo_cli",
+    "src/xolo/core/rust/xolo_core",
+
+]
+resolver = "3"
+
+# Central optimization
+[profile.release]
+opt-level = 3
+lto = true

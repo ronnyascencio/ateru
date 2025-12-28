@@ -1,0 +1,10 @@
+[package]
+name = "xolo_core"
+version = "0.1.0"
+edition = "2024"
+resolver = "3"
+
+[dependencies]
+anyhow = "1.0.100"
+serde = "1.0.228"
+serde_yaml = "0.9.34"
