@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - 'CHANGELOG.md'
+  workflow_dispatch:
 
 jobs:
   release:
@@ -30,33 +29,34 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
-      - name: Run Bump (Commitizen)
+      - name: Bump version and Generate Changelog
         id: cz
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+
           uv run cz bump --prerelease alpha --yes --changelog || \
           uv run cz bump --prerelease alpha --increment PATCH --yes --changelog
-          
 
           VERSION=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
           echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
-          
 
           git push origin main --tags
 
       - name: Build package
         run: uv build
-          
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.NEW_VERSION }}
           name: Release v${{ env.NEW_VERSION }}
           files: dist/*
-          generate_release_notes: true
 
-          prerelease: ${{ contains(env.NEW_VERSION, 'a') }}
+          generate_release_notes: true
+          body_path: CHANGELOG.md
+
+          prerelease: ${{ contains(env.NEW_VERSION, 'a') || contains(env.NEW_VERSION, 'b') || contains(env.NEW_VERSION, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
