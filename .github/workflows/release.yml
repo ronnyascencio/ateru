@@ -1,4 +1,4 @@
-name: Release System 
+name: Release System (Zed Style)
 
 on:
   push:
@@ -35,10 +35,16 @@ jobs:
 
       - name: Bump Version and Update Changelog
         id: cz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
+
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
 
           uv run cz bump --prerelease alpha --yes --changelog || \
           uv run cz bump --prerelease alpha --increment PATCH --yes --changelog
@@ -52,7 +58,7 @@ jobs:
           git commit -m "chore(release): v$VERSION [skip ci]" || echo "nothing to commit"
           
 
-          git push origin main --tags --force
+          git push origin main --tags
 
       - name: Build Package
         run: uv build
@@ -63,11 +69,8 @@ jobs:
           tag_name: v${{ env.NEW_VERSION }}
           name: v${{ env.NEW_VERSION }}
           files: dist/*
-
           generate_release_notes: true
-
           body_path: CHANGELOG.md
-
           prerelease: ${{ contains(env.NEW_VERSION, 'a') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
