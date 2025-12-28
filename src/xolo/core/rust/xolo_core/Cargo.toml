@@ -1,10 +1,20 @@
 [package]
 name = "xolo_core"
+<<<<<<< HEAD
 version = "0.1.0a0"
+=======
+version = "0.1.0-a0"
+>>>>>>> 5661196 (chore: reset environment and update pipeline)
 edition = "2024"
 resolver = "3"
 
 [dependencies]
 anyhow = "1.0.100"
+dirs = "6.0.0"
+log = "0.4.29"
+reqwest = "0.12.28"
+semver = "1.0.27"
 serde = "1.0.228"
 serde_yaml = "0.9.34"
+thiserror = "2.0.17"
+tokio = "1.48.0"
