@@ -16,8 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-
+          fetch-depth: 0 
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
@@ -29,20 +28,28 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
-      - name: Bump version and Generate Changelog
+      - name: Run Bump and Generate Changelog
         id: cz
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          echo "Intentando incrementar versión..."
 
-
-          uv run cz bump --prerelease alpha --yes --changelog || \
-          uv run cz bump --prerelease alpha --increment PATCH --yes --changelog
+          if ! uv run cz bump --prerelease alpha --yes --changelog; then
+            echo "Aviso: No se detectaron tags previos. Iniciando primer ciclo de release..."
+            uv run cz bump --prerelease alpha --increment PATCH --yes --changelog || echo "Ya existe la versión."
+          fi
+          
 
           VERSION=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
           echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
+          
 
-          git push origin main --tags
+          git add .
+          git commit -m "chore(release): v$VERSION [skip ci]" || echo "Sin cambios para commitear"
+          git tag -f "v$VERSION"
+          git push origin main --tags --force
 
       - name: Build package
         run: uv build
@@ -55,8 +62,9 @@ jobs:
           files: dist/*
 
           generate_release_notes: true
+
           body_path: CHANGELOG.md
 
-          prerelease: ${{ contains(env.NEW_VERSION, 'a') || contains(env.NEW_VERSION, 'b') || contains(env.NEW_VERSION, 'rc') }}
+          prerelease: ${{ contains(env.NEW_VERSION, 'a') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
