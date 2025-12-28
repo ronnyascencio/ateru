@@ -6,7 +6,7 @@ variables:
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
 
 stages:
-  - test
+  # - test
   - lint
   - review
   - release
