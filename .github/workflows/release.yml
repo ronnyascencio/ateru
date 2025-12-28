@@ -1,5 +1,4 @@
-name: Release System (Zed Style)
-
+name: Release System 
 on:
   push:
     branches:
@@ -41,20 +40,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-
           git remote set-url origin https://x-access-token:${{ secrets.RELEASE_TOKEN }}@github.com/${{ github.repository }}
-
 
           CURRENT_V=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
           
-
           git tag -d "v$CURRENT_V" 2>/dev/null || true
           git push origin --delete "v$CURRENT_V" 2>/dev/null || true
 
-
-          # usamos la versión actual como base para el historial.
+        
           uv run cz bump --prerelease alpha --yes --changelog || \
-          uv run cz bump --prerelease alpha --yes --changelog --manual-v$CURRENT_V
+          uv run cz bump --increment PATCH --prerelease alpha --yes --changelog
           
 
           NEW_VER=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
