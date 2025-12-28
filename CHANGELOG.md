@@ -1,3 +1,9 @@
+## v0.1.0a2 (2025-12-28)
+
+### Bug Fixes
+
+- repair yaml syntax
+
 ## v0.1.0a1 (2025-12-28)
 
 ### Feat
