@@ -54,55 +54,49 @@ release:
     - git pull origin $TARGET_BRANCH
 
 
-    - uv run cz bump --prerelease alpha --yes --changelog || (echo "No hay cambios para subir de versión" && exit 0)
+    - uv run cz bump --prerelease alpha --yes --changelog || (echo "No hay cambios suficientes para incrementar versión" && exit 0)
     
 
-    - git push origin $TARGET_BRANCH --tags
+    - NEW_VERSION=$(uv run cz version --project)
+    - git add .
+    - |
+      if git diff --cached --quiet; then
+        echo "No hay cambios detectados para commitear."
+      else
+        git commit -m "chore(release): v$NEW_VERSION [skip ci]"
+      fi
+    
 
+    - git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION" || echo "El tag ya existe"
+    - git push origin $TARGET_BRANCH --tags --force
 
     - rm -rf dist/
     - uv build
-    
 
-    - VERSION=$(uv run cz version --project)
+
     - |
       python3 -c "
       import pathlib, re, os, json
-      version = os.getenv('VERSION', '')
+      version = os.getenv('NEW_VERSION', '')
       dist_path = pathlib.Path('dist')
       
-      # Buscamos el whl y tar.gz reales
-      whl_files = list(dist_path.glob('*.whl'))
-      tar_files = list(dist_path.glob('*.tar.gz'))
-      
-      whl_name = whl_files[0].name if whl_files else ''
-      tar_name = tar_files[0].name if tar_files else ''
-
-      description = f'### Release {version}\n\nNueva versión alpha del pipeline.'
-      try:
-          if pathlib.Path('CHANGELOG.md').exists():
-              content = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8')
-              # Extraer la sección del changelog para esta versión específica
-              pattern = r'## (v?)' + re.escape(version) + r'.*?(?=\n## |$)'
-              match = re.search(pattern, content, re.DOTALL)
-              if match:
-                  description = match.group(0).strip()
-      except Exception as e:
-          print(f'Aviso: No se pudo procesar el changelog: {e}')
+      whl_file = next(dist_path.glob('*.whl')).name if list(dist_path.glob('*.whl')) else ''
+      tar_file = next(dist_path.glob('*.tar.gz')).name if list(dist_path.glob('*.tar.gz')) else ''
 
       payload = {
           'name': f'Release {version}',
           'tag_name': f'v{version}',
-          'description': description,
+          'ref': os.getenv('CI_COMMIT_SHA'),
+          'description': f'Xolo Pipeline Alpha v{version}\n\nActualización automática de la rama principal.',
           'assets': {
               'links': [
                   {
                       'name': '📦 Python Wheel',
-                      'url': f'{os.getenv(\"CI_PROJECT_URL\")}/-/jobs/{os.getenv(\"CI_JOB_ID\")}/artifacts/raw/dist/{whl_name}'
+                      'url': f'{os.getenv(\"CI_PROJECT_URL\")}/-/jobs/{os.getenv(\"CI_JOB_ID\")}/artifacts/raw/dist/{whl_file}'
                   },
                   {
                       'name': 'Source Tarball',
-                      'url': f'{os.getenv(\"CI_PROJECT_URL\")}/-/jobs/{os.getenv(\"CI_JOB_ID\")}/artifacts/raw/dist/{tar_name}'
+                      'url': f'{os.getenv(\"CI_PROJECT_URL\")}/-/jobs/{os.getenv(\"CI_JOB_ID\")}/artifacts/raw/dist/{tar_file}'
                   }
               ]
           }
@@ -110,7 +104,6 @@ release:
       with open('release_data.json', 'w') as f:
           json.dump(payload, f)
       "
-
 
     - sleep 5
     - |
@@ -125,6 +118,5 @@ release:
       - dist/
     expire_in: never
   rules:
-
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE !~ /bump: version|chore\(release\):/'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE !~ /chore\(release\):|bump: version/'
       when: on_success
