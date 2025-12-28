@@ -44,6 +44,7 @@ release:
     - git checkout -B $TARGET_BRANCH
     - git pull origin $TARGET_BRANCH
 
+
     - uv run cz bump --prerelease alpha --yes --changelog
     
 
@@ -58,29 +59,30 @@ release:
     - git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION" || echo "Tag exists"
     - git push origin $TARGET_BRANCH --tags --force
 
-
+ 
     - rm -rf dist/
     - uv build
 
-  
+
     - |
       python3 -c "
       import pathlib, re, os, json
       version = os.getenv('NEW_VERSION', '')
       dist_path = pathlib.Path('dist')
       
-      # 1. Buscar binarios
+      # 1. Buscar binario Wheel
       whl_file = next(dist_path.glob('*.whl')).name if list(dist_path.glob('*.whl')) else ''
 
-      # 2. Extraer notas del CHANGELOG.md automáticamente
-      changelog_notes = 'No release notes provided.'
+      # 2. Extraer notas del CHANGELOG.md (Automático)
+      changelog_notes = 'New alpha release.'
       try:
           content = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8')
-
-          pattern = r'## (v?)' + re.escape(version) + r'(.*?)(?=\n## |$)'
+          # Regex para capturar solo la sección de la versión actual
+          pattern = r'## (v?)' + re.escape(version) + r'.*?(?=\n## |$)'
           match = re.search(pattern, content, re.DOTALL)
           if match:
-              changelog_notes = match.group(2).strip()
+              # Limpiamos el título ## v0.x.x para dejar solo el contenido
+              changelog_notes = match.group(0).split('\n', 1)[1].strip()
       except Exception as e:
           print(f'Error reading changelog: {e}')
 
@@ -88,7 +90,7 @@ release:
           'name': f'Release {version}',
           'tag_name': f'v{version}',
           'ref': os.getenv('CI_COMMIT_SHA'),
-          'description': changelog_notes, 
+          'description': changelog_notes,
           'assets': {
               'links': [
                   {
