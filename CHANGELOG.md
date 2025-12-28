@@ -1,3 +1,17 @@
+## v1.0.0 (2025-12-28)
+
+### Feat
+
+- **rust**: basic initial rust implementation for xolo_core and xolo_cli
+
+### Fix
+
+- **refactor**: refactore python code new project structure
+
+### Refactor
+
+- initial rust imp and code refactor to paralel development python/rust
+
 ## v0.4.0 (2025-12-27)
 
 ### Feat
