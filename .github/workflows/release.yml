@@ -1,13 +1,13 @@
-name: Release System 
+name: Release System
 
 on:
   push:
     branches:
       - main
     paths-ignore:
-      - 'CHANGELOG.md'
-      - '**/pyproject.toml'
-  workflow_dispatch: 
+      - "CHANGELOG.md"
+      - "**/pyproject.toml"
+  workflow_dispatch:
 
 jobs:
   release:
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -40,22 +40,26 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
+
           git remote set-url origin https://x-access-token:${{ secrets.RELEASE_TOKEN }}@github.com/${{ github.repository }}
 
+
           CURRENT_V=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
-          
           git tag -d "v$CURRENT_V" 2>/dev/null || true
           git push origin --delete "v$CURRENT_V" 2>/dev/null || true
 
+
+          rm -f CHANGELOG.md
+
           if ! uv run cz bump --prerelease alpha --yes --changelog; then
-            echo "Detectado Error 16. Forzando generación de changelog no-incremental..."
-            uv run cz bump --prerelease alpha --yes --changelog --no-incremental
+            echo "Fallo detectado. Intentando bump forzado..."
+            uv run cz bump --prerelease alpha --yes --changelog --increment PATCH
           fi
-          
+
           NEW_VER=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
           echo "NEW_VERSION=$NEW_VER" >> $GITHUB_ENV
-          
+
           git push origin main --tags --force
 
       - name: Build Package
