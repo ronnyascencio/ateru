@@ -35,29 +35,24 @@ jobs:
       - name: Bump Version and Update Changelog
         id: cz
         env:
-
           RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
-
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
 
           git remote set-url origin https://x-access-token:${{ secrets.RELEASE_TOKEN }}@github.com/${{ github.repository }}
 
-          uv run cz bump --prerelease alpha --yes --changelog || \
-          uv run cz bump --prerelease alpha --increment PATCH --yes --changelog
+
+          uv run cz bump --prerelease alpha --yes --changelog --force || \
+          uv run cz bump --prerelease alpha --increment PATCH --yes --changelog --force
           
 
           VERSION=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
           echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
           
 
-          git add .
-          git commit -m "chore(release): v$VERSION [skip ci]" || echo "nothing to commit"
-          
-
-          git push origin main --tags
+          git push origin main --tags --force
 
       - name: Build Package
         run: uv build
@@ -68,12 +63,8 @@ jobs:
           tag_name: v${{ env.NEW_VERSION }}
           name: v${{ env.NEW_VERSION }}
           files: dist/*
-
           generate_release_notes: true
-
           body_path: CHANGELOG.md
-
           prerelease: ${{ contains(env.NEW_VERSION, 'a') }}
         env:
-
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
