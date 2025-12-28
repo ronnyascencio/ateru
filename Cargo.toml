@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "src/xolo/core/rust/updater",
+
+]
+
+# Central optimization
+[profile.release]
+opt-level = 3
+lto = true
