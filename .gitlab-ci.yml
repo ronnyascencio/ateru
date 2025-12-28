@@ -6,9 +6,7 @@ variables:
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
 
 stages:
-  # - test
   - lint
-  - review
   - release
 
 cache:
@@ -24,21 +22,6 @@ cache:
     - uv sync --dev
 
 # -------------------------
-# TESTS
-# -------------------------
-# test:
-#   stage: test
-#   extends: .before_uv
-#   variables:
-#     PIPELINE_ROOT: "/tmp/xolo-pipeline"
-#   script:
-#     - mkdir -p /tmp/xolo-pipeline
-#     - uv run --dev pytest -q tests
-#   rules:
-#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-#     - if: "$CI_COMMIT_BRANCH"
-
-# -------------------------
 # LINTING
 # -------------------------
 lint:
@@ -49,20 +32,10 @@ lint:
   allow_failure: true
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: "$CI_COMMIT_BRANCH"
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
 
 # -------------------------
-# REVIEW (Merge Requests)
-# -------------------------
-review_pipeline:
-  stage: review
-  script:
-    - echo "Review pipeline passed"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-
-# -------------------------
-# RELEASE (Nivel Profesional)
+# RELEASE (Auto-Versioning & Build)
 # -------------------------
 release:
   stage: release
@@ -71,46 +44,52 @@ release:
     GIT_STRATEGY: clone
     GIT_DEPTH: 0
   script:
-    - pip install uv
-    - uv sync --dev
 
-    # 1. Configuración y Sincronización Robusta
     - git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
     - git config user.name "$GITLAB_USER_NAME"
     - git config user.email "$GITLAB_USER_EMAIL"
-    - git reset --hard HEAD
-
-    # Solución al error 'switch B requires a value'
+    
     - TARGET_BRANCH=${CI_COMMIT_BRANCH:-$CI_DEFAULT_BRANCH}
     - git checkout -B $TARGET_BRANCH
     - git pull origin $TARGET_BRANCH
 
-    # 2. Generación de Versión y Tags
-    - uv run cz bump --yes --changelog || echo "Skipping bump"
-    - git push https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git HEAD:$TARGET_BRANCH --tags
 
-    # 3. Construcción Limpia (Evita AbsoluteLinkError)
-    - rm -rf .venv .cache
+    - uv run cz bump --prerelease alpha --yes --changelog || (echo "No hay cambios para subir de versión" && exit 0)
+    
+
+    - git push origin $TARGET_BRANCH --tags
+
+
+    - rm -rf dist/
     - uv build
+    
 
     - VERSION=$(uv run cz version --project)
-    - export VERSION
-
     - |
       python3 -c "
       import pathlib, re, os, json
       version = os.getenv('VERSION', '')
-      description = f'### Release {version}\n\nMejoras generales.'
-      try:
-          content = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8')
-          pattern = r'## (v?)' + re.escape(version) + r'.*?(?=\n## |$)'
-          match = re.search(pattern, content, re.DOTALL)
-          if match:
-              description = match.group(0).strip()
-      except:
-          pass
+      dist_path = pathlib.Path('dist')
+      
+      # Buscamos el whl y tar.gz reales
+      whl_files = list(dist_path.glob('*.whl'))
+      tar_files = list(dist_path.glob('*.tar.gz'))
+      
+      whl_name = whl_files[0].name if whl_files else ''
+      tar_name = tar_files[0].name if tar_files else ''
 
-      # Construimos el objeto del Release
+      description = f'### Release {version}\n\nNueva versión alpha del pipeline.'
+      try:
+          if pathlib.Path('CHANGELOG.md').exists():
+              content = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8')
+              # Extraer la sección del changelog para esta versión específica
+              pattern = r'## (v?)' + re.escape(version) + r'.*?(?=\n## |$)'
+              match = re.search(pattern, content, re.DOTALL)
+              if match:
+                  description = match.group(0).strip()
+      except Exception as e:
+          print(f'Aviso: No se pudo procesar el changelog: {e}')
+
       payload = {
           'name': f'Release {version}',
           'tag_name': f'v{version}',
@@ -118,12 +97,12 @@ release:
           'assets': {
               'links': [
                   {
-                      'name': '📦 Python Wheel (.whl)',
-                      'url': f'${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/dist/xolo_pipeline-{version}-py3-none-any.whl'
+                      'name': '📦 Python Wheel',
+                      'url': f'{os.getenv(\"CI_PROJECT_URL\")}/-/jobs/{os.getenv(\"CI_JOB_ID\")}/artifacts/raw/dist/{whl_name}'
                   },
                   {
-                      'name': 'Source Distribution (.tar.gz)',
-                      'url': f'${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/dist/xolo_pipeline-{version}.tar.gz'
+                      'name': 'Source Tarball',
+                      'url': f'{os.getenv(\"CI_PROJECT_URL\")}/-/jobs/{os.getenv(\"CI_JOB_ID\")}/artifacts/raw/dist/{tar_name}'
                   }
               ]
           }
@@ -132,6 +111,8 @@ release:
           json.dump(payload, f)
       "
 
+
+    - sleep 5
     - |
       curl --request POST \
         --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
@@ -143,7 +124,7 @@ release:
     paths:
       - dist/
     expire_in: never
-
   rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE !~ /chore\(release\):/'
-      when: manual
+
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE !~ /bump: version|chore\(release\):/'
+      when: on_success
