@@ -13,17 +13,11 @@ cache:
   paths:
     - .cache/uv
 
-# -------------------------
-# Base setup
-# -------------------------
 .before_uv:
   before_script:
     - pip install uv
     - uv sync --dev
 
-# -------------------------
-# LINTING
-# -------------------------
 lint:
   stage: lint
   extends: .before_uv
@@ -34,9 +28,6 @@ lint:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
 
-# -------------------------
-# RELEASE (Auto-Versioning & Build)
-# -------------------------
 release:
   stage: release
   extends: .before_uv
@@ -55,71 +46,63 @@ release:
 
 
     - |
-      echo "Ejecutando bump de versión..."
-      if ! uv run cz bump --prerelease alpha --yes --changelog; then
-        echo "Aviso: Falló el bump automático. Forzando incremento tipo PATCH..."
-        uv run cz bump --prerelease alpha --increment PATCH --yes --changelog
-      fi
+      echo "Iniciando proceso de versión..."
+      # Intentamos el bump normal, si falla (por falta de tags), forzamos el incremento
+      uv run cz bump --prerelease alpha --yes --changelog || \
+      uv run cz bump --prerelease alpha --increment PATCH --yes --changelog || \
+      echo "Commitizen reportó error de historial pero continuaremos manualmente."
+
 
     - NEW_VERSION=$(uv run cz version --project)
-    - echo "Nueva versión detectada -> $NEW_VERSION"
+    - echo "Trabajando con versión -> $NEW_VERSION"
     - git add .
     - |
       if git diff --cached --quiet; then
-        echo "No hay cambios para commitear."
+        echo "No hay cambios pendientes."
       else
         git commit -m "chore(release): v$NEW_VERSION [skip ci]"
       fi
     
 
-    - git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION" || echo "Tag ya existe localmente"
+    - git tag -f "v$NEW_VERSION" -m "Release v$NEW_VERSION"
     - git push origin $TARGET_BRANCH --tags --force
 
-
+ 
     - rm -rf dist/
     - uv build
+
 
     - |
       python3 -c "
       import pathlib, re, os, json
       version = os.getenv('NEW_VERSION', '')
       dist_path = pathlib.Path('dist')
-      
- 
       whl_file = next(dist_path.glob('*.whl')).name if list(dist_path.glob('*.whl')) else ''
 
- 
-      changelog_notes = 'Release alpha version ' + version
+      notes = 'New alpha release.'
       try:
           if pathlib.Path('CHANGELOG.md').exists():
               content = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8')
-              
+              # Busca la sección de esta versión
               pattern = r'## (v?)' + re.escape(version) + r'(.*?)(?=\n## |$)'
               match = re.search(pattern, content, re.DOTALL)
               if match:
-                  changelog_notes = match.group(2).strip()
-      except Exception as e:
-          print(f'Error procesando CHANGELOG: {e}')
+                  notes = match.group(2).strip()
+      except:
+          pass
 
       payload = {
           'name': f'Release {version}',
           'tag_name': f'v{version}',
           'ref': os.getenv('CI_COMMIT_SHA'),
-          'description': changelog_notes,
-          'assets': {
-              'links': [
-                  {
-                      'name': '📦 Python Wheel',
-                      'url': f'{os.getenv(\"CI_PROJECT_URL\")}/-/jobs/{os.getenv(\"CI_JOB_ID\")}/artifacts/raw/dist/{whl_file}'
-                  }
-              ]
-          }
+          'description': notes,
+          'assets': {'links': [{'name': '📦 Python Wheel', 'url': f'{os.getenv(\"CI_PROJECT_URL\")}/-/jobs/{os.getenv(\"CI_JOB_ID\")}/artifacts/raw/dist/{whl_file}'}]}
       }
       with open('release_data.json', 'w') as f:
           json.dump(payload, f, indent=4)
       "
 
-    - sleep 5
+
     - |
       curl --request POST \
         --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
