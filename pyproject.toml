@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "xolo-pipeline"
-version = "0.1.0a0"
+version = "0.1.0a1"
 description = "Open source VFX/Animation pipeline for freelancers and small studios."
 authors = [{ name = "Ronny Ascencio" }]
 readme = "README.md"
@@ -44,7 +44,7 @@ dev = [
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0a0"
+version = "0.1.0a1"
 tag_format = "v$version"
 version_files = ["pyproject.toml:version"]
 major_version_zero = true
