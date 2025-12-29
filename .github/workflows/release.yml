@@ -1,5 +1,4 @@
 name: Release System
-
 on:
   push:
     branches:
@@ -38,17 +37,24 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
           git remote set-url origin https://x-access-token:${{ secrets.RELEASE_TOKEN }}@github.com/${{ github.repository }}
 
-          git tag -d v0.1.0a4 v0.1.0a5 2>/dev/null || true
-          git push origin --delete v0.1.0a4 v0.1.0a5 2>/dev/null || true
 
-          uv run cz bump --prerelease alpha --yes --changelog || \
-          uv run cz bump --prerelease alpha --increment PATCH --yes --changelog
+          git tag -l "v0.1.0a*" | xargs -n 1 git tag -d 2>/dev/null || true
+          git ls-remote --tags origin "v0.1.0a*" | awk '{print $2}' | sed 's/refs\/tags\///' | xargs -I {} git push origin :{} 2>/dev/null || true
+
+          if ! uv run cz bump --prerelease alpha --yes --changelog; then
+            echo "Error de historial detectado. Limpiando y regenerando desde el inicio..."
+            rm -f CHANGELOG.md
+            uv run cz bump --prerelease alpha --yes --changelog --increment PATCH
+          fi
           
+
           NEW_VER=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
           echo "NEW_VERSION=$NEW_VER" >> $GITHUB_ENV
           
+
           git push origin main --tags
 
       - name: Build Package
@@ -62,7 +68,6 @@ jobs:
           files: dist/*
           generate_release_notes: true
           body_path: CHANGELOG.md
-
           prerelease: ${{ contains(env.NEW_VERSION, 'a') }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
