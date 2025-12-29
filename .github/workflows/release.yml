@@ -7,7 +7,16 @@ on:
     paths-ignore:
       - 'CHANGELOG.md'
       - '**/pyproject.toml'
-  workflow_dispatch: 
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'alpha'
+        type: choice
+        options:
+          - alpha
+          - stable
 
 jobs:
   release:
@@ -39,14 +48,21 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
           git remote set-url origin https://x-access-token:${{ secrets.RELEASE_TOKEN }}@github.com/${{ github.repository }}
 
-          if uv run cz bump --prerelease alpha --yes --changelog; then
+
+          BUMP_ARGS="--prerelease alpha"
+          if [[ "${{ github.event.head_commit.message }}" == *"[stable]"* ]] || [[ "${{ github.event.inputs.release_type }}" == "stable" ]]; then
+            BUMP_ARGS=""
+            echo "RELEASE_CHANNEL=stable" >> $GITHUB_ENV
+          else
+            echo "RELEASE_CHANNEL=alpha" >> $GITHUB_ENV
+          fi
+
+          if uv run cz bump $BUMP_ARGS --yes --changelog; then
             echo "BUMP_CREATED=true" >> $GITHUB_ENV
           else
             echo "BUMP_CREATED=false" >> $GITHUB_ENV
-            echo "No se detectaron cambios significativos para un nuevo release."
           fi
           
           NEW_VER=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
@@ -69,6 +85,7 @@ jobs:
           files: dist/*
           generate_release_notes: true 
           body_path: CHANGELOG.md
+ 
           prerelease: ${{ contains(env.NEW_VERSION, 'a') || contains(env.NEW_VERSION, 'b') }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
