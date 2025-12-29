@@ -854,7 +854,7 @@ wheels = [
 
 [[package]]
 name = "xolo-pipeline"
-version = "0.1.0a9"
+version = "0.1.0a10"
 source = { editable = "." }
 dependencies = [
     { name = "pathlib" },
