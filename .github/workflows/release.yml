@@ -38,17 +38,17 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
           git remote set-url origin https://x-access-token:${{ secrets.RELEASE_TOKEN }}@github.com/${{ github.repository }}
 
+          git tag -d v0.1.0a4 v0.1.0a5 2>/dev/null || true
+          git push origin --delete v0.1.0a4 v0.1.0a5 2>/dev/null || true
 
-          uv run cz bump --prerelease alpha --yes --changelog
+          uv run cz bump --prerelease alpha --yes --changelog || \
+          uv run cz bump --prerelease alpha --increment PATCH --yes --changelog
           
-
           NEW_VER=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
           echo "NEW_VERSION=$NEW_VER" >> $GITHUB_ENV
           
-
           git push origin main --tags
 
       - name: Build Package
@@ -62,6 +62,7 @@ jobs:
           files: dist/*
           generate_release_notes: true
           body_path: CHANGELOG.md
-          prerelease: true
+
+          prerelease: ${{ contains(env.NEW_VERSION, 'a') }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
