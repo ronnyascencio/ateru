@@ -1,12 +1,13 @@
-name: Release System
+name: Release System 
+
 on:
   push:
     branches:
       - main
     paths-ignore:
-      - "CHANGELOG.md"
-      - "**/pyproject.toml"
-  workflow_dispatch:
+      - 'CHANGELOG.md'
+      - '**/pyproject.toml'
+  workflow_dispatch: 
 
 jobs:
   release:
@@ -18,7 +19,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 
 
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -35,25 +36,17 @@ jobs:
         env:
           RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
-
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
+          
 
           git remote set-url origin https://x-access-token:${{ secrets.RELEASE_TOKEN }}@github.com/${{ github.repository }}
 
-
-          git tag -d v0.1.0a4 v0.1.0a5 2>/dev/null || true
-
-
-          uv run cz bump --prerelease alpha --yes --changelog || \
-          uv run cz bump --prerelease alpha --increment PATCH --yes --changelog
-
-
+          uv run cz bump --prerelease alpha --yes --changelog
+          
           NEW_VER=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
           echo "NEW_VERSION=$NEW_VER" >> $GITHUB_ENV
-
-
+          
           git push origin main --tags
 
       - name: Build Package
