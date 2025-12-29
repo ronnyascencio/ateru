@@ -1,4 +1,4 @@
-name: Release System 
+name: Release System
 
 on:
   push:
@@ -39,14 +39,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-
           git remote set-url origin https://x-access-token:${{ secrets.RELEASE_TOKEN }}@github.com/${{ github.repository }}
+
 
           uv run cz bump --prerelease alpha --yes --changelog
           
+
           NEW_VER=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
           echo "NEW_VERSION=$NEW_VER" >> $GITHUB_ENV
           
+
           git push origin main --tags
 
       - name: Build Package
