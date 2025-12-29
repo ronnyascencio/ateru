@@ -19,10 +19,13 @@ on:
           - stable
 
 jobs:
+  # JOB 1: Gestionar versión y tags (Similar al tuyo pero extrae la versión)
   release:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    
+    outputs:
+      BUMP_CREATED: ${{ env.BUMP_CREATED }}
+      NEW_VERSION: ${{ env.NEW_VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,54 +41,74 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
-        run: uv sync --dev
-
       - name: Bump & Changelog
-        id: cz
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.RELEASE_TOKEN }}@github.com/${{ github.repository }}
-
-
+          
           BUMP_ARGS="--prerelease alpha"
           if [[ "${{ github.event.head_commit.message }}" == *"[stable]"* ]] || [[ "${{ github.event.inputs.release_type }}" == "stable" ]]; then
             BUMP_ARGS=""
-            echo "RELEASE_CHANNEL=stable" >> $GITHUB_ENV
-          else
-            echo "RELEASE_CHANNEL=alpha" >> $GITHUB_ENV
           fi
 
           if uv run cz bump $BUMP_ARGS --yes --changelog; then
             echo "BUMP_CREATED=true" >> $GITHUB_ENV
+            git push origin main --tags
           else
             echo "BUMP_CREATED=false" >> $GITHUB_ENV
           fi
           
           NEW_VER=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
           echo "NEW_VERSION=$NEW_VER" >> $GITHUB_ENV
-          
-          if [ "${{ env.BUMP_CREATED }}" = "true" ]; then
-            git push origin main --tags
-          fi
 
-      - name: Build
-        if: env.BUMP_CREATED == 'true'
-        run: uv build
+
+  build_wheels:
+    needs: release
+    if: needs.release.outputs.BUMP_CREATED == 'true'
+    strategy:
+      matrix:
+
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build Wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          command: build
+          args: --release --out dist
+          sccache: 'true'
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: dist/*.whl
+
+  publish:
+    needs: [release, build_wheels]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download all wheels
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: wheels-*
+          merge-multiple: true
 
       - name: Create GitHub Release
-        if: env.BUMP_CREATED == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.NEW_VERSION }}
-          name: v${{ env.NEW_VERSION }}
+          tag_name: v${{ needs.release.outputs.NEW_VERSION }}
+          name: v${{ needs.release.outputs.NEW_VERSION }}
           files: dist/*
-          generate_release_notes: true 
+          generate_release_notes: true
           body_path: CHANGELOG.md
- 
-          prerelease: ${{ contains(env.NEW_VERSION, 'a') || contains(env.NEW_VERSION, 'b') }}
+          prerelease: ${{ contains(needs.release.outputs.NEW_VERSION, 'a') }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}

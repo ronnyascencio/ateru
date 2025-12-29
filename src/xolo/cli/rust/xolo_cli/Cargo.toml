@@ -1,10 +1,6 @@
 [package]
 name = "xolo_cli"
-<<<<<<< HEAD
-version = "0.1.0a0"
-=======
-version = "0.1.0-a0"
->>>>>>> 5661196 (chore: reset environment and update pipeline)
+version = "0.1.0"
 edition = "2024"
 
 [dependencies]

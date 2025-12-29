@@ -1,14 +1,22 @@
 [workspace]
-members = ["src/xolo/cli/rust/xolo_cli",
+members = [
+    "src/xolo/cli/rust/xolo_cli",
     "src/xolo/core/rust/xolo_core",
-
 ]
 resolver = "3"
 
-# Central optimization
-[profile.release]
-opt-level = 3
-lto = true
-
 [package]
-version="0.1.0-a0"
+name = "xolo-pipeline"
+version = "0.1.0-alpha.0"
+edition = "2024"
+
+[lib]
+name = "_core"
+path = "src/xolo/core/rust/xolo_core/src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.23", features = ["extension-module"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+anyhow = "1.0"
