@@ -44,11 +44,18 @@ dev = [
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0a12"
+version = "0.1.0a0"
 tag_format = "v$version"
 version_files = ["pyproject.toml:version"]
 major_version_zero = true
 update_changelog_on_bump = true
-changelog_incremental = true
-change_type_order = ["Feat", "Fix", "Docs", "Style", "Refactor", "Perf", "Test"]
-change_type_map = { "feat" = "Features", "fix" = "Bug Fixes", "perf" = "Performance Improvements", "docs" = "Documentation" }
+
+
+change_type_map = { "feat" = "Features", "fix" = "Bug Fixes", "refactor" = "Refactors", "perf" = "Performance Improvements" }
+change_type_order = ["Features", "Bug Fixes", "Refactors", "Performance Improvements"]
+
+
+changelog_pattern = "^(feat|fix|refactor|perf).*"
+
+
+bump_message = "chore: release v$current_version [skip ci]"
