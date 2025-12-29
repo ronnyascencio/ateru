@@ -1,4 +1,5 @@
 name: Release System
+
 on:
   push:
     branches:
@@ -11,14 +12,12 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -31,24 +30,16 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
-      - name: Release and Bump
+      - name: Bump & Changelog
+        id: cz
         env:
-          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git remote set-url origin https://x-access-token:${{ secrets.RELEASE_TOKEN }}@github.com/${{ github.repository }}
 
-
-          git tag -l "v0.1.0a*" | xargs -n 1 git tag -d 2>/dev/null || true
-          git ls-remote --tags origin "v0.1.0a*" | awk '{print $2}' | sed 's/refs\/tags\///' | xargs -I {} git push origin :{} 2>/dev/null || true
-
-          if ! uv run cz bump --prerelease alpha --yes --changelog; then
-            echo "Error de historial detectado. Limpiando y regenerando desde el inicio..."
-            rm -f CHANGELOG.md
-            uv run cz bump --prerelease alpha --yes --changelog --increment PATCH
-          fi
+          uv run cz bump --prerelease alpha --yes --changelog
           
 
           NEW_VER=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
@@ -57,7 +48,7 @@ jobs:
 
           git push origin main --tags
 
-      - name: Build Package
+      - name: Build
         run: uv build
 
       - name: Create GitHub Release
@@ -66,8 +57,9 @@ jobs:
           tag_name: v${{ env.NEW_VERSION }}
           name: v${{ env.NEW_VERSION }}
           files: dist/*
-          generate_release_notes: true
+
+          generate_release_notes: true 
           body_path: CHANGELOG.md
-          prerelease: ${{ contains(env.NEW_VERSION, 'a') }}
+          prerelease: ${{ contains(env.NEW_VERSION, 'a') || contains(env.NEW_VERSION, 'b') }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
