@@ -9,12 +9,13 @@ on:
   workflow_dispatch:
     inputs:
       force_bump:
-        description: 'Force face (empty for outo)'
+        description: 'Forzar fase (dejar vacío para auto)'
         default: ''
         type: choice
         options: ['alpha', 'beta', 'stable', '']
 
 jobs:
+
   bump:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
@@ -47,12 +48,14 @@ jobs:
             BUMP_CMD="cog bump --auto --pre alpha"
           fi
 
+
           if $BUMP_CMD; then
-            TAG=$(cog last-tag)
+            TAG=$(git describe --tags --abbrev=0)
             echo "NEW_TAG=$TAG" >> $GITHUB_ENV
             echo "SKIPPED=false" >> $GITHUB_ENV
             git push origin main --tags
           else
+            echo "No se encontraron commits convencionales para realizar un bump."
             echo "SKIPPED=true" >> $GITHUB_ENV
           fi
 
@@ -69,7 +72,10 @@ jobs:
         with:
           ref: ${{ needs.bump.outputs.new_tag }} 
 
-      - name: Build Wheels (Maturin)
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Wheels
         uses: PyO3/maturin-action@v1
         with:
           command: build
@@ -82,7 +88,7 @@ jobs:
           name: wheels-${{ matrix.os }}
           path: dist/*.whl
 
-
+  # ETAPA 3: Publicación en GitHub Releases
   publish:
     needs: [bump, build]
     runs-on: ubuntu-latest
@@ -91,7 +97,7 @@ jobs:
         with:
           ref: ${{ needs.bump.outputs.new_tag }}
 
-      - name: Download Wheels
+      - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           path: dist
