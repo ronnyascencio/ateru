@@ -17,6 +17,7 @@ on:
         type: choice
         options:
           - alpha
+          - beta
           - stable
 
 jobs:
@@ -37,24 +38,32 @@ jobs:
         run: cargo install cocogitto
 
       - name: Bump & Changelog
+        id: bump_step
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-
-          BUMP_ARGS="--pre alpha"
-          if [[ "${{ github.event.head_commit.message }}" == *"[stable]"* ]] || [[ "${{ github.event.inputs.release_type }}" == "stable" ]]; then
-            BUMP_ARGS=""
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          
+          # LÓGICA DINÁMICA: Prioriza el input manual, luego busca en el commit
+          if [[ "${{ github.event.inputs.release_type }}" == "stable" ]] || [[ "$COMMIT_MSG" == *"[stable]"* ]]; then
+            echo "Modo: STABLE"
+            cog bump --auto
+          elif [[ "${{ github.event.inputs.release_type }}" == "beta" ]] || [[ "$COMMIT_MSG" == *"[beta]"* ]]; then
+            echo "Modo: BETA"
+            cog bump --auto --pre beta
+          else
+            echo "Modo: ALPHA"
+            cog bump --auto --pre alpha
           fi
-
-
-          if cog bump --auto $BUMP_ARGS; then
+          
+          # Verificar si se creó un nuevo tag
+          NEW_TAG=$(cog last-tag 2>/dev/null || echo "")
+          if [ -n "$NEW_TAG" ]; then
             echo "BUMP_CREATED=true" >> $GITHUB_ENV
-            # Extraer versión recién creada (quita la 'v' inicial)
-            NEW_VER=$(cog last-tag | sed 's/v//')
-            echo "NEW_VERSION=$NEW_VER" >> $GITHUB_ENV
+            echo "NEW_VERSION=${NEW_TAG#v}" >> $GITHUB_ENV
             git push origin main --tags
           else
             echo "BUMP_CREATED=false" >> $GITHUB_ENV
@@ -106,6 +115,6 @@ jobs:
           files: dist/*
           body_path: CHANGELOG.md
           generate_release_notes: false
-          prerelease: ${{ contains(needs.release.outputs.NEW_VERSION, 'alpha') }}
+          prerelease: ${{ contains(needs.release.outputs.NEW_VERSION, 'alpha') || contains(needs.release.outputs.NEW_VERSION, 'beta') }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
