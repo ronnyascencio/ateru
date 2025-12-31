@@ -10,8 +10,9 @@ app = typer.Typer(help="Xolo version and updates")
 @app.command()
 def show():
     """Show current version"""
+    _core.pipe_version()
     _core.get_core_version()
-    typer.echo(f"Xolo Pipeline {app_version()}, core rust: {_core.get_core_version()}")
+    typer.echo(f"Xolo Pipeline {app_version()}, core rust: {_core.get_core_version()}, pipe version: {_core.pipe_version()}")
 
 
 @app.command()

@@ -1,0 +1,25 @@
+project = "xolo-pipeline"
+tag_prefix = "v"
+ignore_merge_commits = true
+
+[[version_files]]
+path = "pyproject.toml"
+pattern = 'version = "$version"'
+
+[[version_files]]
+path = "Cargo.toml"
+pattern = 'version = "$version"'
+
+[changelog]
+path = "CHANGELOG.md"
+template = "remote" 
+remote = "github.com"
+repository = "xolo-pipeline"
+owner = "xololab"
+
+[commit_types]
+feat = { version_update = "minor", changelog_title = "🚀 Features" }
+fix = { version_update = "patch", changelog_title = "🐛 Bug Fixes" }
+docs = { version_update = "patch", changelog_title = "📖 Documentation" }
+chore = { changelog_title = "⚙️ Maintenance" }
+perf = { version_update = "patch", changelog_title = "⚡ Performance" }

@@ -7,6 +7,7 @@ on:
     paths-ignore:
       - 'CHANGELOG.md'
       - '**/pyproject.toml'
+      - '**/Cargo.toml'
   workflow_dispatch:
     inputs:
       release_type:
@@ -19,7 +20,6 @@ on:
           - stable
 
 jobs:
-  # JOB 1: Gestionar versión y tags (Similar al tuyo pero extrae la versión)
   release:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
@@ -33,13 +33,8 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_TOKEN }}
 
-      - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - name: Install Cocogitto
+        run: cargo install cocogitto
 
       - name: Bump & Changelog
         env:
@@ -48,34 +43,34 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          BUMP_ARGS="--prerelease alpha"
+
+          BUMP_ARGS="--pre alpha"
           if [[ "${{ github.event.head_commit.message }}" == *"[stable]"* ]] || [[ "${{ github.event.inputs.release_type }}" == "stable" ]]; then
             BUMP_ARGS=""
           fi
 
-          if uv run cz bump $BUMP_ARGS --yes --changelog; then
+
+          if cog bump --auto $BUMP_ARGS; then
             echo "BUMP_CREATED=true" >> $GITHUB_ENV
+            # Extraer versión recién creada (quita la 'v' inicial)
+            NEW_VER=$(cog last-tag | sed 's/v//')
+            echo "NEW_VERSION=$NEW_VER" >> $GITHUB_ENV
             git push origin main --tags
           else
             echo "BUMP_CREATED=false" >> $GITHUB_ENV
           fi
-          
-          NEW_VER=$(grep -m 1 'version =' pyproject.toml | tr -d '"' | tr -d ' ' | cut -d '=' -f2)
-          echo "NEW_VERSION=$NEW_VER" >> $GITHUB_ENV
-
 
   build_wheels:
     needs: release
     if: needs.release.outputs.BUMP_CREATED == 'true'
     strategy:
       matrix:
-
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       
-      - name: Build Wheels
+      - name: Build Wheels (Maturin)
         uses: PyO3/maturin-action@v1
         with:
           command: build
@@ -93,6 +88,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: Download all wheels
         uses: actions/download-artifact@v4
@@ -107,8 +104,8 @@ jobs:
           tag_name: v${{ needs.release.outputs.NEW_VERSION }}
           name: v${{ needs.release.outputs.NEW_VERSION }}
           files: dist/*
-          generate_release_notes: true
           body_path: CHANGELOG.md
-          prerelease: ${{ contains(needs.release.outputs.NEW_VERSION, 'a') }}
+          generate_release_notes: false
+          prerelease: ${{ contains(needs.release.outputs.NEW_VERSION, 'alpha') }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
