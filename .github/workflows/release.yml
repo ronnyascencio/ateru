@@ -1,35 +1,28 @@
-name: Release System
+name: Production Release System
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths-ignore:
       - 'CHANGELOG.md'
-      - '**/pyproject.toml'
-      - '**/Cargo.toml'
+      - 'README.md'
   workflow_dispatch:
     inputs:
-      release_type:
-        description: 'Release type'
-        required: true
-        default: 'alpha'
+      force_bump:
+        description: 'Force face (empty for outo)'
+        default: ''
         type: choice
-        options:
-          - alpha
-          - beta
-          - stable
+        options: ['alpha', 'beta', 'stable', '']
 
 jobs:
-  release:
+  bump:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     outputs:
-      BUMP_CREATED: ${{ env.BUMP_CREATED }}
-      NEW_VERSION: ${{ env.NEW_VERSION }}
+      new_tag: ${{ env.NEW_TAG }}
+      skipped: ${{ env.SKIPPED }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_TOKEN }}
@@ -37,48 +30,45 @@ jobs:
       - name: Install Cocogitto
         run: cargo install cocogitto
 
-      - name: Bump & Changelog
-        id: bump_step
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+      - name: Calculate and Apply Bump
+        id: apply_bump
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
           COMMIT_MSG=$(git log -1 --pretty=%B)
           
-          # LÓGICA DINÁMICA: Prioriza el input manual, luego busca en el commit
-          if [[ "${{ github.event.inputs.release_type }}" == "stable" ]] || [[ "$COMMIT_MSG" == *"[stable]"* ]]; then
-            echo "Modo: STABLE"
-            cog bump --auto
-          elif [[ "${{ github.event.inputs.release_type }}" == "beta" ]] || [[ "$COMMIT_MSG" == *"[beta]"* ]]; then
-            echo "Modo: BETA"
-            cog bump --auto --pre beta
+
+          if [[ "${{ github.event.inputs.force_bump }}" == "stable" ]] || [[ "$COMMIT_MSG" == *"[stable]"* ]]; then
+            BUMP_CMD="cog bump --auto"
+          elif [[ "${{ github.event.inputs.force_bump }}" == "beta" ]] || [[ "$COMMIT_MSG" == *"[beta]"* ]]; then
+            BUMP_CMD="cog bump --auto --pre beta"
           else
-            echo "Modo: ALPHA"
-            cog bump --auto --pre alpha
-          fi
-          
-          # Verificar si se creó un nuevo tag
-          NEW_TAG=$(cog last-tag 2>/dev/null || echo "")
-          if [ -n "$NEW_TAG" ]; then
-            echo "BUMP_CREATED=true" >> $GITHUB_ENV
-            echo "NEW_VERSION=${NEW_TAG#v}" >> $GITHUB_ENV
-            git push origin main --tags
-          else
-            echo "BUMP_CREATED=false" >> $GITHUB_ENV
+            BUMP_CMD="cog bump --auto --pre alpha"
           fi
 
-  build_wheels:
-    needs: release
-    if: needs.release.outputs.BUMP_CREATED == 'true'
+          if $BUMP_CMD; then
+            TAG=$(cog last-tag)
+            echo "NEW_TAG=$TAG" >> $GITHUB_ENV
+            echo "SKIPPED=false" >> $GITHUB_ENV
+            git push origin main --tags
+          else
+            echo "SKIPPED=true" >> $GITHUB_ENV
+          fi
+
+
+  build:
+    needs: bump
+    if: needs.bump.outputs.skipped == 'false'
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      
+        with:
+          ref: ${{ needs.bump.outputs.new_tag }} 
+
       - name: Build Wheels (Maturin)
         uses: PyO3/maturin-action@v1
         with:
@@ -86,21 +76,22 @@ jobs:
           args: --release --out dist
           sccache: 'true'
 
-      - name: Upload wheels
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.os }}
           path: dist/*.whl
 
+
   publish:
-    needs: [release, build_wheels]
+    needs: [bump, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      
-      - name: Download all wheels
+          ref: ${{ needs.bump.outputs.new_tag }}
+
+      - name: Download Wheels
         uses: actions/download-artifact@v4
         with:
           path: dist
@@ -110,11 +101,10 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ needs.release.outputs.NEW_VERSION }}
-          name: v${{ needs.release.outputs.NEW_VERSION }}
-          files: dist/*
+          tag_name: ${{ needs.bump.outputs.new_tag }}
+          name: Release ${{ needs.bump.outputs.new_tag }}
           body_path: CHANGELOG.md
-          generate_release_notes: false
-          prerelease: ${{ contains(needs.release.outputs.NEW_VERSION, 'alpha') || contains(needs.release.outputs.NEW_VERSION, 'beta') }}
+          files: dist/*
+          prerelease: ${{ contains(needs.bump.outputs.new_tag, 'alpha') || contains(needs.bump.outputs.new_tag, 'beta') }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
