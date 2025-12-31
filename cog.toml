@@ -1,25 +1,24 @@
-project = "xolo-pipeline"
+# cog.toml
 tag_prefix = "v"
 ignore_merge_commits = true
-
-[[version_files]]
-path = "pyproject.toml"
-pattern = 'version = "$version"'
-
-[[version_files]]
-path = "Cargo.toml"
-pattern = 'version = "$version"'
-
-[changelog]
-path = "CHANGELOG.md"
-template = "remote" 
-remote = "github.com"
-repository = "xolo-pipeline"
-owner = "xololab"
+skip_ci = "[skip ci]"
 
 [commit_types]
 feat = { version_update = "minor", changelog_title = "🚀 Features" }
 fix = { version_update = "patch", changelog_title = "🐛 Bug Fixes" }
-docs = { version_update = "patch", changelog_title = "📖 Documentation" }
-chore = { changelog_title = "⚙️ Maintenance" }
+refactor = { changelog_title = "🛠️ Refactors" }
 perf = { version_update = "patch", changelog_title = "⚡ Performance" }
+docs = { changelog_title = "📖 Documentation" }
+chore = { changelog_title = "⚙️ Maintenance" }
+
+[changelog]
+path = "CHANGELOG.md"
+authors = []
+
+[packages.xolo-pipeline]
+path = "."
+# Los hooks de abajo actualizan la versión en tus archivos .toml automáticamente
+pre_bump_hooks = [
+    "sed -i 's/^version = \".*\"/version = \"{{version}}\"/' pyproject.toml",
+    "sed -i 's/^version = \".*\"/version = \"{{version}}\"/' Cargo.toml"
+]

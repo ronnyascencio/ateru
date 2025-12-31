@@ -31,6 +31,8 @@ ENV/
 dist/
 build/
 *.egg-info/
+*.so
+*.pyd
 
 # Misc
 coverage/
