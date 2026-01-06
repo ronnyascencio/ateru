@@ -9,7 +9,7 @@
 ## Key Features
 * **DCC Launcher:** Controlled environment for Blender, Gaffer, and Nuke.
 * **Modern Tooling:** Powered by `uv` and `cargo` for lightning-fast dependency management.
-* **Rust powered:** Rust core for performance critical tasks.
+* **Rust powered:** Rust core for performance critical tasks `slow develop`.
 * **Unified Color:** Centralized OCIO/ACES configuration across all tools.
 * **Project Standard:** Consistent folder structure for assets and shots.
 
