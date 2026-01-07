@@ -1,7 +1,0 @@
-software:
-  nuke:
-    format: [".nk", ".nknc", ".exr", ".hdr", ".png", ".jpg"]
-  blender:
-    format: [".blend", ".usd", ".usda", ".usdc"]
-  gaffer:
-    format: [".gfr", ".usd", ".usda", ".usdc"]
