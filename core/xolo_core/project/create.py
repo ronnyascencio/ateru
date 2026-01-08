@@ -28,8 +28,7 @@ def create_project_structure(root: Path, project_name: str):
 
 
 def write_project_config(project: Project):
-    project_root = project.root / project.name
-    config_file = project_root / "config" / "project.toml"
+    config_file = project.root / "config" / "project.toml"
 
     data: dict = {
         "project": project.model_dump(mode="json"),
@@ -39,31 +38,3 @@ def write_project_config(project: Project):
     with config_file.open("wb") as f:
         tomli_w.dump(data, f)
     events.success(f"Config File created {config_file}")
-
-
-def create_project(
-    project_name: str,
-    root: Path,
-    fps: int,
-    width: str,
-    height: str,
-):
-    rand_id: int = uuid.uuid4().int
-    project = Project(
-        id=rand_id,
-        name=project_name,
-        root=root,
-        fps=fps,
-        resolution=(width, height),
-    )
-    create_project_structure(project.root, project.name)
-    write_project_config(project=project)
-
-
-project_creation = create_project(
-    project_name="test",
-    root=Path("/home/ronnyascencio/projects"),
-    fps=24,
-    width="1920",
-    height="1080",
-)
