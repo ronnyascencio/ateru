@@ -16,6 +16,8 @@ requires-python = ">=3.11, <3.12"
 dependencies = [
     "loguru>=0.7.3",
     "pydantic>=2.8,<3.0",
+    "tomli>=2.3.0",
+    "tomli-w>=1.2.0",
 ]
 
 [project.scripts]
