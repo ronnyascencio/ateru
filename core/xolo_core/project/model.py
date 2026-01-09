@@ -3,9 +3,8 @@ from pathlib import Path
 from typing import Tuple
 
 
-class VfxRoot(BaseModel):
-    root: Path
-    projects_root: str
+class Xolo(BaseModel):
+    projects_root: Path
 
 
 class Project(BaseModel):
@@ -17,7 +16,6 @@ class Project(BaseModel):
 
 
 class Shot(BaseModel):
-    sequence_name: str
     shot_name: str
     start: int
     end: int
@@ -37,7 +35,7 @@ class Publish(BaseModel):
 class ProjectPaths:
     def __init__(self, root: Path):
         self.root = root
-        self.config = root / "pconfig.toml"
+        self.config = root / "config" / "pconfig.toml"
         self.shots_root = root / "shots"
         self.assets_root = root / "assets"
 
