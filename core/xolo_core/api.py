@@ -34,6 +34,10 @@ def create_project(
         id=rand_id,
         name=project_name,
         root=root_project,
+        renders=root_project / "renders",
+        assets=root_project / "assets",
+        plates=root_project / "plates",
+        shots=root_project / "shots",
         fps=fps,
         resolution=(width, height),
     )
@@ -67,4 +71,4 @@ def set_globalconfig(root: Path):
     write_global_config(xolo)
 
 
-
+# create_project(project_name="test2", fps=24, width="1920", height="1080")

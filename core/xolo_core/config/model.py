@@ -1,6 +1,8 @@
 from pathlib import Path
-from typing import Dict
-from pydantic import BaseModel, Field
+from typing import Dict, Annotated
+from pydantic import BaseModel, Field, field_validator
+
+import re
 
 
 class ProjectConfig(BaseModel):
@@ -44,3 +46,35 @@ class GlobalConfig(BaseModel):
     model_config = {
         "frozen": True,
     }
+
+
+class Version(BaseModel):
+    value: str = "v000"
+
+    @field_validator("value")
+    @classmethod
+    def validate_version(cls, v: str) -> str:
+        if not re.fullmatch(r"v\d{3}", v):
+            raise ValueError("Version must match format v000")
+        return v
+
+    @property
+    def number(self) -> int:
+        """v012 -> 12"""
+        return int(self.value[1:])
+
+    def bump(self, step: int = 1) -> "Version":
+        new_number = self.number + step
+        return Version(value=f"v{new_number:03d}")
+
+
+class NamingConvention(BaseModel):
+    shot_name: str
+    task: str
+    version: Version = Field(default_factory=Version)
+
+    def bump_version(self, step: int = 1) -> "NamingConvention":
+        return self.model_copy(update={"version": self.version.bump(step)})
+
+    def __str__(self) -> str:
+        return f"{self.shot_name}_{self.task}_{self.version.value}"
