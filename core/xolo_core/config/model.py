@@ -5,6 +5,10 @@ from pydantic import BaseModel, Field, field_validator
 import re
 
 
+class Xolo(BaseModel):
+    projects_root: Path
+
+
 class ProjectConfig(BaseModel):
     root: Path
 
@@ -69,7 +73,7 @@ class Version(BaseModel):
 
 
 class NamingConvention(BaseModel):
-    shot_name: str
+    name: str
     task: str
     version: Version = Field(default_factory=Version)
 
@@ -77,4 +81,11 @@ class NamingConvention(BaseModel):
         return self.model_copy(update={"version": self.version.bump(step)})
 
     def __str__(self) -> str:
-        return f"{self.shot_name}_{self.task}_{self.version.value}"
+        return f"{self.name}_{self.task.upper()}_{self.version.value}"
+
+
+class Publish(BaseModel):
+    file_name: str
+    publish_root: Path
+    work_file_version: str
+    work_root: Path

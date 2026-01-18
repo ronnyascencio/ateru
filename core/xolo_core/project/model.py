@@ -19,18 +19,7 @@ class Project(BaseModel):
     resolution: Tuple[str, str]
 
 
-class Shot(BaseModel):
-    shot_name: str
-    start: int
-    end: int
-    fps: int
 
 
-class Asset(BaseModel):
-    asset_type: str
-    asset_name: str
 
 
-class Publish(BaseModel):
-    file_name: str
-    work_file_version: str

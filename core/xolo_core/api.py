@@ -1,12 +1,11 @@
-from core.xolo_core.project.model import Project, Xolo, Shot
-from core.xolo_core.project.create import (
-    create_project_structure,
-    create_shot_structure,
-    write_project_config,
-    write_global_config,
-    write_shot_config,
-)
-from core.xolo_core.project.load import read_xolo_config, read_project_config
+from core.xolo_core.project.model import Project, Xolo
+from core.xolo_core.shot.model import Shot
+from core.xolo_core.project.create import create_project_structure
+from core.xolo_core.shot.create import create_shot_structure
+from core.xolo_core.project.scan import list_projects
+from core.xolo_core.config import loader, create, model
+from core.xolo_core.project.load import read_project_config
+from core.xolo_core.logging import events
 from pathlib import Path
 import uuid
 
@@ -16,7 +15,7 @@ import uuid
     Project API:
         create
         delete
-        search
+        scan
 
 """
 
@@ -29,7 +28,7 @@ def create_project(
 ):
     rand_id: int = uuid.uuid4().int
 
-    root_project = Path(read_xolo_config()) / project_name
+    root_project = Path(loader.read_xolo_config()) / project_name
     project = Project(
         id=rand_id,
         name=project_name,
@@ -42,7 +41,14 @@ def create_project(
         resolution=(width, height),
     )
     create_project_structure(project.name)
-    write_project_config(project=project)
+    create.write_project_config(project=project)
+
+
+def scan_projects():
+    projects_root = loader.read_xolo_config()
+    projects = list_projects(projects_root)
+    events.info(f" projects in projects directory: {projects}")
+    return projects 
 
 
 def create_shot(
@@ -63,12 +69,14 @@ def create_shot(
     )
 
     create_shot_structure(project_name=project_name, shot_name=shot_name)
-    write_shot_config(project_name=project_name, shot=shot)
+    create.write_shot_config(project_name=project_name, shot=shot)
 
 
 def set_globalconfig(root: Path):
-    xolo = Xolo(projects_root=root)
-    write_global_config(xolo)
+    xolo = model.Xolo(projects_root=root)
+    create.write_global_config(xolo)
 
 
-# create_project(project_name="test2", fps=24, width="1920", height="1080")
+# create_project(project_name="test3", fps=24, width="1920", height="1080")
+projects = scan_projects()
+print(*projects, sep=" - ")
