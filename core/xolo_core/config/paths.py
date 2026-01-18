@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from core.xolo_core.config.model import ProjectConfig, ShotConfig
+from core.xolo_core.config.model import ProjectConfig, ShotConfig, AssetConfig
 
 
 def pipeline_path() -> Path:
@@ -27,6 +27,14 @@ def resolve_project_paths(config: ProjectConfig) -> dict[str, Path]:
 
 
 def resolve_shot_path(config: ShotConfig) -> dict[str, Path]:
+    return {
+        "root": config.root,
+        "work": config.root / config.work_dir,
+        "publish": config.root / config.publish_dir,
+    }
+
+
+def resolve_asset_path(config: AssetConfig) -> dict[str, Path]:
     return {
         "root": config.root,
         "work": config.root / config.work_dir,

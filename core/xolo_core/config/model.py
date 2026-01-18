@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, Annotated
+from typing import Dict, Annotated, Optional
 from pydantic import BaseModel, Field, field_validator
 
 import re
@@ -27,6 +27,18 @@ class ProjectConfig(BaseModel):
 class ShotConfig(BaseModel):
     root: Path
 
+    work_dir: str = "work"
+    publish_dir: str = "publish"
+
+    model_config = {
+        "frozen": True,
+    }
+
+
+class AssetConfig(BaseModel):
+    root: Path
+
+    type: str | None = None
     work_dir: str = "work"
     publish_dir: str = "publish"
 
