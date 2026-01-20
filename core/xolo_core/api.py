@@ -2,6 +2,7 @@ from core.xolo_core.project.model import Project, Xolo
 from core.xolo_core.shot.model import Shot
 from core.xolo_core.asset.model import Asset
 from core.xolo_core.project.create import create_project_structure
+from core.xolo_core.project.delete import project_delete
 from core.xolo_core.shot.create import create_shot_structure
 from core.xolo_core.asset.create import create_asset_structure
 from core.xolo_core.project.scan import list_projects
@@ -46,6 +47,9 @@ def create_project(
     )
     create_project_structure(project.name)
     create.write_project_config(project=project)
+
+def delete_project(project_name: str):
+    project_delete(project_name)
 
 
 def scan_projects():
@@ -111,5 +115,3 @@ def scan_assets(project_name: str):
 def set_globalconfig(root: Path):
     xolo = model.Xolo(projects_root=root)
     create.write_global_config(xolo)
-
-
