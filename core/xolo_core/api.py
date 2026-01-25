@@ -4,6 +4,7 @@ from core.xolo_core.asset.model import Asset
 from core.xolo_core.project.create import create_project_structure
 from core.xolo_core.project.delete import project_delete
 from core.xolo_core.shot.create import create_shot_structure
+from core.xolo_core.shot.delete import shot_delete
 from core.xolo_core.asset.create import create_asset_structure
 from core.xolo_core.project.scan import list_projects
 from core.xolo_core.shot.scan import list_shots
@@ -18,11 +19,27 @@ import uuid
 """
 
     Project API:
-        create
-        delete
-        scan
+        create project
+        delete project
+        scan project
+        create shot
+        delete shot
+        scan shot
+        create asset
+        delete asset
+        scan asset
 
+        show project info
+        show shot info
+        show pipeline info
+        
+    Validation API:
+        scane name validation
+        
 """
+
+
+""" Project """
 
 
 def create_project(
@@ -48,6 +65,7 @@ def create_project(
     create_project_structure(project.name)
     create.write_project_config(project=project)
 
+
 def delete_project(project_name: str):
     project_delete(project_name)
 
@@ -57,6 +75,9 @@ def scan_projects():
     projects = list_projects(projects_root)
     events.info(f" projects in projects directory: {projects}")
     return projects
+
+
+""" Shot """
 
 
 def create_shot(
@@ -90,6 +111,13 @@ def scan_shots(project_name: str):
     return shots
 
 
+def delete_shot(project_name: str, shot_name: str):
+    shot_delete(project_name=project_name, shot_name=shot_name)
+
+
+""" Asset """
+
+
 def create_asset(
     project_name: str,
     asset_name: str,
@@ -110,6 +138,9 @@ def scan_assets(project_name: str):
     assets = list_assets(assets_path)
     events.info(f" assets in {project_name} directory: {assets}")
     return assets
+
+
+""" Global """
 
 
 def set_globalconfig(root: Path):
