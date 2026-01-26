@@ -91,7 +91,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="project_name_lineEdit"/>
+                      <widget class="QLineEdit" name="project_name_lineEdit">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;project name or code of the project &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -111,7 +115,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="fps_lineEdit"/>
+                      <widget class="QLineEdit" name="fps_lineEdit">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;this valeu will be used for the entire project &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
+                      </widget>
                      </item>
                      <item>
                       <widget class="QLabel" name="label_3">
@@ -121,7 +129,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="ress_lineEdit"/>
+                      <widget class="QLineEdit" name="ress_lineEdit">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;set custom resolution:&lt;/p&gt;&lt;p&gt;write the resollution p.e. &lt;span style=&quot; font-weight:700;&quot;&gt;1920x1080&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -148,6 +160,9 @@
                    </item>
                    <item>
                     <widget class="QPushButton" name="delete_project_pushButton">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;delete button will delete the project selected in the list&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="styleSheet">
                       <string notr="true">background-color: rgb(192, 28, 40);</string>
                      </property>
@@ -167,6 +182,9 @@
                  </item>
                  <item alignment="Qt::AlignHCenter|Qt::AlignTop">
                   <widget class="QPushButton" name="create_project_pushButton">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;will create folder structure and all config need it for the project &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="styleSheet">
                     <string notr="true">background-color: rgb(51, 209, 122);</string>
                    </property>

@@ -73,7 +73,7 @@ class XoloManager(QMainWindow):
             events.error(f"project {project_name} could not be deleted")
 
     def closeEvent(self, event):
-        events.success("[UI] Finalizando procesos de Xolo...")
+        events.success("[UI] finishing proscess of  Xolo...")
         event.accept()
         QApplication.quit()
 
