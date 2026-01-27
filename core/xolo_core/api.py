@@ -10,7 +10,8 @@ from core.xolo_core.project.scan import list_projects
 from core.xolo_core.shot.scan import list_shots
 from core.xolo_core.asset.scan import list_assets
 from core.xolo_core.config import loader, create, model
-from core.xolo_core.project.load import read_project_config
+from core.xolo_core.project.load import read_project_config, update_status
+
 from core.xolo_core.logging import events
 from pathlib import Path
 import uuid
@@ -32,22 +33,17 @@ import uuid
         show project info
         show shot info
         show pipeline info
-        
+
     Validation API:
         scane name validation
-        
+
 """
 
 
 """ Project """
 
 
-def create_project(
-    project_name: str,
-    fps: int,
-    width: str,
-    height: str,
-):
+def create_project(project_name: str, fps: int, width: str, height: str, type: str):
     rand_id: int = uuid.uuid4().int
 
     root_project = Path(loader.read_xolo_config()) / project_name
@@ -61,6 +57,8 @@ def create_project(
         shots=root_project / "shots",
         fps=fps,
         resolution=(width, height),
+        type=type,
+        status="active",
     )
     create_project_structure(project.name)
     create.write_project_config(project=project)
@@ -86,6 +84,7 @@ def create_shot(
     start: int,
     end: int,
     fps: int,
+    priority: str,
 ):
     root = read_project_config(project_name)
     root_shot = root.root / shot_name
@@ -97,6 +96,7 @@ def create_shot(
         start=start,
         end=end,
         fps=fps,
+        priority=priority,
     )
 
     create_shot_structure(project_name=project_name, shot_name=shot_name)
@@ -146,3 +146,11 @@ def scan_assets(project_name: str):
 def set_globalconfig(root: Path):
     xolo = model.Xolo(projects_root=root)
     create.write_global_config(xolo)
+
+
+def project_data(project_name: str):
+    return read_project_config(project_name)
+
+
+def update_project_status(project_name: str, new_status: str):
+    return update_status(project_name, new_status)

@@ -8,12 +8,13 @@ app = typer.Typer(help="Create and manage shots")
 @app.command()
 def create():
     project_name = typer.prompt("project name")
-    shot_name = typer.prompt("shot name (e.g. '000_010'")
+    shot_name = typer.prompt("shot name (e.g. '000_010')")
     fps = typer.prompt("set fps")
     res_str = typer.prompt("frame range (e.g. 1001-1100)")
     start, end = map(int, res_str.lower().replace(" ", "").split("-"))
     f_start = start
     f_end = end
+    priority = typer.prompt("priority e.g. 'low, mid, on fire")
 
     project = create_shot(
         shot_name=shot_name,
@@ -21,6 +22,7 @@ def create():
         fps=fps,
         start=f_start,
         end=f_end,
+        priority=priority,
     )
 
 
