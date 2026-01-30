@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>684</width>
-    <height>625</height>
+    <width>676</width>
+    <height>707</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,6 +49,43 @@
         <number>1</number>
        </property>
        <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <property name="topMargin">
+          <number>6</number>
+         </property>
+         <property name="bottomMargin">
+          <number>6</number>
+         </property>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item alignment="Qt::AlignRight">
+          <widget class="QToolButton" name="settings_toolButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;settings:&lt;/p&gt;&lt;p&gt;- projects directory&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset theme="system-run">
+             <normaloff>.</normaloff>.</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <property name="topMargin">
           <number>2</number>
@@ -69,168 +106,254 @@
                 <number>20</number>
                </property>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout">
-                 <property name="rightMargin">
-                  <number>10</number>
+                <layout class="QVBoxLayout" name="verticalLayout_18">
+                 <property name="topMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>6</number>
                  </property>
                  <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_4">
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_2">
-                     <property name="topMargin">
-                      <number>10</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>10</number>
-                     </property>
-                     <item>
-                      <widget class="QLabel" name="label">
-                       <property name="text">
-                        <string>name</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="project_name_lineEdit">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;project name or code of the project &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="label_5">
-                       <property name="text">
-                        <string>type</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="project_type_lineEdit"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_3">
-                     <property name="topMargin">
-                      <number>10</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>10</number>
-                     </property>
-                     <item>
-                      <widget class="QLabel" name="label_2">
-                       <property name="text">
-                        <string>fps    </string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="fps_lineEdit">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;this valeu will be used for the entire project &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="label_3">
-                       <property name="text">
-                        <string>resolution</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="ress_lineEdit">
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;set custom resolution:&lt;/p&gt;&lt;p&gt;write the resollution p.e. &lt;span style=&quot; font-weight:700;&quot;&gt;1920x1080&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <widget class="Line" name="line_2">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_4">
-                     <item>
-                      <widget class="QLabel" name="label_4">
-                       <property name="text">
-                        <string>delete project</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QComboBox" name="projects_delete_comboBox"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="delete_project_pushButton">
-                     <property name="font">
-                      <font>
-                       <bold>false</bold>
-                      </font>
-                     </property>
-                     <property name="toolTip">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;delete button will delete the project selected in the list&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">background-color: rgb(165, 29, 45);
-color: rgb(36, 31, 49);</string>
-                     </property>
-                     <property name="text">
-                      <string>Delete</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <widget class="Line" name="line_4">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
+                  <widget class="QGroupBox" name="groupBox_4">
+                   <property name="title">
+                    <string/>
                    </property>
-                  </widget>
-                 </item>
-                 <item alignment="Qt::AlignHCenter|Qt::AlignTop">
-                  <widget class="QPushButton" name="create_project_pushButton">
-                   <property name="font">
-                    <font>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;will create folder structure and all config need it for the project &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">background-color: rgb(46, 194, 126);
-color: rgb(36, 31, 49);</string>
-                   </property>
-                   <property name="text">
-                    <string>Create</string>
-                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_20">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_19">
+                      <property name="topMargin">
+                       <number>6</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>6</number>
+                      </property>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_18">
+                        <property name="topMargin">
+                         <number>6</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>6</number>
+                        </property>
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_21">
+                          <property name="leftMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>6</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="label">
+                            <property name="text">
+                             <string>name</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="label_2">
+                            <property name="text">
+                             <string>fps    </string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_26">
+                          <property name="leftMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>6</number>
+                          </property>
+                          <item>
+                           <widget class="QLineEdit" name="project_name_lineEdit">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="toolTip">
+                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;project name or code of the project &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLineEdit" name="fps_lineEdit">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>0</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="toolTip">
+                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;this valeu will be used for the entire project &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_25">
+                          <property name="leftMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>6</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="label_5">
+                            <property name="text">
+                             <string>type</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="label_3">
+                            <property name="text">
+                             <string>resolution</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_23">
+                          <property name="leftMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>6</number>
+                          </property>
+                          <item>
+                           <widget class="QLineEdit" name="project_type_lineEdit"/>
+                          </item>
+                          <item>
+                           <widget class="QLineEdit" name="ress_lineEdit">
+                            <property name="toolTip">
+                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;set custom resolution:&lt;/p&gt;&lt;p&gt;write the resollution p.e. &lt;span style=&quot; font-weight:700;&quot;&gt;1920x1080&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <widget class="Line" name="line_2">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_4">
+                        <item>
+                         <widget class="QLabel" name="label_4">
+                          <property name="text">
+                           <string>delete project</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QComboBox" name="projects_delete_comboBox"/>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout">
+                        <property name="topMargin">
+                         <number>6</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>6</number>
+                        </property>
+                        <item>
+                         <spacer name="horizontalSpacer_5">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="create_project_pushButton">
+                          <property name="font">
+                           <font>
+                            <bold>false</bold>
+                           </font>
+                          </property>
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;will create folder structure and all config need it for the project &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">color: rgb(38, 162, 105);</string>
+                          </property>
+                          <property name="text">
+                           <string>Create</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="delete_project_pushButton">
+                          <property name="font">
+                           <font>
+                            <bold>false</bold>
+                           </font>
+                          </property>
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;delete button will delete the project selected in the list&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">color: rgb(224, 27, 36);</string>
+                          </property>
+                          <property name="text">
+                           <string>Delete</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
                   </widget>
                  </item>
                 </layout>
@@ -245,82 +368,127 @@ color: rgb(36, 31, 49);</string>
                <item>
                 <widget class="QGroupBox" name="groupBox">
                  <property name="title">
-                  <string>Projects info</string>
+                  <string>projects info</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout_6">
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_5">
+                   <layout class="QVBoxLayout" name="verticalLayout_4">
                     <item>
-                     <widget class="QTableWidget" name="projects_tableWidget">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
+                     <layout class="QHBoxLayout" name="horizontalLayout_3">
+                      <property name="topMargin">
+                       <number>6</number>
                       </property>
-                      <property name="frameShape">
-                       <enum>QFrame::StyledPanel</enum>
+                      <property name="bottomMargin">
+                       <number>6</number>
                       </property>
-                      <property name="sizeAdjustPolicy">
-                       <enum>QAbstractScrollArea::AdjustToContents</enum>
-                      </property>
-                      <attribute name="horizontalHeaderCascadingSectionResizes">
-                       <bool>false</bool>
-                      </attribute>
-                      <column>
-                       <property name="text">
-                        <string>Name</string>
-                       </property>
-                      </column>
-                      <column>
-                       <property name="text">
-                        <string>Type</string>
-                       </property>
-                      </column>
-                      <column>
-                       <property name="text">
-                        <string>Status</string>
-                       </property>
-                      </column>
-                     </widget>
+                      <item>
+                       <widget class="QTableView" name="project_tableView"/>
+                      </item>
+                      <item>
+                       <widget class="QTableWidget" name="projects_tableWidget">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="frameShape">
+                         <enum>QFrame::StyledPanel</enum>
+                        </property>
+                        <property name="sizeAdjustPolicy">
+                         <enum>QAbstractScrollArea::AdjustToContents</enum>
+                        </property>
+                        <attribute name="horizontalHeaderCascadingSectionResizes">
+                         <bool>false</bool>
+                        </attribute>
+                        <column>
+                         <property name="text">
+                          <string>Name</string>
+                         </property>
+                        </column>
+                        <column>
+                         <property name="text">
+                          <string>Type</string>
+                         </property>
+                        </column>
+                        <column>
+                         <property name="text">
+                          <string>Status</string>
+                         </property>
+                        </column>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="Line" name="line_3">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_5">
+                        <property name="leftMargin">
+                         <number>6</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>6</number>
+                        </property>
+                       </layout>
+                      </item>
+                     </layout>
                     </item>
                     <item>
-                     <widget class="Line" name="line_3">
-                      <property name="orientation">
-                       <enum>Qt::Vertical</enum>
+                     <layout class="QHBoxLayout" name="horizontalLayout_19">
+                      <property name="topMargin">
+                       <number>6</number>
                       </property>
-                     </widget>
-                    </item>
-                    <item alignment="Qt::AlignTop">
-                     <widget class="QPushButton" name="update_projects_pushButton">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
+                      <property name="bottomMargin">
+                       <number>6</number>
                       </property>
-                      <property name="minimumSize">
-                       <size>
-                        <width>0</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <bold>false</bold>
-                       </font>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">background-color: rgb(26, 95, 180);
-color: rgb(36, 31, 49);</string>
-                      </property>
-                      <property name="text">
-                       <string>Update</string>
-                      </property>
-                     </widget>
+                      <item>
+                       <spacer name="horizontalSpacer_6">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="update_projects_pushButton">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <bold>false</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true"/>
+                        </property>
+                        <property name="text">
+                         <string>Update</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
                     </item>
                    </layout>
                   </item>
@@ -379,10 +547,9 @@ color: rgb(36, 31, 49);</string>
                   </spacer>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton">
+                  <widget class="QPushButton" name="shots_update_pushButton">
                    <property name="styleSheet">
-                    <string notr="true">background-color: rgb(26, 95, 180);
-color: rgb(36, 31, 49);</string>
+                    <string notr="true"/>
                    </property>
                    <property name="text">
                     <string>update</string>
@@ -401,11 +568,6 @@ color: rgb(36, 31, 49);</string>
                    <widget class="QTableWidget" name="shots_manager_tableWidget">
                     <column>
                      <property name="text">
-                      <string>priority</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
                       <string>name</string>
                      </property>
                     </column>
@@ -417,6 +579,11 @@ color: rgb(36, 31, 49);</string>
                     <column>
                      <property name="text">
                       <string>deadline</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>priority</string>
                      </property>
                     </column>
                    </widget>
@@ -488,6 +655,13 @@ color: rgb(36, 31, 49);</string>
                      </property>
                     </widget>
                    </item>
+                   <item>
+                    <widget class="QLabel" name="label_12">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
                  </item>
                  <item>
@@ -534,7 +708,7 @@ color: rgb(36, 31, 49);</string>
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_9">
                      <property name="topMargin">
-                      <number>10</number>
+                      <number>2</number>
                      </property>
                      <property name="bottomMargin">
                       <number>2</number>
@@ -567,6 +741,30 @@ color: rgb(36, 31, 49);</string>
                      </item>
                     </layout>
                    </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_17">
+                     <property name="topMargin">
+                      <number>10</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>10</number>
+                     </property>
+                     <item alignment="Qt::AlignHCenter">
+                      <widget class="QLabel" name="label_13">
+                       <property name="text">
+                        <string>start</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item alignment="Qt::AlignHCenter">
+                      <widget class="QLabel" name="label_14">
+                       <property name="text">
+                        <string>end</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
                   </layout>
                  </item>
                  <item>
@@ -585,8 +783,7 @@ color: rgb(36, 31, 49);</string>
                     </sizepolicy>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">background-color: rgb(38, 162, 105);
-color: rgb(36, 31, 49);</string>
+                    <string notr="true">color: rgb(38, 162, 105);</string>
                    </property>
                    <property name="text">
                     <string>create</string>
@@ -603,6 +800,199 @@ color: rgb(36, 31, 49);</string>
             <attribute name="title">
              <string>Assets</string>
             </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_14">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_13">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_13">
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="label_9">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>project</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="assets_projects_comboBox"/>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Fixed</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>300</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="assets_update_pushButton">
+                   <property name="styleSheet">
+                    <string notr="true"/>
+                   </property>
+                   <property name="text">
+                    <string>update</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="assets_groupBox">
+                 <property name="title">
+                  <string>assets</string>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_15">
+                  <item>
+                   <widget class="QTableWidget" name="assets_manager_tableWidget"/>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="comments_groupBox">
+                 <property name="title">
+                  <string>comments</string>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_16">
+                  <item>
+                   <widget class="QListWidget" name="comments_manager_listWidget"/>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_14">
+                 <property name="topMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>6</number>
+                 </property>
+                 <item>
+                  <layout class="QVBoxLayout" name="verticalLayout_17">
+                   <property name="topMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>6</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_10">
+                     <property name="text">
+                      <string>name</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_11">
+                     <property name="text">
+                      <string>type</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QVBoxLayout" name="verticalLayout_16">
+                   <property name="topMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>6</number>
+                   </property>
+                   <item>
+                    <widget class="QLineEdit" name="asset_name_lineEdit">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="asset_type_comboBox">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <item>
+                      <property name="text">
+                       <string>character</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>prop</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>environment</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>vehicle</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <widget class="Line" name="line_8">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QVBoxLayout" name="verticalLayout_15">
+                   <property name="topMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>6</number>
+                   </property>
+                   <item>
+                    <widget class="QPushButton" name="asset_create_pushButton">
+                     <property name="styleSheet">
+                      <string notr="true">color: rgb(38, 162, 105);</string>
+                     </property>
+                     <property name="text">
+                      <string>create</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
           </widget>
          </item>
@@ -623,11 +1013,7 @@ color: rgb(36, 31, 49);</string>
           <number>6</number>
          </property>
          <item>
-          <widget class="QPushButton" name="lancher_pushButton">
-           <property name="styleSheet">
-            <string notr="true">background-color: rgb(97, 53, 131);
-color: rgb(36, 31, 49);</string>
-           </property>
+          <widget class="QToolButton" name="launcher_toolButton">
            <property name="text">
             <string>launcher</string>
            </property>
@@ -643,7 +1029,7 @@ color: rgb(36, 31, 49);</string>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>400</width>
+             <width>450</width>
              <height>20</height>
             </size>
            </property>
@@ -716,7 +1102,7 @@ color: rgb(36, 31, 49);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>684</width>
+     <width>676</width>
      <height>23</height>
     </rect>
    </property>

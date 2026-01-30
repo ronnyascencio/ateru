@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-
+import subprocess
 from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QObject, Qt
@@ -14,6 +14,8 @@ from core.xolo_core.api import (
     scan_projects,
     project_data,
     update_project_status,
+    scan_shots,
+    scan_assets,
 )
 from ui.bar import ProgressController
 
@@ -51,10 +53,19 @@ class XoloManager(QMainWindow):
         self.ui("create_project_pushButton").clicked.connect(self.project_create)
         self.ui("delete_project_pushButton").clicked.connect(self.project_delete)
         self.ui("update_projects_pushButton").clicked.connect(self.refresh_projects)
+        self.ui("launcher_toolButton").clicked.connect(self.start_launcher)
 
         self.ui("projects_tableWidget").cellChanged.connect(self.on_table_cell_changed)
 
         self.refresh_projects()
+
+        """ shots tab """
+        self.ui("shots_project_comboBox").addItems(self.projects_listed())
+        self.ui("shots_project_comboBox").currentTextChanged.connect(self.refresh_shots)
+        self.refresh_shots()
+
+        """ assets tab"""
+        self.ui("assets_projects_comboBox").addItems(self.projects_listed())
 
     """ UI helpers start"""
 
@@ -77,7 +88,9 @@ class XoloManager(QMainWindow):
         combo = self.ui("projects_delete_comboBox")
         combo.clear()
         combo.addItems(sorted(scan_projects()))
+
         self.populate_projects_table()
+        shots_combo = self.ui("shots_project_comboBox")
 
     def projects_listed(self) -> list[str]:
         return sorted(scan_projects())
@@ -107,13 +120,13 @@ class XoloManager(QMainWindow):
 
                 status_lower = project_info.status.lower()
                 if "active" in status_lower:
-                    status_item.setBackground(QBrush(QColor("green")))
+                    status_item.setForeground(QBrush(QColor("green")))
                 elif "archived" in status_lower:
-                    status_item.setBackground(QBrush(QColor("red")))
+                    status_item.setForeground(QBrush(QColor("darkRed")))
                 elif "hold" in status_lower:
-                    status_item.setBackground(QBrush(QColor("purple")))
+                    status_item.setForeground(QBrush(QColor("purple")))
                 else:
-                    status_item.setBackground(QBrush(QColor("white")))
+                    status_item.setForeground(QBrush(QColor("white")))
 
                 table.setItem(row, 0, name_item)
                 table.setItem(row, 1, type_item)
@@ -205,10 +218,66 @@ class XoloManager(QMainWindow):
         finally:
             self.progress.stop()
 
+    """ shots tab start """
+
+    def shots_listed(self):
+        project_name = self.ui("shots_project_comboBox").currentText()
+        shots = scan_shots(project_name)
+
+        return shots
+
+    def populate_shots_table(self):
+        table = self.ui("shots_manager_tableWidget")
+        shots = self.shots_listed()  # ['sh010', 'sh020', ...]
+
+        table.blockSignals(True)
+
+        table.setRowCount(len(shots))
+
+        for row, shot_name in enumerate(shots):
+            table.setItem(row, 0, QTableWidgetItem(shot_name))  # name
+            table.setItem(row, 1, QTableWidgetItem("WIP"))  # status
+            table.setItem(row, 2, QTableWidgetItem("-"))  # deadline
+            table.setItem(row, 3, QTableWidgetItem("Normal"))  # priority
+
+            for col in range(table.columnCount()):
+                item = table.item(row, col)
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+
+        table.resizeColumnsToContents()
+        table.blockSignals(False)
+
+    def refresh_shots(self):
+        """refresh combo and table"""
+        self.populate_shots_table()
+
+    """ shots tab ends"""
+
+    """ assets tab start"""
+
+    """ assets tab ends"""
+
+    """ launcher start"""
+
+    def start_launcher(self):
+        process = subprocess.Popen(
+            [sys.executable, "ui/show_launcher.py"],
+            stdout=None,
+            stderr=None,
+        )
+
+        try:
+            process.wait()
+
+        except KeyboardInterrupt:
+            process.terminate()
+
+    """ launcher ends"""
+
     """ Close """
 
     def closeEvent(self, event):
-        events.success("[UI] finishing process of Xolo...")
+        events.success("[UI] process finished of Xolo Manager...")
         event.accept()
         QApplication.quit()
 

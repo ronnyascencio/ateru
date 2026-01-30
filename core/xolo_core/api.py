@@ -71,7 +71,7 @@ def delete_project(project_name: str):
 def scan_projects():
     projects_root = loader.read_xolo_config()
     projects = list_projects(projects_root)
-    events.info(f" projects in projects directory: {projects}")
+
     return projects
 
 
