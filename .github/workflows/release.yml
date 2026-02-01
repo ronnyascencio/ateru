@@ -4,24 +4,28 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - 'CHANGELOG.md'
-      - 'README.md'
+      - "CHANGELOG.md"
+      - "README.md"
+
   workflow_dispatch:
     inputs:
       force_bump:
-        description: 'Forzar fase (dejar vacío para auto)'
-        default: ''
+        description: "Forzar fase de release"
+        required: false
         type: choice
-        options: ['alpha', 'beta', 'stable', '']
+        options:
+          - alpha
+          - beta
+          - stable
 
 jobs:
-
   bump:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
     outputs:
       new_tag: ${{ env.NEW_TAG }}
-      skipped: ${{ env.SKIPPED }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,54 +33,49 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_TOKEN }}
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: "3.11"
 
-      - name: Install Commitizen with semver support
+      - name: Install Commitizen
         run: pip install "commitizen[semver]"
 
-      - name: Calculate and Apply Version Bump
-        id: apply_bump
+      - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Determinar tipo de release
-          if [[ "${{ github.event.inputs.force_bump }}" == "stable" ]]; then
-            RELEASE_TYPE="stable"
-          elif [[ "${{ github.event.inputs.force_bump }}" == "beta" ]]; then
-            RELEASE_TYPE="beta"
+      - name: Run Commitizen bump
+        run: |
+          FORCE="${{ github.event.inputs.force_bump }}"
+
+          if [[ "$FORCE" == "stable" ]]; then
+            echo "📦 Stable release"
+            cz bump --yes
+          elif [[ "$FORCE" == "beta" ]]; then
+            echo "🧪 Beta pre-release"
+            cz bump --yes --prerelease beta
           else
-            RELEASE_TYPE="alpha"
+            echo "🧪 Alpha pre-release"
+            cz bump --yes --prerelease alpha
           fi
 
-          # Ejecutar Commitizen bump
-          if [[ "$RELEASE_TYPE" == "stable" ]]; then
-            NEW_VERSION=$(cz bump --yes)
-          else
-            NEW_VERSION=$(cz bump --yes -- --pre-id $RELEASE_TYPE)
-          fi
+          TAG=$(git describe --tags --abbrev=0)
+          echo "NEW_TAG=$TAG" >> $GITHUB_ENV
 
-          if [ -n "$NEW_VERSION" ]; then
-            echo "NEW_TAG=$NEW_VERSION" >> $GITHUB_ENV
-            echo "SKIPPED=false" >> $GITHUB_ENV
-            git push origin main --tags
-          else
-            echo "No se encontraron commits convencionales para bump."
-            echo "SKIPPED=true" >> $GITHUB_ENV
-          fi
+          git push origin main --tags
 
   build:
     needs: bump
-    if: needs.bump.outputs.skipped == 'false'
+    runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+
     steps:
-      - name: Checkout code at new tag
+      - name: Checkout code at tag
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.bump.outputs.new_tag }}
@@ -84,14 +83,14 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Build Wheels
+      - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           command: build
           args: --release --out dist
-          sccache: 'true'
+          sccache: "true"
 
-      - name: Upload Artifacts
+      - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.os }}
@@ -100,13 +99,14 @@ jobs:
   publish:
     needs: [bump, build]
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code at new tag
+      - name: Checkout code at tag
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.bump.outputs.new_tag }}
 
-      - name: Download Artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: dist
@@ -120,6 +120,6 @@ jobs:
           name: Release ${{ needs.bump.outputs.new_tag }}
           body_path: CHANGELOG.md
           files: dist/*
-          prerelease: ${{ startsWith(needs.bump.outputs.new_tag, '0.') && (contains(needs.bump.outputs.new_tag, 'alpha') || contains(needs.bump.outputs.new_tag, 'beta')) }}
+          prerelease: ${{ contains(needs.bump.outputs.new_tag, 'alpha') || contains(needs.bump.outputs.new_tag, 'beta') }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
