@@ -144,11 +144,17 @@ def scan_assets(project_name: str):
 """ Global """
 
 
-def set_globalconfig(root: Path, ocio: Path, nuke: Path, blender: Path, gaffer: Path):
-  
+def set_software_paths(nuke: Path, blender: Path, gaffer: Path):
+    apps = model.SoftwareConfig(
+        nuke_path=nuke, blender_path=blender, gaffer_path=gaffer
+    )
+    create.write_global_config_software(apps)
+
+
+def set_projects_root(root: Path, ocio: Path):
     xolo = model.GlobalConfig(projects_root=root, ocio_config=ocio)
-    apps = model.SoftwareConfig(nuke_path=nuke, blender_path=blender, gaffer_path=gaffer)
-    create.write_global_config(xolo, apps)
+
+    create.write_global_config_root(xolo)
 
 
 def project_data(project_name: str):

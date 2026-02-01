@@ -54,6 +54,7 @@ class XoloManager(QMainWindow):
         self.ui("delete_project_pushButton").clicked.connect(self.project_delete)
         self.ui("update_projects_pushButton").clicked.connect(self.refresh_projects)
         self.ui("launcher_toolButton").clicked.connect(self.start_launcher)
+        self.ui("settings_toolButton").clicked.connect(self.start_settings)
 
         self.ui("projects_tableWidget").cellChanged.connect(self.on_table_cell_changed)
 
@@ -273,6 +274,17 @@ class XoloManager(QMainWindow):
             process.terminate()
 
     """ launcher ends"""
+
+    """ start settings"""
+
+    def start_settings(self):
+        process = subprocess.Popen(
+            [sys.executable, "ui/show_settings.py"],
+            stdout=None,
+            stderr=None,
+        )
+
+    """ ends settings"""
 
     """ Close """
 
