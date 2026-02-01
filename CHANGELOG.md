@@ -1,3 +1,9 @@
+## v0.1.0a8 (2026-02-01)
+
+### Fix
+
+- **ci**: fix release.yml tag and release
+
 ## v0.1.0a7 (2026-02-01)
 
 ### Feat
