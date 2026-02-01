@@ -1,14 +1,12 @@
 import sys
 from pathlib import Path
 
-from PySide6.QtWidgets import QApplication, QDialog, QLayout
+from PySide6.QtWidgets import QApplication, QDialog
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QObject
 
 from core.xolo_core.logging import events
-from core.xolo_core.config.utility import user_name
 from core.xolo_core.api import set_software_paths, set_projects_root
-from ui.bar import ProgressController
 
 
 class XoloSettings(QDialog):
@@ -64,14 +62,14 @@ class XoloSettings(QDialog):
         ocio_path = self.ui("ocio_path_lineEdit").text()
 
         set_projects_root(root=projects_path, ocio=ocio_path)
-        events.success(f"roots global config set")
+        events.success("roots global config set")
 
     def set_softwares_paths(self):
         nuke_path = self.ui("nuke_path_lineEdit").text()
         gaffer_path = self.ui("gaffer_path_lineEdit").text()
         blender_path = self.ui("blender_path_lineEdit").text()
         set_software_paths(nuke=nuke_path, gaffer=gaffer_path, blender=blender_path)
-        events.success(f"softwares global config set")
+        events.success("software global config set")
 
 
 def main():

@@ -40,3 +40,5 @@ basedpyrightconfig.json
 version_cache.json
 pipeline_config.yaml
 target/
+xolo.bat
+xolo.cmd
