@@ -1,3 +1,20 @@
+## v0.1.0a7 (2026-02-01)
+
+### Feat
+
+- **ui**: ui updated write config implementation and secure data creation
+- **ui**: cli settings and ui settings designed
+- **ui**:  ui develop
+- **ui**:  ui implementation project creation update status and table display
+- **ui**:  initial implementation UIX project manager
+
+### Fix
+
+- **ci**: pyproject.toml updated
+- **ci**: release workflow
+- **workflow**: release workflow
+- **ui**:  debug on closing app window
+
 ## v0.1.0a6 (2026-02-01)
 
 ## v0.1.0a5 (2026-02-01)
