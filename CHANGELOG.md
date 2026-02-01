@@ -1,3 +1,14 @@
+## v0.1.0a9 (2026-02-01)
+
+### Feat
+
+- **ui**: settings design for global and software
+- **core**: windows .bat file to install xolo in windows
+
+### Fix
+
+- **core**: git ignore updated for ignore xolo.bat and xolo.cmd
+
 ## v0.1.0a8 (2026-02-01)
 
 ### Fix
