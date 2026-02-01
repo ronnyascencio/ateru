@@ -4,17 +4,18 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - "CHANGELOG.md"
-      - "README.md"
+      - 'CHANGELOG.md'
+      - 'README.md'
   workflow_dispatch:
     inputs:
       force_bump:
-        description: "Forzar fase (dejar vacío para auto)"
-        default: ""
+        description: 'Forzar fase (dejar vacío para auto)'
+        default: ''
         type: choice
-        options: ["alpha", "beta", "stable", ""]
+        options: ['alpha', 'beta', 'stable', '']
 
 jobs:
+
   bump:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
@@ -22,26 +23,27 @@ jobs:
       new_tag: ${{ env.NEW_TAG }}
       skipped: ${{ env.SKIPPED }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_TOKEN }}
 
-      - name: Set up Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
 
-      - name: Install Commitizen
-        run: pip install commitizen
+      - name: Install Commitizen with semver support
+        run: pip install "commitizen[semver]"
 
-      - name: Calculate and Apply Bump
+      - name: Calculate and Apply Version Bump
         id: apply_bump
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Detectar tipo de release forzado
+          # Determinar tipo de release
           if [[ "${{ github.event.inputs.force_bump }}" == "stable" ]]; then
             RELEASE_TYPE="stable"
           elif [[ "${{ github.event.inputs.force_bump }}" == "beta" ]]; then
@@ -50,13 +52,11 @@ jobs:
             RELEASE_TYPE="alpha"
           fi
 
-          # Ejecutar Commitizen bump automático
-          # --yes aplica sin interacción
-          # --pre-id permite pre-release (alpha/beta)
+          # Ejecutar Commitizen bump
           if [[ "$RELEASE_TYPE" == "stable" ]]; then
             NEW_VERSION=$(cz bump --yes)
           else
-            NEW_VERSION=$(cz bump --yes --pre-id $RELEASE_TYPE)
+            NEW_VERSION=$(cz bump --yes -- --pre-id $RELEASE_TYPE)
           fi
 
           if [ -n "$NEW_VERSION" ]; then
@@ -76,7 +76,8 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code at new tag
+        uses: actions/checkout@v4
         with:
           ref: ${{ needs.bump.outputs.new_tag }}
 
@@ -88,7 +89,7 @@ jobs:
         with:
           command: build
           args: --release --out dist
-          sccache: "true"
+          sccache: 'true'
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -100,7 +101,8 @@ jobs:
     needs: [bump, build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code at new tag
+        uses: actions/checkout@v4
         with:
           ref: ${{ needs.bump.outputs.new_tag }}
 
