@@ -1,66 +1,43 @@
-name: Production Release System
-
+name: Production release
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
   release:
-    name: Commitizen Release
     runs-on: ubuntu-latest
 
     steps:
-      # --------------------------------------------------
-      # Checkout completo (necesario para tags)
-      # --------------------------------------------------
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # --------------------------------------------------
-      # Python
-      # --------------------------------------------------
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # --------------------------------------------------
-      # Instalar Commitizen
-      # --------------------------------------------------
       - name: Install Commitizen
         run: |
           python -m pip install --upgrade pip
           pip install commitizen
 
-      # --------------------------------------------------
-      # Configurar Git (OBLIGATORIO)
-      # --------------------------------------------------
-      - name: Configure Git
+      - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # --------------------------------------------------
-      # Bump de versión (alpha)
-      # Commitizen decide TODO
-      # --------------------------------------------------
-      - name: Bump version (alpha)
-        env:
-          CZ_FORCE_COLOR: "1"
+      # 🔒 FORZAMOS patch + alpha
+      - name: Version bump (alpha patch only)
         run: |
-          cz bump --prerelease alpha --yes
+          cz bump --increment patch --prerelease alpha --yes
 
-      # --------------------------------------------------
-      # Push commit + tags
-      # --------------------------------------------------
-      - name: Push changes and tags
+      - name: Push changes
         run: |
           git push origin main
           git push origin --tags
