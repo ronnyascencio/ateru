@@ -123,3 +123,46 @@ jobs:
           prerelease: ${{ contains(needs.bump.outputs.new_tag, 'alpha') || contains(needs.bump.outputs.new_tag, 'beta') }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+name: Production release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Commitizen
+        run: |
+          python -m pip install --upgrade pip
+          pip install commitizen
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # 🔒 FORZAMOS patch + alpha
+      - name: Version bump (alpha patch only)
+        run: |
+          cz bump --increment patch --prerelease alpha --yes
+
+      - name: Push changes
+        run: |
+          git push origin main
+          git push origin --tags
