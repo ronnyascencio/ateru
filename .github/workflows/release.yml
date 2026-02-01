@@ -4,18 +4,17 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - 'CHANGELOG.md'
-      - 'README.md'
+      - "CHANGELOG.md"
+      - "README.md"
   workflow_dispatch:
     inputs:
       force_bump:
-        description: 'Forzar fase (dejar vacío para auto)'
-        default: ''
+        description: "Forzar fase (dejar vacío para auto)"
+        default: ""
         type: choice
-        options: ['alpha', 'beta', 'stable', '']
+        options: ["alpha", "beta", "stable", ""]
 
 jobs:
-
   bump:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
@@ -28,37 +27,46 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_TOKEN }}
 
-      - name: Install Cocogitto
-        run: cargo install cocogitto
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install Commitizen
+        run: pip install commitizen
 
       - name: Calculate and Apply Bump
         id: apply_bump
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          COMMIT_MSG=$(git log -1 --pretty=%B)
-          
 
-          if [[ "${{ github.event.inputs.force_bump }}" == "stable" ]] || [[ "$COMMIT_MSG" == *"[stable]"* ]]; then
-            BUMP_CMD="cog bump --auto"
-          elif [[ "${{ github.event.inputs.force_bump }}" == "beta" ]] || [[ "$COMMIT_MSG" == *"[beta]"* ]]; then
-            BUMP_CMD="cog bump --auto --pre beta"
+          # Detectar tipo de release forzado
+          if [[ "${{ github.event.inputs.force_bump }}" == "stable" ]]; then
+            RELEASE_TYPE="stable"
+          elif [[ "${{ github.event.inputs.force_bump }}" == "beta" ]]; then
+            RELEASE_TYPE="beta"
           else
-            BUMP_CMD="cog bump --auto --pre alpha"
+            RELEASE_TYPE="alpha"
           fi
 
+          # Ejecutar Commitizen bump automático
+          # --yes aplica sin interacción
+          # --pre-id permite pre-release (alpha/beta)
+          if [[ "$RELEASE_TYPE" == "stable" ]]; then
+            NEW_VERSION=$(cz bump --yes)
+          else
+            NEW_VERSION=$(cz bump --yes --pre-id $RELEASE_TYPE)
+          fi
 
-          if $BUMP_CMD; then
-            TAG=$(git describe --tags --abbrev=0)
-            echo "NEW_TAG=$TAG" >> $GITHUB_ENV
+          if [ -n "$NEW_VERSION" ]; then
+            echo "NEW_TAG=$NEW_VERSION" >> $GITHUB_ENV
             echo "SKIPPED=false" >> $GITHUB_ENV
             git push origin main --tags
           else
-            echo "No se encontraron commits convencionales para realizar un bump."
+            echo "No se encontraron commits convencionales para bump."
             echo "SKIPPED=true" >> $GITHUB_ENV
           fi
-
 
   build:
     needs: bump
@@ -70,7 +78,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.bump.outputs.new_tag }} 
+          ref: ${{ needs.bump.outputs.new_tag }}
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -80,7 +88,7 @@ jobs:
         with:
           command: build
           args: --release --out dist
-          sccache: 'true'
+          sccache: "true"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -88,7 +96,6 @@ jobs:
           name: wheels-${{ matrix.os }}
           path: dist/*.whl
 
-  # ETAPA 3: Publicación en GitHub Releases
   publish:
     needs: [bump, build]
     runs-on: ubuntu-latest
@@ -111,6 +118,6 @@ jobs:
           name: Release ${{ needs.bump.outputs.new_tag }}
           body_path: CHANGELOG.md
           files: dist/*
-          prerelease: ${{ contains(needs.bump.outputs.new_tag, 'alpha') || contains(needs.bump.outputs.new_tag, 'beta') }}
+          prerelease: ${{ startsWith(needs.bump.outputs.new_tag, '0.') && (contains(needs.bump.outputs.new_tag, 'alpha') || contains(needs.bump.outputs.new_tag, 'beta')) }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
