@@ -118,11 +118,22 @@ jobs:
           merge-multiple: true
           pattern: wheels-*
 
+      # --------------------------------------------------
+      # Capturar último tag
+      # --------------------------------------------------
+      - name: Get latest tag
+        id: latest_tag
+        run: |
+          echo "TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      # --------------------------------------------------
+      # Crear release en GitHub
+      # --------------------------------------------------
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          tag_name: ${{ env.TAG }}
+          name: Release ${{ env.TAG }}
           body_path: CHANGELOG.md
           files: dist/*
           prerelease: true
