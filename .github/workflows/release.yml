@@ -14,62 +14,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # --------------------------------------------------
-      # Checkout completo (necesario para tags)
-      # --------------------------------------------------
+      # 1️⃣ Checkout completo
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 
 
-      # --------------------------------------------------
-      # Setup Python
-      # --------------------------------------------------
+ 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # --------------------------------------------------
-      # Instalar Commitizen
-      # --------------------------------------------------
       - name: Install Commitizen
         run: |
           python -m pip install --upgrade pip
           pip install commitizen
 
-      # --------------------------------------------------
-      # Configurar Git
-      # --------------------------------------------------
+
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # --------------------------------------------------
-      # Limpiar posibles tags conflictivos
-      # --------------------------------------------------
-      - name: Cleanup possible bad tags
+   
+      - name: Bump version (auto increment)
         run: |
-          git fetch --prune --tags
-          git push origin :refs/tags/main || echo "No remote tag 'main' to delete"
+          # Detectar si hay commits nuevos desde el último tag
+          cz bump --increment auto --prerelease alpha --yes
 
-      # --------------------------------------------------
-      # Bump version (alpha patch)
-      # --------------------------------------------------
-      - name: Bump version (alpha patch)
-        run: |
-          # Si no hay tag previo (primer release), saltar changelog
-          if git describe --tags --abbrev=0 >/dev/null 2>&1; then
-            cz bump --increment patch --prerelease alpha --yes
-          else
-            cz bump --increment patch --prerelease alpha --yes --no-changelog
-          fi
 
-      # --------------------------------------------------
-      # Push commit y tag de forma segura
-      # --------------------------------------------------
-      - name: Push bump commit and tag
+      - name: Push bump commit and tags
         run: |
           git push origin refs/heads/main
           git push origin --tags
@@ -126,17 +101,14 @@ jobs:
           merge-multiple: true
           pattern: wheels-*
 
-      # --------------------------------------------------
-      # Capturar último tag
-      # --------------------------------------------------
+
       - name: Get latest tag
         id: latest_tag
         run: |
-          echo "TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+          TAG=$(git describe --tags --abbrev=0)
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
-      # --------------------------------------------------
-      # Crear release en GitHub
-      # --------------------------------------------------
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
