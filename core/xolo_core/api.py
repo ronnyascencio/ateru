@@ -1,6 +1,7 @@
-from core.xolo_core.project.model import Project, Xolo
+from core.xolo_core.project.model import Project
 from core.xolo_core.shot.model import Shot
 from core.xolo_core.asset.model import Asset
+from core.xolo_core.config.model import GlobalConfig, SoftwareConfig
 from core.xolo_core.project.create import create_project_structure
 from core.xolo_core.project.delete import project_delete
 from core.xolo_core.shot.create import create_shot_structure
@@ -143,9 +144,11 @@ def scan_assets(project_name: str):
 """ Global """
 
 
-def set_globalconfig(root: Path):
-    xolo = model.Xolo(projects_root=root)
-    create.write_global_config(xolo)
+def set_globalconfig(root: Path, ocio: Path, nuke: Path, blender: Path, gaffer: Path):
+  
+    xolo = model.GlobalConfig(projects_root=root, ocio_config=ocio)
+    apps = model.SoftwareConfig(nuke_path=nuke, blender_path=blender, gaffer_path=gaffer)
+    create.write_global_config(xolo, apps)
 
 
 def project_data(project_name: str):

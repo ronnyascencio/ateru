@@ -57,12 +57,12 @@ class XoloManager(QMainWindow):
 
         self.ui("projects_tableWidget").cellChanged.connect(self.on_table_cell_changed)
 
-        self.refresh_projects()
+        # self.refresh_projects()
 
         """ shots tab """
         self.ui("shots_project_comboBox").addItems(self.projects_listed())
         self.ui("shots_project_comboBox").currentTextChanged.connect(self.refresh_shots)
-        self.refresh_shots()
+        # self.refresh_shots()
 
         """ assets tab"""
         self.ui("assets_projects_comboBox").addItems(self.projects_listed())

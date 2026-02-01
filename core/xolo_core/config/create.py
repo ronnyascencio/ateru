@@ -1,5 +1,5 @@
 from pathlib import Path
-from core.xolo_core.config.model import Xolo
+from core.xolo_core.config.model import Xolo, GlobalConfig, SoftwareConfig
 from core.xolo_core.project.model import Project
 from core.xolo_core.shot.model import Shot
 from core.xolo_core.asset.model import Asset
@@ -60,13 +60,14 @@ def write_asset_config(asset: Asset, project_name: str):
 """
 
 
-def write_global_config(xolo: Xolo):
+def write_global_config(xolo: GlobalConfig, apps: SoftwareConfig):
     config_file: Path = Path.home() / ".xolo" / "xolo_config.toml"
     title: dict = {"name": "Xolo Global Configuration"}
 
     data: dict = {
         "title": title,
-        "Paths": xolo.model_dump(mode="json"),
+        "root": xolo.model_dump(mode="json"),
+        "apps": apps.model_dump(mode="json")
     }
 
     config_file.parent.mkdir(parents=True, exist_ok=True)
