@@ -3,6 +3,8 @@
 ## [0.1.0a1] - Initial alpha release
 - First release of Xolo Pipeline
 
+## v0.1.0a2 (2026-02-01)
+
 ## v0.1.0a1 (2026-02-01)
 
 ### Feat
