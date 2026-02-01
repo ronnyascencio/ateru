@@ -14,35 +14,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # --------------------------------------------------
+      # Checkout completo (necesario para tags)
+      # --------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # --------------------------------------------------
+      # Setup Python
+      # --------------------------------------------------
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # --------------------------------------------------
+      # Instalar Commitizen
+      # --------------------------------------------------
       - name: Install Commitizen
         run: |
           python -m pip install --upgrade pip
           pip install commitizen
 
+      # --------------------------------------------------
+      # Configurar Git
+      # --------------------------------------------------
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      # --------------------------------------------------
+      # Bump version (alpha patch)
+      # --------------------------------------------------
       - name: Bump version (alpha patch)
         run: |
-          # Si es el primer release y no hay tag previo, usa --no-changelog
+          # Si no hay tag previo (primer release), saltar changelog
           if git describe --tags --abbrev=0 >/dev/null 2>&1; then
             cz bump --increment patch --prerelease alpha --yes
           else
             cz bump --increment patch --prerelease alpha --yes --no-changelog
           fi
 
+      # --------------------------------------------------
+      # Push commit y tag
+      # --------------------------------------------------
       - name: Push bump commit and tag
         run: |
           git push origin main
@@ -74,7 +92,7 @@ jobs:
 
       - name: Build wheel
         run: |
-          python -m hatchling build -s wheel
+          python -m hatchling build
 
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v4
