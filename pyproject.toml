@@ -16,7 +16,6 @@ requires-python = ">=3.11, <3.12"
 dependencies = [
     "loguru>=0.7.3",
     "pydantic>=2.8,<3.0",
-    "pyside6>=6.10.1",
     "tomli>=2.3.0",
     "tomli-w>=1.2.0",
     "typer>=0.21.1",
@@ -28,3 +27,12 @@ xolo = "cli.xolo_cli.main:app"
 
 [tool.hatch.build.targets.wheel]
 packages = ["cli", "core"]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.0-alpha.0"
+version_files = [
+  "pyproject.toml:project.version"
+]
+tag_format = "v$version"
+update_changelog_on_bump = true
