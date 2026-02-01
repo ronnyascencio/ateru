@@ -4,18 +4,17 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - 'CHANGELOG.md'
-      - 'README.md'
+      - "CHANGELOG.md"
+      - "README.md"
   workflow_dispatch:
     inputs:
       force_bump:
-        description: 'Forzar fase (dejar vacío para auto)'
-        default: ''
+        description: "Forzar fase (dejar vacío para auto)"
+        default: ""
         type: choice
-        options: ['alpha', 'beta', 'stable', '']
+        options: ["alpha", "beta", "stable", ""]
 
 jobs:
-
   bump:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
@@ -89,7 +88,7 @@ jobs:
         with:
           command: build
           args: --release --out dist
-          sccache: 'true'
+          sccache: "true"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
