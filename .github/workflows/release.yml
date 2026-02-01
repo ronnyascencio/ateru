@@ -10,17 +10,14 @@ permissions:
 
 jobs:
   bump:
-    name: Version bump (alpha)
+    name: Version bump
     runs-on: ubuntu-latest
-
     steps:
-      # 1️⃣ Checkout completo
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
 
- 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -31,22 +28,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install commitizen
 
-
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-   
-      - name: Bump version (auto increment)
+      - name: Bump version (pre-release alpha)
         run: |
-          # Detectar si hay commits nuevos desde el último tag
-          cz bump --increment auto --prerelease alpha --yes
+          # Si es primer release, saltar changelog
+          if git describe --tags --abbrev=0 >/dev/null 2>&1; then
+            cz bump --prerelease alpha --yes --allow-no-commit
+          else
+            cz bump --prerelease alpha --yes --allow-no-commit --no-changelog
+          fi
 
-
-      - name: Push bump commit and tags
+      - name: Push bump commit and tag
         run: |
-          git push origin refs/heads/main
+          git push origin main
           git push origin --tags
 
   build:
@@ -56,7 +54,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -74,8 +71,7 @@ jobs:
           pip install hatchling
 
       - name: Build wheel
-        run: |
-          python -m hatchling build
+        run: python -m hatchling build
 
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v4
@@ -87,7 +83,6 @@ jobs:
     name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -101,13 +96,10 @@ jobs:
           merge-multiple: true
           pattern: wheels-*
 
-
       - name: Get latest tag
         id: latest_tag
         run: |
-          TAG=$(git describe --tags --abbrev=0)
-          echo "TAG=$TAG" >> $GITHUB_ENV
-
+          echo "TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
