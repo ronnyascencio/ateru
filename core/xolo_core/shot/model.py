@@ -8,3 +8,4 @@ class Shot(BaseModel):
     start: int
     end: int
     fps: int
+    priority: str

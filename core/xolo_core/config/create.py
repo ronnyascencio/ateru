@@ -1,11 +1,16 @@
 from pathlib import Path
-from core.xolo_core.config.model import Xolo
+from core.xolo_core.config.model import Xolo, GlobalConfig, SoftwareConfig
+from core.xolo_core.config.loader import ensure_config_exists
 from core.xolo_core.project.model import Project
 from core.xolo_core.shot.model import Shot
 from core.xolo_core.asset.model import Asset
 from core.xolo_core.project import load
 import tomli_w
+import tomli
 from core.xolo_core.logging import events
+
+
+CONFIG_FILE = Path.home() / ".xolo" / "xolo_config.toml"
 
 
 def write_project_config(project: Project):
@@ -60,17 +65,38 @@ def write_asset_config(asset: Asset, project_name: str):
 """
 
 
-def write_global_config(xolo: Xolo):
-    config_file: Path = Path.home() / ".xolo" / "xolo_config.toml"
-    title: dict = {"name": "Xolo Global Configuration"}
+def load_config() -> dict:
+    if CONFIG_FILE.exists():
+        with CONFIG_FILE.open("rb") as f:
+            return tomli.load(f)
+    else:
+        # Crear archivo base vacío
+        CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        base = {"title": {"name": "Xolo Global Configuration"}}
+        with CONFIG_FILE.open("wb") as f:
+            tomli_w.dump(base, f)
+        return base
 
-    data: dict = {
-        "title": title,
-        "Paths": xolo.model_dump(mode="json"),
-    }
 
-    config_file.parent.mkdir(parents=True, exist_ok=True)
-
-    with config_file.open("wb") as f:
+def write_config(data: dict):
+    """secure write data."""
+    CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with CONFIG_FILE.open("wb") as f:
         tomli_w.dump(data, f)
-    events.success(f"Config File created {config_file}")
+    events.success(f"Config File updated {CONFIG_FILE}")
+
+
+def write_global_config_root(xolo: GlobalConfig):
+    """update root section TOML without delete apps."""
+    config = ensure_config_exists()
+    config["root"] = xolo.model_dump(mode="json")
+    with CONFIG_FILE.open("wb") as f:
+        tomli_w.dump(config, f)
+
+
+def write_global_config_software(apps: SoftwareConfig):
+    """update apps section TOML without delete root."""
+    config = ensure_config_exists()
+    config["apps"] = apps.model_dump(mode="json")
+    with CONFIG_FILE.open("wb") as f:
+        tomli_w.dump(config, f)

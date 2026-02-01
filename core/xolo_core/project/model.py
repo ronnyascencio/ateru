@@ -17,6 +17,8 @@ class Project(BaseModel):
     shots: Path
     fps: int
     resolution: Tuple[str, str]
+    type: str
+    status: str
 
 
 

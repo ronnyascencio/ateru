@@ -13,3 +13,5 @@ def pieline_env():
         events.success("PIPELINE_ROOT env variable registered")
     except:
         events.error("PIPELINE_ROOT could not register env variable")
+        
+

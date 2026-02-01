@@ -33,14 +33,3 @@ def create_project_structure(project_name: str):
         events.info(f"Created directory: {str(path)}")
 
 
-def create_shot_structure(project_name: str, shot_name: str):
-    project_config = read_project_config(project_name)
-    root_shot = project_config.root / project_config.shots_dir / shot_name
-
-    model = ShotConfig(root=root_shot)
-
-    directories = resolve_shot_path(model)
-
-    for path in directories.values():
-        path.mkdir(parents=True, exist_ok=True)
-        events.info(f"Created directory: {path}")

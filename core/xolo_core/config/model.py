@@ -49,19 +49,22 @@ class AssetConfig(BaseModel):
 
 class GlobalConfig(BaseModel):
     projects_root: Path
-    ocio_config: Path
+    ocio_config: Optional[Path]
 
-    apps: Dict[str, str] = Field(default_factory=dict)
+
 
     logs_dir: Path = Field(default_factory=lambda: Path.home() / ".xolo" / "logs")
     cache_dir: Path = Field(default_factory=lambda: Path.home() / ".xolo" / "cache")
-    xolo_config_dir: Path = Field(
-        default_factory=lambda: Path.home() / ".xolo" / "config"
-    )
+
 
     model_config = {
         "frozen": True,
     }
+
+class SoftwareConfig(BaseModel):
+    nuke_path: Path
+    gaffer_path: Path
+    blender_path: Path
 
 
 class Version(BaseModel):

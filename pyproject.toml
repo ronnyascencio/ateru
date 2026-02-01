@@ -23,7 +23,11 @@ packages = ["cli", "core"]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
+
+
+
 version = "0.1.0a6"
+
 version_scheme = "pep440"
 tag_format = "v$version"
 update_changelog_on_bump = true

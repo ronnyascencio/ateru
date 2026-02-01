@@ -1,6 +1,7 @@
-from core.xolo_core.project.model import Project, Xolo
+from core.xolo_core.project.model import Project
 from core.xolo_core.shot.model import Shot
 from core.xolo_core.asset.model import Asset
+from core.xolo_core.config.model import GlobalConfig, SoftwareConfig
 from core.xolo_core.project.create import create_project_structure
 from core.xolo_core.project.delete import project_delete
 from core.xolo_core.shot.create import create_shot_structure
@@ -10,7 +11,8 @@ from core.xolo_core.project.scan import list_projects
 from core.xolo_core.shot.scan import list_shots
 from core.xolo_core.asset.scan import list_assets
 from core.xolo_core.config import loader, create, model
-from core.xolo_core.project.load import read_project_config
+from core.xolo_core.project.load import read_project_config, update_status
+
 from core.xolo_core.logging import events
 from pathlib import Path
 import uuid
@@ -32,22 +34,17 @@ import uuid
         show project info
         show shot info
         show pipeline info
-        
+
     Validation API:
         scane name validation
-        
+
 """
 
 
 """ Project """
 
 
-def create_project(
-    project_name: str,
-    fps: int,
-    width: str,
-    height: str,
-):
+def create_project(project_name: str, fps: int, width: str, height: str, type: str):
     rand_id: int = uuid.uuid4().int
 
     root_project = Path(loader.read_xolo_config()) / project_name
@@ -61,6 +58,8 @@ def create_project(
         shots=root_project / "shots",
         fps=fps,
         resolution=(width, height),
+        type=type,
+        status="active",
     )
     create_project_structure(project.name)
     create.write_project_config(project=project)
@@ -73,7 +72,7 @@ def delete_project(project_name: str):
 def scan_projects():
     projects_root = loader.read_xolo_config()
     projects = list_projects(projects_root)
-    events.info(f" projects in projects directory: {projects}")
+
     return projects
 
 
@@ -86,6 +85,7 @@ def create_shot(
     start: int,
     end: int,
     fps: int,
+    priority: str,
 ):
     root = read_project_config(project_name)
     root_shot = root.root / shot_name
@@ -97,6 +97,7 @@ def create_shot(
         start=start,
         end=end,
         fps=fps,
+        priority=priority,
     )
 
     create_shot_structure(project_name=project_name, shot_name=shot_name)
@@ -143,6 +144,22 @@ def scan_assets(project_name: str):
 """ Global """
 
 
-def set_globalconfig(root: Path):
-    xolo = model.Xolo(projects_root=root)
-    create.write_global_config(xolo)
+def set_software_paths(nuke: Path, blender: Path, gaffer: Path):
+    apps = model.SoftwareConfig(
+        nuke_path=nuke, blender_path=blender, gaffer_path=gaffer
+    )
+    create.write_global_config_software(apps)
+
+
+def set_projects_root(root: Path, ocio: Path):
+    xolo = model.GlobalConfig(projects_root=root, ocio_config=ocio)
+
+    create.write_global_config_root(xolo)
+
+
+def project_data(project_name: str):
+    return read_project_config(project_name)
+
+
+def update_project_status(project_name: str, new_status: str):
+    return update_status(project_name, new_status)
