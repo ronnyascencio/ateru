@@ -30,7 +30,7 @@ packages = ["cli", "core"]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.0a3"
+version = "0.1.0a4"
 version_files = [
   "pyproject.toml:project.version"
 ]
