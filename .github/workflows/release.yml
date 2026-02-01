@@ -1,133 +1,66 @@
 name: Production Release System
 
+
 on:
   push:
-    branches: [main]
-    paths-ignore:
-      - "CHANGELOG.md"
-      - "README.md"
+    branches:
+      - main
 
-  workflow_dispatch:
-    inputs:
-      force_bump:
-        description: "Forzar fase de release"
-        required: false
-        type: choice
-        options:
-          - alpha
-          - beta
-          - stable
+permissions:
+  contents: write
 
 jobs:
-
-  bump:
+  release:
+    name: Commitizen Release
     runs-on: ubuntu-latest
 
-    # 🔒 BLOQUEO TOTAL DE LOOPS
-    if: |
-      !contains(github.event.head_commit.message, '[skip ci]') &&
-      github.actor != 'github-actions[bot]'
-
-    outputs:
-      new_tag: ${{ env.NEW_TAG }}
-
     steps:
+      # --------------------------------------------------
+      # Checkout completo (necesario para tags)
+      # --------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.RELEASE_TOKEN }}
 
+      # --------------------------------------------------
+      # Python
+      # --------------------------------------------------
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # --------------------------------------------------
+      # Instalar Commitizen
+      # --------------------------------------------------
       - name: Install Commitizen
-        run: pip install "commitizen[semver]"
+        run: |
+          python -m pip install --upgrade pip
+          pip install commitizen
 
-      - name: Configure git
+      # --------------------------------------------------
+      # Configurar Git (OBLIGATORIO)
+      # --------------------------------------------------
+      - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Run Commitizen bump
-        run: |
-          FORCE="${{ github.event.inputs.force_bump }}"
-
-          if [[ "$FORCE" == "stable" ]]; then
-            echo "📦 Stable release"
-            cz bump --yes \
-              --message "chore(release): bump version [skip ci]"
-          elif [[ "$FORCE" == "beta" ]]; then
-            echo "🧪 Beta pre-release"
-            cz bump --yes --prerelease beta \
-              --message "chore(release): bump version [skip ci]"
-          else
-            echo "🧪 Alpha pre-release"
-            cz bump --yes --prerelease alpha \
-              --message "chore(release): bump version [skip ci]"
-          fi
-
-          TAG=$(git describe --tags --abbrev=0)
-          echo "NEW_TAG=$TAG" >> $GITHUB_ENV
-
-          git push origin main --tags
-
-  build:
-    needs: bump
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-
-    steps:
-      - name: Checkout code at tag
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.bump.outputs.new_tag }}
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Build wheels
-        uses: PyO3/maturin-action@v1
-        with:
-          command: build
-          args: --release --out dist
-          sccache: "true"
-
-      - name: Upload wheels
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheels-${{ matrix.os }}
-          path: dist/*.whl
-
-  publish:
-    needs: [bump, build]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code at tag
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.bump.outputs.new_tag }}
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-          pattern: wheels-*
-          merge-multiple: true
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ needs.bump.outputs.new_tag }}
-          name: Release ${{ needs.bump.outputs.new_tag }}
-          body_path: CHANGELOG.md
-          files: dist/*
-          prerelease: ${{ contains(needs.bump.outputs.new_tag, 'alpha') || contains(needs.bump.outputs.new_tag, 'beta') }}
+      # --------------------------------------------------
+      # Bump de versión (alpha)
+      # Commitizen decide TODO
+      # --------------------------------------------------
+      - name: Bump version (alpha)
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          CZ_FORCE_COLOR: "1"
+        run: |
+          cz bump --prerelease alpha --yes
+
+      # --------------------------------------------------
+      # Push commit + tags
+      # --------------------------------------------------
+      - name: Push changes and tags
+        run: |
+          git push origin main
+          git push origin --tags
