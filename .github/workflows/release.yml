@@ -47,6 +47,14 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       # --------------------------------------------------
+      # Limpiar posibles tags conflictivos
+      # --------------------------------------------------
+      - name: Cleanup possible bad tags
+        run: |
+          git fetch --prune --tags
+          git push origin :refs/tags/main || echo "No remote tag 'main' to delete"
+
+      # --------------------------------------------------
       # Bump version (alpha patch)
       # --------------------------------------------------
       - name: Bump version (alpha patch)
@@ -59,11 +67,11 @@ jobs:
           fi
 
       # --------------------------------------------------
-      # Push commit y tag
+      # Push commit y tag de forma segura
       # --------------------------------------------------
       - name: Push bump commit and tag
         run: |
-          git push origin main
+          git push origin refs/heads/main
           git push origin --tags
 
   build:
