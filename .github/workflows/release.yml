@@ -22,7 +22,11 @@ jobs:
 
   bump:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
+    # 🔒 BLOQUEO TOTAL DE LOOPS
+    if: |
+      !contains(github.event.head_commit.message, '[skip ci]') &&
+      github.actor != 'github-actions[bot]'
 
     outputs:
       new_tag: ${{ env.NEW_TAG }}
@@ -53,13 +57,16 @@ jobs:
 
           if [[ "$FORCE" == "stable" ]]; then
             echo "📦 Stable release"
-            cz bump --yes
+            cz bump --yes \
+              --message "chore(release): bump version [skip ci]"
           elif [[ "$FORCE" == "beta" ]]; then
             echo "🧪 Beta pre-release"
-            cz bump --yes --prerelease beta
+            cz bump --yes --prerelease beta \
+              --message "chore(release): bump version [skip ci]"
           else
             echo "🧪 Alpha pre-release"
-            cz bump --yes --prerelease alpha
+            cz bump --yes --prerelease alpha \
+              --message "chore(release): bump version [skip ci]"
           fi
 
           TAG=$(git describe --tags --abbrev=0)
