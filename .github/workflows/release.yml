@@ -3,7 +3,7 @@ name: GitHub Release
 on:
   push:
     tags:
-      - 'v*'  
+      - 'v*'
 
 permissions:
   contents: write
@@ -20,6 +20,7 @@ jobs:
         with:
           fetch-depth: 0
 
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -31,16 +32,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install commitizen
 
-  
+
       - name: Get version from tag
         run: |
           echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-  
+   
       - name: Generate release notes
         id: changelog
         run: |
-          NOTES=$(cz changelog --rev-range ${{ env.VERSION }}^..${{ env.VERSION }} --changelog-to-stdout --)
+          NOTES=$(cz changelog ${{ env.VERSION }} --dry-run)
           echo "NOTES<<EOF" >> $GITHUB_ENV
           echo "$NOTES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
