@@ -3,7 +3,7 @@ name: GitHub Release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'  # Solo se dispara cuando se hace push de un tag
 
 permissions:
   contents: write
@@ -13,51 +13,45 @@ jobs:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     steps:
+      # 1️⃣ Checkout del repo completo
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # 2️⃣ Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # 3️⃣ Install Commitizen (para generar body del release)
       - name: Install Commitizen
         run: |
           python -m pip install --upgrade pip
           pip install commitizen
 
+      # 4️⃣ Extraer la versión del tag
       - name: Get version from tag
         run: |
           echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      - name: Extract changelog for current tag
-        id: extract_changelog
+      # 5️⃣ Crear release solo con el changelog de esa versión
+      - name: Generate release notes
+        id: changelog
         run: |
-          import re
-          import os
+          NOTES=$(cz changelog --version ${{ env.VERSION }})
+          echo "NOTES<<EOF" >> $GITHUB_ENV
+          echo "$NOTES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
-          version = os.environ["VERSION"]
-
-          with open("CHANGELOG.md", "r", encoding="utf-8") as f:
-              changelog = f.read()
-
-          # Busca solo la sección del tag actual
-          pattern = rf"## {re.escape(version)}.*?(?=(## v|$))"
-          match = re.search(pattern, changelog, re.DOTALL)
-          if not match:
-              raise Exception(f"Changelog section for {version} not found")
-
-          with open("CHANGELOG_TAG.md", "w", encoding="utf-8") as f:
-              f.write(match.group(0))
-
+      # 6️⃣ Crear GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
-          body_path: CHANGELOG_TAG.md
+          body: ${{ env.NOTES }}
           files: dist/*
           prerelease: true
         env:
