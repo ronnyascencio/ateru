@@ -3,48 +3,42 @@ name: Production Release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 permissions:
   contents: write
 
 jobs:
   release:
+    name: Create GitHub Release
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set VERSION
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Commitizen
         run: |
-          echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+          python -m pip install --upgrade pip
+          pip install commitizen
 
-      - name: Extract changelog section
+      - name: Get tag version
         run: |
-          python - << EOF
-          import re, sys, os
-          from pathlib import Path
-
-          version = os.environ["VERSION"]
-          text = Path("CHANGELOG.md").read_text(encoding="utf-8")
-          pattern = rf"## {re.escape(version)}.*?(?=\\n## |\\Z)"
-          match = re.search(pattern, text, re.S)
-
-          if not match:
-              print(f"Changelog section for {version} not found")
-              sys.exit(1)
-
-          Path("RELEASE_NOTES.md").write_text(match.group(0), encoding="utf-8")
-          EOF
+          echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
-          body_path: RELEASE_NOTES.md
+          body_path: CHANGELOG.md
+          files: dist/*
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
