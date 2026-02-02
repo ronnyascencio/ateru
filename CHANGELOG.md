@@ -1,3 +1,9 @@
+## v0.1.0a11 (2026-02-02)
+
+### Fix
+
+- **workflow**: CHANGELOG version updated to match tag version and release
+
 ## v0.1.0a10 (2026-02-02)
 
 ### Fix
