@@ -1,3 +1,52 @@
+## v0.1.0a17 (2026-02-02)
+
+## v0.1.0a16 (2026-02-02)
+
+## v0.1.0a15 (2026-02-02)
+
+## v0.1.0a14 (2026-02-02)
+
+## v0.1.0a13 (2026-02-02)
+
+### Fix
+
+- **ci**: allow VERSION expansion in release notes
+
+## v0.1.0a12 (2026-02-02)
+
+### Fix
+
+- **workflow**: Bug fix where change log version was not found
+
+## v0.1.0a11 (2026-02-02)
+
+### Fix
+
+- **workflow**: CHANGELOG version updated to match tag version and release
+
+## v0.1.0a10 (2026-02-02)
+
+### Fix
+
+- **workflow**: release yml file updated, bug Bug CHANGELOG where tag was created correctly but release stays one version back
+
+## v0.1.0a9 (2026-02-01)
+
+### Feat
+
+- **ui**: settings design for global and software
+- **core**: windows .bat file to install xolo in windows
+
+### Fix
+
+- **core**: git ignore updated for ignore xolo.bat and xolo.cmd
+
+## v0.1.0a8 (2026-02-01)
+
+### Fix
+
+- **ci**: fix release.yml tag and release
+
 ## v0.1.0a17 (2026-02-03)
 
 ### Feat
