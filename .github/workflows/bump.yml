@@ -35,7 +35,7 @@ jobs:
 
       - name: Bump version (pre-release alpha)
         run: |
-          # Si hay tags previos, hace prerelease alpha
+          # Saltar changelog si no hay tags previos
           if git describe --tags --abbrev=0 >/dev/null 2>&1; then
             cz bump --prerelease alpha --yes --allow-no-commit
           else

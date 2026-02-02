@@ -1,3 +1,12 @@
+## v0.1.0a17 (2026-02-03)
+
+### Feat
+- **core**: new .bat windows instalation
+
+### Fix
+- **ci**: update tag and release 
+
+
 ## v0.1.0a16 (2026-02-02)
 
 ## v0.1.0a15 (2026-02-02)
