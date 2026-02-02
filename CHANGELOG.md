@@ -1,3 +1,9 @@
+## v0.1.0a23 (2026-02-01)
+
+### Fix
+
+- **ci**: workflow added for wheels linux and windows en release
+
 ## v0.1.0a22 (2026-02-01)
 
 ### Fix
