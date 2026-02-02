@@ -9,14 +9,9 @@ permissions:
   contents: write
 
 jobs:
-# ==================================================
-# 1. BUMP VERSION + TAG
-# ==================================================
   bump:
     name: Version bump
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
 
     steps:
       - name: Checkout repository
@@ -39,29 +34,21 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Bump version (alpha prerelease)
+      - name: Bump version (alpha)
         run: |
           if git describe --tags --abbrev=0 >/dev/null 2>&1; then
-            cz bump --prerelease alpha --yes --allow-no-commit
+            cz bump --prerelease alpha --yes
           else
-            cz bump --prerelease alpha --yes --allow-no-commit --no-changelog
+            cz bump --prerelease alpha --yes --no-changelog
           fi
-
-      - name: Get new version
-        id: get_version
-        run: |
-          echo "version=$(cz version)" >> "$GITHUB_OUTPUT"
 
       - name: Push bump commit and tag
         run: |
           git push origin main
           git push origin --tags
 
-# ==================================================
-# 2. BUILD ARTIFACTS
-# ==================================================
   build:
-    name: Build wheels (Linux + Windows)
+    name: Build wheels
     needs: bump
     strategy:
       matrix:
@@ -93,12 +80,9 @@ jobs:
           name: wheels-${{ matrix.os }}
           path: dist/*.whl
 
-# ==================================================
-# 3. CREATE GITHUB RELEASE
-# ==================================================
   release:
-    name: Create GitHub Release
-    needs: [bump, build]
+    name: GitHub Release
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -114,38 +98,57 @@ jobs:
           merge-multiple: true
           pattern: wheels-*
 
-      # ----------------------------------------------
-      # Extract ONLY the current version from CHANGELOG
-      # ----------------------------------------------
-      - name: Extract release notes from changelog
+      - name: Get latest tag
+        id: tag
+        run: |
+          echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Extract changelog for version
         run: |
           python - << 'EOF'
-          import re, pathlib
+          import re
+          import sys
+          from pathlib import Path
 
-          raw_version = "${{ needs.bump.outputs.version }}"
-          version = f"v{raw_version}"
+          version = "${VERSION}"
+          changelog = Path("CHANGELOG.md")
 
-          changelog = pathlib.Path("CHANGELOG.md").read_text(encoding="utf-8")
+          if not changelog.exists():
+              print("CHANGELOG.md not found")
+              sys.exit(1)
 
-          pattern = rf"## {re.escape(version)}.*?(?=\n## |\Z)"
-          match = re.search(pattern, changelog, re.S)
+          lines = changelog.read_text(encoding="utf-8").splitlines()
 
-          if not match:
-              raise SystemExit(f"Changelog section for {version} not found")
+          header = re.compile(rf"^##\s+{re.escape(version)}(\s+\(.*\))?$")
 
-          pathlib.Path("RELEASE_NOTES.md").write_text(
-              match.group(0).strip(),
-              encoding="utf-8"
-          )
+          start = None
+          end = None
+
+          for i, line in enumerate(lines):
+              if header.match(line.strip()):
+                  start = i + 1
+                  continue
+              if start and line.startswith("## "):
+                  end = i
+                  break
+
+          if start is None:
+              print(f"Changelog section for {version} not found")
+              sys.exit(1)
+
+          content = "\n".join(lines[start:end]).strip()
+
+          with open("RELEASE_NOTES.md", "w", encoding="utf-8") as f:
+              f.write(content)
           EOF
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ needs.bump.outputs.version }}
-          name: v${{ needs.bump.outputs.version }}
+          tag_name: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
           body_path: RELEASE_NOTES.md
           files: dist/*
           prerelease: true
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
