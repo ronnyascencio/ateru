@@ -3,7 +3,7 @@ name: GitHub Release
 on:
   push:
     tags:
-      - 'v*'   
+      - "v*"
 
 permissions:
   contents: write
@@ -32,12 +32,32 @@ jobs:
         run: |
           echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
+      - name: Extract changelog for current tag
+        id: extract_changelog
+        run: |
+          import re
+          import os
+
+          version = os.environ["VERSION"]
+
+          with open("CHANGELOG.md", "r", encoding="utf-8") as f:
+              changelog = f.read()
+
+          # Busca solo la sección del tag actual
+          pattern = rf"## {re.escape(version)}.*?(?=(## v|$))"
+          match = re.search(pattern, changelog, re.DOTALL)
+          if not match:
+              raise Exception(f"Changelog section for {version} not found")
+
+          with open("CHANGELOG_TAG.md", "w", encoding="utf-8") as f:
+              f.write(match.group(0))
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
-          body_path: CHANGELOG.md
+          body_path: CHANGELOG_TAG.md
           files: dist/*
           prerelease: true
         env:
