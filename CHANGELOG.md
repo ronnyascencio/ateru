@@ -1,3 +1,9 @@
+## v0.1.0a20 (2026-02-01)
+
+### Fix
+
+- **ci**: workflow manual release commitizen
+
 ## v0.1.0a19 (2026-02-01)
 
 ## v0.1.0a18 (2026-02-02)
