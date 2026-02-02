@@ -3,7 +3,7 @@ name: GitHub Release
 on:
   push:
     tags:
-      - 'v*'  # Solo se dispara cuando se hace push de un tag
+      - 'v*'  # Se dispara solo cuando haces push de un tag
 
 permissions:
   contents: write
@@ -13,7 +13,7 @@ jobs:
     name: Create GitHub Release
     runs-on: ubuntu-latest
     steps:
-      # 1️⃣ Checkout del repo completo
+      # 1️⃣ Checkout del repositorio completo
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      # 3️⃣ Install Commitizen (para generar body del release)
+      # 3️⃣ Instalar Commitizen
       - name: Install Commitizen
         run: |
           python -m pip install --upgrade pip
@@ -36,23 +36,23 @@ jobs:
         run: |
           echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      # 5️⃣ Crear release solo con el changelog de esa versión
+      # 5️⃣ Generar release notes solo para este tag
       - name: Generate release notes
         id: changelog
         run: |
-          NOTES=$(cz changelog --version ${{ env.VERSION }})
+          NOTES=$(cz changelog --rev-range ${GITHUB_REF}^..${GITHUB_REF} --changelog-to-stdout)
           echo "NOTES<<EOF" >> $GITHUB_ENV
           echo "$NOTES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      # 6️⃣ Crear GitHub Release
+      # 6️⃣ Crear GitHub Release con el changelog generado
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
           body: ${{ env.NOTES }}
-          files: dist/*
+          files: dist/*  # Si tienes artifacts, se subirán aquí
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
