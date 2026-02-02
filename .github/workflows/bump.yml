@@ -10,19 +10,22 @@ permissions:
 
 jobs:
   bump:
+    name: Version bump
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install Commitizen
         run: |
+          python -m pip install --upgrade pip
           pip install commitizen
 
       - name: Configure Git
@@ -30,11 +33,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Bump version
+      - name: Bump version (pre-release alpha)
         run: |
-          cz bump --prerelease alpha --yes
+          # Si hay tags previos, hace prerelease alpha
+          if git describe --tags --abbrev=0 >/dev/null 2>&1; then
+            cz bump --prerelease alpha --yes --allow-no-commit
+          else
+            cz bump --prerelease alpha --yes --allow-no-commit --no-changelog
+          fi
 
-      - name: Push changes
+      - name: Push bump commit and tag
         run: |
           git push origin main
           git push origin --tags
