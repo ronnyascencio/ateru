@@ -12,6 +12,8 @@ jobs:
   bump:
     name: Version bump
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,12 +37,17 @@ jobs:
 
       - name: Bump version (pre-release alpha)
         run: |
-          # Si es primer release, saltar changelog
           if git describe --tags --abbrev=0 >/dev/null 2>&1; then
-            cz bump --prerelease alpha --yes --allow-no-commit
+            cz bump --prerelease alpha --yes
           else
-            cz bump --prerelease alpha --yes --allow-no-commit --no-changelog
+            cz bump --prerelease alpha --yes --no-changelog
           fi
+
+      - name: Get bumped version
+        id: get_version
+        run: |
+          VERSION=$(cz version)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Push bump commit and tag
         run: |
@@ -55,13 +62,11 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -81,11 +86,10 @@ jobs:
 
   release:
     name: Create GitHub Release
-    needs: build
+    needs: [build, bump]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -96,17 +100,29 @@ jobs:
           merge-multiple: true
           pattern: wheels-*
 
-      - name: Get latest tag
-        id: latest_tag
+      - name: Extract release notes from changelog
         run: |
-          echo "TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+          python - << 'EOF'
+          import re, pathlib
+
+          version = "${{ needs.bump.outputs.version }}"
+          text = pathlib.Path("CHANGELOG.md").read_text(encoding="utf-8")
+
+          pattern = rf"## {re.escape(version)}.*?(?=\n## |\Z)"
+          match = re.search(pattern, text, re.S)
+
+          if not match:
+              raise SystemExit(f"Changelog section for {version} not found")
+
+          pathlib.Path("RELEASE_NOTES.md").write_text(match.group(0), encoding="utf-8")
+          EOF
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.TAG }}
-          name: Release ${{ env.TAG }}
-          body_path: CHANGELOG.md
+          tag_name: v${{ needs.bump.outputs.version }}
+          name: v${{ needs.bump.outputs.version }}
+          body_path: RELEASE_NOTES.md
           files: dist/*
           prerelease: true
         env:
