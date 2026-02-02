@@ -2,145 +2,41 @@ name: Production Release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
 
 permissions:
   contents: write
 
 jobs:
-  bump:
-    name: Version bump
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install Commitizen
-        run: |
-          python -m pip install --upgrade pip
-          pip install commitizen
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Bump version (alpha prerelease)
-        run: |
-          if git describe --tags --abbrev=0 >/dev/null 2>&1; then
-            cz bump --prerelease alpha --yes
-          else
-            cz bump --prerelease alpha --yes --no-changelog
-          fi
-
-      - name: Push bump commit and tag
-        run: |
-          git push origin main
-          git push origin --tags
-
-  build:
-    name: Build wheels
-    needs: bump
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install build tools
-        run: |
-          python -m pip install --upgrade pip
-          pip install hatchling
-
-      - name: Build wheel
-        run: python -m hatchling build
-
-      - name: Upload wheel artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheels-${{ matrix.os }}
-          path: dist/*.whl
-
   release:
-    name: Create GitHub Release
-    needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Download wheel artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-          merge-multiple: true
-
-      - name: Get latest tag
+      - name: Set VERSION
         run: |
-          echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+          echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
-      - name: Extract changelog for version
+      - name: Extract changelog section
         run: |
           python - << EOF
-          import re
-          import sys
-          import os
+          import re, sys, os
           from pathlib import Path
 
-          version = os.environ.get("VERSION")
+          version = os.environ["VERSION"]
+          text = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          pattern = rf"## {re.escape(version)}.*?(?=\\n## |\\Z)"
+          match = re.search(pattern, text, re.S)
 
-          if not version:
-              print("VERSION env var not set")
-              sys.exit(1)
-
-          changelog = Path("CHANGELOG.md")
-          if not changelog.exists():
-              print("CHANGELOG.md not found")
-              sys.exit(1)
-
-          lines = changelog.read_text(encoding="utf-8").splitlines()
-
-          header = re.compile(rf"^##\\s+{re.escape(version)}(\\s+\\(.*\\))?$")
-
-          start = None
-          end = None
-
-          for i, line in enumerate(lines):
-              if header.match(line.strip()):
-                  start = i + 1
-                  continue
-              if start and line.startswith("## "):
-                  end = i
-                  break
-
-          if start is None:
+          if not match:
               print(f"Changelog section for {version} not found")
               sys.exit(1)
 
-          content = "\\n".join(lines[start:end]).strip()
-          Path("RELEASE_NOTES.md").write_text(content, encoding="utf-8")
+          Path("RELEASE_NOTES.md").write_text(match.group(0), encoding="utf-8")
           EOF
 
       - name: Create GitHub Release
@@ -149,7 +45,6 @@ jobs:
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
           body_path: RELEASE_NOTES.md
-          files: dist/*
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
