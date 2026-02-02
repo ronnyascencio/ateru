@@ -1,3 +1,9 @@
+## v0.1.0a13 (2026-02-02)
+
+### Fix
+
+- **ci**: allow VERSION expansion in release notes
+
 ## v0.1.0a12 (2026-02-02)
 
 ### Fix
