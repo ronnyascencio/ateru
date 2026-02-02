@@ -1,3 +1,9 @@
+## v0.1.0a10 (2026-02-02)
+
+### Fix
+
+- **workflow**: release yml file updated, bug Bug CHANGELOG where tag was created correctly but release stays one version back
+
 ## v0.1.0a9 (2026-02-01)
 
 ### Feat
