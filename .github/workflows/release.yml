@@ -9,11 +9,15 @@ permissions:
   contents: write
 
 jobs:
+# ==================================================
+# 1. BUMP VERSION + TAG
+# ==================================================
   bump:
     name: Version bump
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get_version.outputs.version }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,25 +39,27 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Bump version (pre-release alpha)
+      - name: Bump version (alpha prerelease)
         run: |
           if git describe --tags --abbrev=0 >/dev/null 2>&1; then
-            cz bump --prerelease alpha --yes
+            cz bump --prerelease alpha --yes --allow-no-commit
           else
-            cz bump --prerelease alpha --yes --no-changelog
+            cz bump --prerelease alpha --yes --allow-no-commit --no-changelog
           fi
 
-      - name: Get bumped version
+      - name: Get new version
         id: get_version
         run: |
-          VERSION=$(cz version)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version=$(cz version)" >> "$GITHUB_OUTPUT"
 
       - name: Push bump commit and tag
         run: |
           git push origin main
           git push origin --tags
 
+# ==================================================
+# 2. BUILD ARTIFACTS
+# ==================================================
   build:
     name: Build wheels (Linux + Windows)
     needs: bump
@@ -61,12 +67,15 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -84,12 +93,17 @@ jobs:
           name: wheels-${{ matrix.os }}
           path: dist/*.whl
 
+# ==================================================
+# 3. CREATE GITHUB RELEASE
+# ==================================================
   release:
     name: Create GitHub Release
-    needs: [build, bump]
+    needs: [bump, build]
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -100,21 +114,29 @@ jobs:
           merge-multiple: true
           pattern: wheels-*
 
+      # ----------------------------------------------
+      # Extract ONLY the current version from CHANGELOG
+      # ----------------------------------------------
       - name: Extract release notes from changelog
         run: |
           python - << 'EOF'
           import re, pathlib
 
-          version = "${{ needs.bump.outputs.version }}"
-          text = pathlib.Path("CHANGELOG.md").read_text(encoding="utf-8")
+          raw_version = "${{ needs.bump.outputs.version }}"
+          version = f"v{raw_version}"
+
+          changelog = pathlib.Path("CHANGELOG.md").read_text(encoding="utf-8")
 
           pattern = rf"## {re.escape(version)}.*?(?=\n## |\Z)"
-          match = re.search(pattern, text, re.S)
+          match = re.search(pattern, changelog, re.S)
 
           if not match:
               raise SystemExit(f"Changelog section for {version} not found")
 
-          pathlib.Path("RELEASE_NOTES.md").write_text(match.group(0), encoding="utf-8")
+          pathlib.Path("RELEASE_NOTES.md").write_text(
+              match.group(0).strip(),
+              encoding="utf-8"
+          )
           EOF
 
       - name: Create GitHub Release
