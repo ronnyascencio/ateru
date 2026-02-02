@@ -34,7 +34,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Bump version (alpha)
+      - name: Bump version (alpha prerelease)
         run: |
           if git describe --tags --abbrev=0 >/dev/null 2>&1; then
             cz bump --prerelease alpha --yes
@@ -81,7 +81,7 @@ jobs:
           path: dist/*.whl
 
   release:
-    name: GitHub Release
+    name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
 
@@ -96,30 +96,33 @@ jobs:
         with:
           path: dist
           merge-multiple: true
-          pattern: wheels-*
 
       - name: Get latest tag
-        id: tag
         run: |
           echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
       - name: Extract changelog for version
         run: |
-          python - << 'EOF'
+          python - << EOF
           import re
           import sys
+          import os
           from pathlib import Path
 
-          version = "${VERSION}"
-          changelog = Path("CHANGELOG.md")
+          version = os.environ.get("VERSION")
 
+          if not version:
+              print("VERSION env var not set")
+              sys.exit(1)
+
+          changelog = Path("CHANGELOG.md")
           if not changelog.exists():
               print("CHANGELOG.md not found")
               sys.exit(1)
 
           lines = changelog.read_text(encoding="utf-8").splitlines()
 
-          header = re.compile(rf"^##\s+{re.escape(version)}(\s+\(.*\))?$")
+          header = re.compile(rf"^##\\s+{re.escape(version)}(\\s+\\(.*\\))?$")
 
           start = None
           end = None
@@ -136,10 +139,8 @@ jobs:
               print(f"Changelog section for {version} not found")
               sys.exit(1)
 
-          content = "\n".join(lines[start:end]).strip()
-
-          with open("RELEASE_NOTES.md", "w", encoding="utf-8") as f:
-              f.write(content)
+          content = "\\n".join(lines[start:end]).strip()
+          Path("RELEASE_NOTES.md").write_text(content, encoding="utf-8")
           EOF
 
       - name: Create GitHub Release
@@ -151,4 +152,4 @@ jobs:
           files: dist/*
           prerelease: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
