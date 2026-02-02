@@ -1,3 +1,9 @@
+## v0.1.0a12 (2026-02-02)
+
+### Fix
+
+- **workflow**: Bug fix where change log version was not found
+
 ## v0.1.0a11 (2026-02-02)
 
 ### Fix
