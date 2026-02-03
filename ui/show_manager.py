@@ -13,7 +13,9 @@ from core.xolo_core.api import (
     delete_project,
     scan_projects,
     project_data,
+    count_shots,
     update_project_status,
+    create_shot,
     scan_shots,
     scan_assets,
 )
@@ -58,12 +60,13 @@ class XoloManager(QMainWindow):
 
         self.ui("projects_tableWidget").cellChanged.connect(self.on_table_cell_changed)
 
-        # self.refresh_projects()
+        """ project tab"""
+        self.ui("projects_tableWidget").itemSelectionChanged.connect(self.project_info)
 
         """ shots tab """
-        self.ui("shots_project_comboBox").addItems(self.projects_listed())
         self.ui("shots_project_comboBox").currentTextChanged.connect(self.refresh_shots)
-        # self.refresh_shots()
+        self.ui("shots_project_comboBox").addItems(self.projects_listed())
+        self.ui("shot_create_pushButton").clicked.connect(self.shot_create)
 
         """ assets tab"""
         self.ui("assets_projects_comboBox").addItems(self.projects_listed())
@@ -84,29 +87,47 @@ class XoloManager(QMainWindow):
 
     """ UI helpers ends"""
 
+    """ projects start"""
+
+    def clear_project_info(self):
+        self.ui("project_info_name_label").setText("-")
+        self.ui("fps_project_info_label").setText("-")
+        self.ui("resolution_project_info_label").setText("-")
+        self.ui("shot_project_count_info_label").setText("0")
+
     def refresh_projects(self):
-        """refresh combo and table"""
+        projects = self.projects_listed()
+
         combo = self.ui("projects_delete_comboBox")
         combo.clear()
-        combo.addItems(sorted(scan_projects()))
+        combo.addItems(projects)
+
+        shots_combo = self.ui("shots_project_comboBox")
+        shots_combo.clear()
+        shots_combo.addItems(projects)
 
         self.populate_projects_table()
-        shots_combo = self.ui("shots_project_comboBox")
+        self.populate_shots_table()
 
     def projects_listed(self) -> list[str]:
         return sorted(scan_projects())
 
     def populate_projects_table(self):
-        """Fill table and color status"""
         table = self.ui("projects_tableWidget")
         projects = self.projects_listed()
 
         table.blockSignals(True)
-
         table.clearContents()
-        table.setRowCount(len(projects))
         table.setColumnCount(3)
         table.setHorizontalHeaderLabels(["Name", "Type", "Status"])
+
+        if not projects:
+            table.setRowCount(0)
+            table.blockSignals(False)
+            self.clear_project_info()
+            return
+
+        table.setRowCount(len(projects))
 
         for row, project_name in enumerate(projects):
             try:
@@ -135,13 +156,10 @@ class XoloManager(QMainWindow):
 
             except Exception as e:
                 print(f"Error leyendo proyecto {project_name}: {e}")
-                continue
 
         table.resizeColumnsToContents()
         table.horizontalHeader().setStretchLastSection(True)
         table.blockSignals(False)
-
-    """ Actions """
 
     def project_create(self):
         project_name = self.ui("project_name_lineEdit").text()
@@ -219,7 +237,42 @@ class XoloManager(QMainWindow):
         finally:
             self.progress.stop()
 
+    """ info project start """
+
+    def project_info(self):
+        table = self.ui("projects_tableWidget")
+
+        row = table.currentRow()
+        if row == -1:
+            return  # nada seleccionado
+
+        item = table.item(row, 0)  # columna 0 = name
+        if item is None:
+            return
+
+        project_name = item.text()
+        project = project_data(project_name)
+        name = project.name
+        fps = project.fps
+        separator = "x"
+        resolution = separator.join(project.resolution)
+        shots_number = str(count_shots(project.name))
+
+        self.ui("project_info_name_label").setText(name)
+        self.ui("fps_project_info_label").setText(str(fps))
+        self.ui("resolution_project_info_label").setText(resolution)
+        self.ui("shot_project_count_info_label").setText(str(shots_number))
+
+    """ info project ends """
+
+    """ projects ends"""
+
     """ shots tab start """
+
+    def selected_shots_project(self) -> str | None:
+        combo = self.ui("shots_project_comboBox")
+        project = combo.currentText().strip()
+        return project if project else None
 
     def shots_listed(self):
         project_name = self.ui("shots_project_comboBox").currentText()
@@ -229,28 +282,72 @@ class XoloManager(QMainWindow):
 
     def populate_shots_table(self):
         table = self.ui("shots_manager_tableWidget")
-        shots = self.shots_listed()  # ['sh010', 'sh020', ...]
+        project_name = self.selected_shots_project()
 
         table.blockSignals(True)
+        table.clearContents()
+        table.setColumnCount(4)
+        table.setHorizontalHeaderLabels(["Name", "Status", "Deadline", "Priority"])
+
+        if not project_name:
+            table.setRowCount(0)
+            table.blockSignals(False)
+            return
+
+        shots = scan_shots(project_name)
+
+        if not shots:
+            table.setRowCount(0)
+            table.blockSignals(False)
+            return
 
         table.setRowCount(len(shots))
 
         for row, shot_name in enumerate(shots):
-            table.setItem(row, 0, QTableWidgetItem(shot_name))  # name
-            table.setItem(row, 1, QTableWidgetItem("WIP"))  # status
-            table.setItem(row, 2, QTableWidgetItem("-"))  # deadline
-            table.setItem(row, 3, QTableWidgetItem("Normal"))  # priority
+            table.setItem(row, 0, QTableWidgetItem(shot_name))
+            table.setItem(row, 1, QTableWidgetItem("WIP"))
+            table.setItem(row, 2, QTableWidgetItem("-"))
+            table.setItem(row, 3, QTableWidgetItem("Normal"))
 
             for col in range(table.columnCount()):
                 item = table.item(row, col)
                 item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
 
         table.resizeColumnsToContents()
+        table.horizontalHeader().setStretchLastSection(True)
         table.blockSignals(False)
 
     def refresh_shots(self):
-        """refresh combo and table"""
         self.populate_shots_table()
+
+    def shot_create(self):
+        project = self.ui("shots_project_comboBox").currentText().strip()
+        shot_name = self.ui("name_shot_lineEdit").text()
+        start = self.ui("start_shots_lineEdit").text()
+        end = self.ui("end_shots_lineEdit").text()
+        fps = self.ui("fps_shots_lineEdit").text()
+        priority = self.ui("priority_shots_comboBox").currentText()
+
+        self.progress.start()
+
+        create_shot(
+            project_name=project,
+            shot_name=shot_name,
+            start=start,
+            end=end,
+            fps=fps,
+            priority=priority,
+        )
+        self.populate_shots_table()
+        self.progress.stop(
+            on_done=lambda: (self.reset_shots_form(), self.refresh_shots())
+        )
+
+    def reset_shots_form(self):
+        self.ui("name_shot_lineEdit").clear()
+        self.ui("start_shots_lineEdit").clear()
+        self.ui("end_shots_lineEdit").clear()
+        self.ui("fps_shots_lineEdit").clear()
 
     """ shots tab ends"""
 
