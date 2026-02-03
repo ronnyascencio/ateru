@@ -25,7 +25,7 @@ core creation for shots
 
 def create_shot_structure(project_name: str, shot_name: str):
     project_config = read_project_config(project_name)
-    root_shot = project_config.root / project_config.shots_dir / shot_name
+    root_shot = project_config.root / project_config.shots / shot_name
 
     model = ShotConfig(root=root_shot)
 
