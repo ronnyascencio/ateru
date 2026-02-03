@@ -116,6 +116,15 @@ def delete_shot(project_name: str, shot_name: str):
     shot_delete(project_name=project_name, shot_name=shot_name)
 
 
+def count_shots(project_name: str):
+    projects_root = loader.read_xolo_config()
+    shots_path = projects_root / project_name / "shots"
+    shots = list_shots(shots_path)
+    path = Path(shots_path)
+    count = sum(1 for entry in path.iterdir() if entry.is_dir())
+    return count
+
+
 """ Asset """
 
 
