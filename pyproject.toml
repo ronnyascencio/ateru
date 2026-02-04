@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-xolo = "cli.xolo_cli.main:app"
+xolo = "xolo.cli.main:app"
 
 [build-system]
 requires = ["hatchling"]
@@ -28,7 +28,8 @@ build-backend = "hatchling.build"
 package = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["cli", "core"]
+packages = ["xolo"] 
+
 
 [tool.commitizen]
 name = "cz_conventional_commits"
