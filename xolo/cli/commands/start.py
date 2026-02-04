@@ -11,7 +11,7 @@ app = typer.Typer(help="start xolo app")
 @app.command()
 def manager():
     process = subprocess.Popen(
-        [sys.executable, "ui/show_manager.py"],
+        [sys.executable, "xolo/ui/windows/show_manager.py"],
         stdout=None,
         stderr=None,
     )
@@ -24,7 +24,7 @@ def manager():
 @app.command()
 def launcher():
     process = subprocess.Popen(
-        [sys.executable, "ui/show_launcher.py"],
+        [sys.executable, "xolo/ui/windows/show_launcher.py"],
         stdout=None,
         stderr=None,
     )

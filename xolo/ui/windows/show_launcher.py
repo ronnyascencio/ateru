@@ -23,7 +23,7 @@ class XoloLauncher(QMainWindow):
         super().__init__()
 
         loader = QUiLoader()
-        ui_path = Path(__file__).parent / "uix" / "launcher.ui"
+        ui_path = Path(__file__).parent.parent / "uix" / "launcher.ui"
         ui_file = QFile(str(ui_path))
         if not ui_file.open(QIODevice.OpenModeFlag.ReadOnly):
             raise RuntimeError(f"Cannot open UI file {ui_path}")

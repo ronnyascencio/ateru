@@ -5,8 +5,8 @@ from PySide6.QtWidgets import QApplication, QDialog
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QObject
 
-from core.xolo_core.logging import events
-from core.xolo_core.api import set_software_paths, set_projects_root
+from xolo.core.logging import events
+from xolo.core.api import set_software_paths, set_projects_root
 
 
 class XoloSettings(QDialog):
@@ -14,7 +14,7 @@ class XoloSettings(QDialog):
         super().__init__(parent)
 
         loader = QUiLoader()
-        ui_path = Path(__file__).parent / "uix" / "settings.ui"
+        ui_path = Path(__file__).parent.parent / "uix" / "settings.ui"
 
         ui_file = QFile(str(ui_path))
         if not ui_file.open(QIODevice.OpenModeFlag.ReadOnly):
