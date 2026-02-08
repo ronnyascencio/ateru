@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+
 class DCCAdapterBase(ABC):
     @abstractmethod
     def load_usd(self, path: Path):
@@ -17,4 +18,8 @@ class DCCAdapterBase(ABC):
 
     @abstractmethod
     def save_scene(self, path: Path):
+        pass
+
+    @abstractmethod
+    def version_up(self, path: Path):
         pass

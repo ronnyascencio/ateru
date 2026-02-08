@@ -2,6 +2,8 @@
 from pathlib import Path
 from xolo.core.dcc.base import DCCAdapterBase
 import nuke
+import nukescripts.version
+
 
 class NukeAdapter(DCCAdapterBase):
     def load_usd(self, path: Path):
@@ -16,3 +18,7 @@ class NukeAdapter(DCCAdapterBase):
 
     def save_scene(self, path: Path):
         nuke.scriptSave(str(path))
+
+    def version_up(self, path: Path):
+        version_up_path = path
+        nukescripts.script_version_up()
