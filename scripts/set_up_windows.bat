@@ -2,9 +2,11 @@
 setlocal enabledelayedexpansion
 
 echo =========================================
-echo    Xolo Pipeline Setup (Windows)
+echo    Ateru Pipeline Setup (Windows)
 echo =========================================
 
+:: Configuración para evitar errores de hardlink en Dropbox/Unidades de Red
+set "UV_LINK_MODE=copy"
 
 set "PIPELINE_ROOT=%~dp0.."
 for %%i in ("%PIPELINE_ROOT%") do set "PIPELINE_ROOT=%%~fpi"
@@ -12,10 +14,8 @@ set "SYSTEM_ROOT=%SystemDrive%\"
 
 echo [+] PIPELINE_ROOT: %PIPELINE_ROOT%
 
-
 setx PIPELINE_ROOT "%PIPELINE_ROOT%" > nul
 setx SYSTEM_ROOT "%SYSTEM_ROOT%" > nul
-
 
 where uv >nul 2>nul
 if %ERRORLEVEL% neq 0 (
@@ -26,39 +26,46 @@ if %ERRORLEVEL% neq 0 (
     echo [OK] uv already installed.
 )
 
-
 cd /d "%PIPELINE_ROOT%"
 echo [+] sync dependences and registring project...
 
-uv sync
-
+:: Sincronizar con modo copia para evitar errores de permisos en Dropbox
+uv sync --link-mode=copy
 
 set "BIN_DIR=%USERPROFILE%\.local\bin"
 if not exist "%BIN_DIR%" mkdir "%BIN_DIR%"
 
-set "XOLO_BAT=%BIN_DIR%\xolo.bat"
+set "ATERU_BAT=%BIN_DIR%\ateru.bat"
 
-echo [+] Creating global bin: %XOLO_BAT%
+echo [+] Creating global bin: %ATERU_BAT%
 
 (
 echo @echo off
 echo setlocal
-echo :: forcing  PYTHONPATH to root for skip ModuleNotFoundError
+echo :: forcing PYTHONPATH to root for skip ModuleNotFoundError
 echo set "PYTHONPATH=%PIPELINE_ROOT%;%%PYTHONPATH%%"
 echo cd /d "%PIPELINE_ROOT%"
-echo ::running uv for  entry point 'xolo'
-echo uv run xolo %%*
-) > "%XOLO_BAT%"
-
+echo :: running uv for entry point 'ateru'
+echo uv run ateru %%*
+) > "%ATERU_BAT%"
 
 set "SAFE_BIN_DIR=%USERPROFILE%\.local\bin"
-powershell -Command "$p=[Environment]::GetEnvironmentVariable('Path','User'); if($p -notlike '*%SAFE_BIN_DIR%*'){ [Environment]::SetEnvironmentVariable('Path',$p+';%SAFE_BIN_DIR%','User'); echo '[OK] %SAFE_BIN_DIR% agregado al PATH.' } else { echo '[OK] directory already in PATH.' }"
+
+:: Agrega al PATH y refresca la sesión actual de esta terminal
+powershell -Command ^
+    "$userPath = [Environment]::GetEnvironmentVariable('Path','User'); ^
+    if($userPath -notlike '*%SAFE_BIN_DIR%*'){ ^
+        [Environment]::SetEnvironmentVariable('Path', $userPath + ';%SAFE_BIN_DIR%', 'User'); ^
+        Write-Host '[OK] %SAFE_BIN_DIR% added to PATH Registry.'; ^
+    } ^
+    $env:Path = [System.Environment]::GetEnvironmentVariable('Path','User') + ';' + [System.Environment]::GetEnvironmentVariable('Path','Machine'); ^
+    Write-Host '[OK] Session PATH refreshed.'"
 
 echo.
 echo =========================================
 echo    INSTALLATION DONE
 echo =========================================
-echo [!]IMPORTANT CLOSE AND REOPEN THE TERMINAL.
-echo [!] Try typing in terminal: xolo --help
+echo [!] If 'ateru' is not recognized, please restart your terminal.
+echo [!] Try typing: ateru --help
 echo.
 pause
