@@ -1,3 +1,21 @@
+## v0.1.0a24 (2026-02-08)
+
+### Feat
+
+- **branding**: rename project to Ateru and update README and docs
+- **ui**: dcc ui design first dev  and adapters for dcc
+- **ui**: shot creation implementation, table in shots tab and project info display in projects tab
+- **ui**: ui updated manager, launcher
+- **core**: count shots within project
+
+### Fix
+
+- **core**: fix fucntion where path had a bad pulling directory
+
+### Refactor
+
+- **core**: refactore code to a sigle module
+
 ## v0.1.0a23 (2026-02-01)
 
 ### Fix
