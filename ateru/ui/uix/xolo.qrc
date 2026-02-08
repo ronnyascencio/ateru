@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="manager">
+    <file>icons/open.png</file>
+    <file>icons/publish.png</file>
+    <file>icons/read.png</file>
+    <file>icons/save.png</file>
+    <file>icons/settings.png</file>
+  </qresource>
+</RCC>

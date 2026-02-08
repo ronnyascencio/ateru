@@ -11,7 +11,7 @@ Before launching any software, you must tell Xolo where your projects are locate
 ### Set your Projects Root
 Define the base directory where all your VFX projects will be stored:
 ```bash
-xolo settings set-projects "/path/to/your/projects_folder"
+ateru settings set "/path/to/your/projects_folder"
 ```
 ## Register your Software (DCCs)
 
@@ -19,15 +19,15 @@ You need to register the path and version of the tools you want to use. Example 
 
 
 ```bash
-xolo settings set-dcc Blender 4.2 "/usr/bin/blender"
-xolo settings set-dcc Gaffer 1.4.5.0 "/opt/gaffer/bin/gaffer"
+ateru settings set Blender 4.2 "/usr/bin/blender"
+ateru settings set Gaffer 1.4.5.0 "/opt/gaffer/bin/gaffer"
 ```
 ## Verify Configuration
 
 Check that everything is saved correctly in your config.yaml:
 Bash
 ```bash
-xolo settings show
+ateru settings show
 ```
 
 ## Creating a New Project
@@ -36,7 +36,7 @@ Xolo handles folder structures and technical metadata (Resolution, FPS) automati
 Start the Wizard
 
 ```bash
-xolo project create
+ateru project create
 ```
 
 The wizard will ask for:
@@ -56,7 +56,7 @@ my_short_film/
 ├── assets/         # Geometry, textures, rigs
 ├── shots/          # Sequences and animation frames
 ├── config/
-│   └── project.yaml # Stores your Resolution and FPS
+│   └── pconfig.toml # Stores your Resolution and FPS
 ├── usd/  
 └── ...
 ```
@@ -65,7 +65,7 @@ my_short_film/
 To see the technical details of a created project:
 ```bash
 
-xolo project show
+ateru project show
 ```
 
 ## Launching your First Project
@@ -74,19 +74,19 @@ Xolo uses a specific command to launch software within a controlled environment.
 Command Structure
 ```bash
 
-xolo launch <software> <project_name>
+ateru launch <software> <project_name>
 ```
 Examples
 
    - Launch Blender:
 
 ```bash
-xolo launch blender my_awesome_short
+ateru launch blender my_awesome_short
 ```
    - Launch Gaffer:
 ```bash
 
-xolo launch gaffer my_awesome_short
+ateru launch gaffer my_awesome_short
 ```
 
 ## Environment Variables
@@ -102,10 +102,10 @@ $OCIO	Automatic path to the pipeline's ACES config.
 
 ##  Summary of Commands
 Context	Command	Description
-Setup	xolo settings show	View global paths and registered software.
-Projects	xolo project create	Start the interactive project creator.
-Projects	xolo project show	Check resolution/FPS of a project.
-Launch	xolo launch [dcc] [project]	Open a tool with the correct environment.
+Setup	ateru settings show	View global paths and registered software.
+Projects	ateru project create	Start the interactive project creator.
+Projects	ateru project show	Check resolution/FPS of a project.
+Launch	ateru launch [dcc] [project]	Open a tool with the correct environment.
 Next Steps
 
    - Create your first project using xolo project create.

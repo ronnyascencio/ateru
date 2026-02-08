@@ -1,5 +1,5 @@
 [project]
-name = "xolo-pipeline"
+name = "ateru"
 version = "0.1.0a0"
 description = "Open source VFX/Animation pipeline for freelancers and small studios."
 authors = [{ name = "Ronny Ascencio" }]
@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-xolo = "cli.xolo_cli.main:app"
+ateru = "ateru.cli.main:app"
 
 [build-system]
 requires = ["hatchling"]
@@ -28,7 +28,8 @@ build-backend = "hatchling.build"
 package = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["cli", "core"]
+packages = ["ateru"]
+
 
 [tool.commitizen]
 name = "cz_conventional_commits"
