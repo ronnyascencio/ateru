@@ -53,7 +53,12 @@ scripts/set_up_windows.bat
 
 ```
 
-[installation](docs/media/demo.gif)
+
+
+<p align="center">
+  <img src="docs/media/ateru_installation.gif" width="800" alt="Ateru installation demo">
+</p>
+
 
 > This sets `PIPELINE_ROOT`, `SYSTEM_ROOT`, and modifies your shell rc so Xolo tools work as expected.
 
