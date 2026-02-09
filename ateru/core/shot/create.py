@@ -1,16 +1,16 @@
 from typing import Tuple
 from pydantic import BaseModel
 from pathlib import Path
-from ateru.core.config.model import Xolo
+from ateru.core.config.model import Ateru
 from ateru.core.project.model import Project
 from ateru.core.config.paths import (
     resolve_project_paths,
-    resolve_xolo_path,
+    resolve_ateru_path,
     resolve_shot_path,
 )
 from ateru.core.config.model import ProjectConfig, ShotConfig
 from ateru.core.logging import events
-from ateru.core.config.loader import read_xolo_config
+from ateru.core.config.loader import read_ateru_config
 from ateru.core.project.load import read_project_config
 import uuid
 import tomli_w

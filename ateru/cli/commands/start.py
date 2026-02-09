@@ -5,13 +5,13 @@ from ateru.ui.windows.show_manager import main as start_gui
 from ateru.ui.windows.show_launcher import main as start_launcher
 from ateru.core.logging import events
 
-app = typer.Typer(help="start ateru app")
+app = typer.Typer(help="start _ateru app")
 
 
 @app.command()
 def manager():
     process = subprocess.Popen(
-        [sys.executable, "ateru/ui/windows/show_manager.py"],
+        [sys.executable, "_ateru/ui/windows/show_manager.py"],
         stdout=None,
         stderr=None,
     )
@@ -24,7 +24,7 @@ def manager():
 @app.command()
 def launcher():
     process = subprocess.Popen(
-        [sys.executable, "ateru/ui/windows/show_launcher.py"],
+        [sys.executable, "_ateru/ui/windows/show_launcher.py"],
         stdout=None,
         stderr=None,
     )

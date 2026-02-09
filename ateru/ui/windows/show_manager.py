@@ -22,7 +22,7 @@ from ateru.core.api import (
 from ateru.ui.bar import ProgressController
 
 
-class XoloManager(QMainWindow):
+class AteruManager(QMainWindow):
     def __init__(self):
         super().__init__()
 
@@ -38,7 +38,7 @@ class XoloManager(QMainWindow):
 
         self.setCentralWidget(self._ui)
         self.resize(self._ui.size())
-        self.setWindowTitle("Xolo Pipeline Manager")
+        self.setWindowTitle("Ateru Pipeline Manager")
 
         self.ui("status_progressBar").setVisible(False)
 
@@ -386,7 +386,7 @@ class XoloManager(QMainWindow):
     """ Close """
 
     def closeEvent(self, event):
-        events.success("[UI] process finished of Xolo Manager...")
+        events.success("[UI] process finished of Ateru Manager...")
         event.accept()
         QApplication.quit()
 
@@ -394,7 +394,7 @@ class XoloManager(QMainWindow):
 def main():
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(True)
-    window = XoloManager()
+    window = AteruManager()
     window.show()
     sys.exit(app.exec())
 

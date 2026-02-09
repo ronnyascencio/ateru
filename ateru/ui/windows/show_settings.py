@@ -9,7 +9,7 @@ from ateru.core.logging import events
 from ateru.core.api import set_software_paths, set_projects_root
 
 
-class XoloSettings(QDialog):
+class AteruSettings(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -37,7 +37,7 @@ class XoloSettings(QDialog):
         self.setLayout(layout)
 
         # ---------- Window setup ----------
-        self.setWindowTitle("Xolo Settings")
+        self.setWindowTitle("Ateru Settings")
         self.resize(self._ui.size())
         self.setModal(True)
 
@@ -74,7 +74,7 @@ class XoloSettings(QDialog):
 
 def main():
     app = QApplication(sys.argv)
-    dialog = XoloSettings()
+    dialog = AteruSettings()
     dialog.exec()
     sys.exit(0)
 

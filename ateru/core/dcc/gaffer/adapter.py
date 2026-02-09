@@ -1,4 +1,4 @@
-# ateru/core/dcc/gaffer/adapter.py
+# _ateru/core/dcc/gaffer/adapter.py
 import Gaffer
 from pathlib import Path
 from ateru.core.dcc.base import DCCAdapterBase

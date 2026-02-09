@@ -47,7 +47,7 @@ import uuid
 def create_project(project_name: str, fps: int, width: str, height: str, type: str):
     rand_id: int = uuid.uuid4().int
 
-    root_project = Path(loader.read_xolo_config()) / project_name
+    root_project = Path(loader.read_ateru_config()) / project_name
     project = Project(
         id=rand_id,
         name=project_name,
@@ -70,7 +70,7 @@ def delete_project(project_name: str):
 
 
 def scan_projects():
-    projects_root = loader.read_xolo_config()
+    projects_root = loader.read_ateru_config()
     projects = list_projects(projects_root)
 
     return projects
@@ -105,7 +105,7 @@ def create_shot(
 
 
 def scan_shots(project_name: str):
-    projects_root = loader.read_xolo_config()
+    projects_root = loader.read_ateru_config()
     shots_path = projects_root / project_name / "shots"
     shots = list_shots(shots_path)
     events.info(f" shots in {project_name} directory: {shots}")
@@ -117,7 +117,7 @@ def delete_shot(project_name: str, shot_name: str):
 
 
 def count_shots(project_name: str):
-    projects_root = loader.read_xolo_config()
+    projects_root = loader.read_ateru_config()
     shots_path = projects_root / project_name / "shots"
     shots = list_shots(shots_path)
     path = Path(shots_path)
@@ -143,7 +143,7 @@ def create_asset(
 
 
 def scan_assets(project_name: str):
-    projects_root = loader.read_xolo_config()
+    projects_root = loader.read_ateru_config()
     assets_path = projects_root / project_name / "assets"
     assets = list_assets(assets_path)
     events.info(f" assets in {project_name} directory: {assets}")
@@ -161,9 +161,9 @@ def set_software_paths(nuke: Path, blender: Path, gaffer: Path):
 
 
 def set_projects_root(root: Path, ocio: Path):
-    xolo = model.GlobalConfig(projects_root=root, ocio_config=ocio)
+    ateru = model.GlobalConfig(projects_root=root, ocio_config=ocio)
 
-    create.write_global_config_root(xolo)
+    create.write_global_config_root(ateru)
 
 
 def project_data(project_name: str):

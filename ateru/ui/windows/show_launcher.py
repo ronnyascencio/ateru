@@ -18,7 +18,7 @@ from ateru.core.api import (
 from ateru.ui.bar import ProgressController
 
 
-class XoloLauncher(QMainWindow):
+class AteruLauncher(QMainWindow):
     def __init__(self):
         super().__init__()
 
@@ -34,7 +34,7 @@ class XoloLauncher(QMainWindow):
 
         self.setCentralWidget(self._ui)
         self.resize(self._ui.size())
-        self.setWindowTitle("Xolo Launcher")
+        self.setWindowTitle("Ateru Launcher")
 
         """ Connections """
         self.ui("launcher_projects_comboBox").addItems(self.projects_listed())
@@ -59,7 +59,7 @@ class XoloLauncher(QMainWindow):
     """ Close """
 
     def closeEvent(self, event):
-        events.success("[UI] process finished of Xolo launcher...")
+        events.success("[UI] process finished of Ateru launcher...")
         event.accept()
         QApplication.quit()
 
@@ -67,7 +67,7 @@ class XoloLauncher(QMainWindow):
 def main():
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(True)
-    window = XoloLauncher()
+    window = AteruLauncher()
     window.show()
     sys.exit(app.exec())
 

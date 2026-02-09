@@ -28,7 +28,10 @@ build-backend = "hatchling.build"
 package = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["ateru"]
+packages = ["src/ateru"] 
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 
 [tool.commitizen]

@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, field_validator
 import re
 
 
-class Xolo(BaseModel):
+class Ateru(BaseModel):
     projects_root: Path
 
 
@@ -53,8 +53,8 @@ class GlobalConfig(BaseModel):
 
 
 
-    logs_dir: Path = Field(default_factory=lambda: Path.home() / ".ateru" / "logs")
-    cache_dir: Path = Field(default_factory=lambda: Path.home() / ".ateru" / "cache")
+    logs_dir: Path = Field(default_factory=lambda: Path.home() / "._ateru" / "logs")
+    cache_dir: Path = Field(default_factory=lambda: Path.home() / "._ateru" / "cache")
 
 
     model_config = {

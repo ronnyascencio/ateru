@@ -1,4 +1,4 @@
-# ateru/core/dcc/blender/adapter.py
+# _ateru/core/dcc/blender/adapter.py
 import bpy
 from pathlib import Path
 from ateru.core.dcc.base import DCCAdapterBase
