@@ -53,7 +53,7 @@ scripts/set_up_windows.bat
 
 ```
 
-![installation](docs/media/demo.gif)
+[installation](docs/media/demo.gif)
 
 > This sets `PIPELINE_ROOT`, `SYSTEM_ROOT`, and modifies your shell rc so Xolo tools work as expected.
 
