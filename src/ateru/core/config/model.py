@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, field_validator
 import re
 
 
-class Xolo(BaseModel):
+class Ateru(BaseModel):
     projects_root: Path
 
 

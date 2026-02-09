@@ -6,7 +6,7 @@ from ateru.core.logging import events
 
 
 def project_delete(project_name: str):
-    project_dir: Path = loader.read_xolo_config()
+    project_dir: Path = loader.read_ateru_config()
     projects: list = list_projects(project_dir) or []
 
     if project_name not in projects:

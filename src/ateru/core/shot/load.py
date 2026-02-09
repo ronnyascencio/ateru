@@ -1,10 +1,10 @@
-from ateru.core.config.loader import read_xolo_config
+from ateru.core.config.loader import read_ateru_config
 import tomllib
 from ateru.core.config.model import ShotConfig
 
 
 def read_shot_config(project_name: str, shot_name: str) -> ShotConfig:
-    config_file = read_xolo_config() / project_name / "config" / "pconfig.toml"
+    config_file = read_ateru_config() / project_name / "config" / "pconfig.toml"
 
     with open(config_file, "rb") as f:
         project_data = tomllib.load(f)

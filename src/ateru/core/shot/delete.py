@@ -6,7 +6,7 @@ from ateru.core.logging import events
 
 
 def shot_delete(shot_name: str, project_name: str):
-    project_dir: Path = loader.read_xolo_config()
+    project_dir: Path = loader.read_ateru_config()
     shots_dir: Path = project_dir / project_name / "shots"
     shots: list = list_shots(shots_dir) or []
 

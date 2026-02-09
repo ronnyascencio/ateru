@@ -1,5 +1,5 @@
 from pathlib import Path
-from ateru.core.config.model import Xolo, GlobalConfig, SoftwareConfig
+from ateru.core.config.model import Ateru, GlobalConfig, SoftwareConfig
 from ateru.core.config.loader import ensure_config_exists
 from ateru.core.project.model import Project
 from ateru.core.shot.model import Shot
@@ -10,7 +10,7 @@ import tomli
 from ateru.core.logging import events
 
 
-CONFIG_FILE = Path.home() / ".ateru" / "xolo_config.toml"
+CONFIG_FILE = Path.home() / ".ateru" / "ateru_config.toml"
 
 
 def write_project_config(project: Project):
@@ -72,7 +72,7 @@ def load_config() -> dict:
     else:
         # Crear archivo base vacío
         CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
-        base = {"title": {"name": "Xolo Global Configuration"}}
+        base = {"title": {"name": "Ateru Global Configuration"}}
         with CONFIG_FILE.open("wb") as f:
             tomli_w.dump(base, f)
         return base
@@ -86,10 +86,10 @@ def write_config(data: dict):
     events.success(f"Config File updated {CONFIG_FILE}")
 
 
-def write_global_config_root(xolo: GlobalConfig):
+def write_global_config_root(Ateru: GlobalConfig):
     """update root section TOML without delete apps."""
     config = ensure_config_exists()
-    config["root"] = xolo.model_dump(mode="json")
+    config["root"] = Ateru.model_dump(mode="json")
     with CONFIG_FILE.open("wb") as f:
         tomli_w.dump(config, f)
 

@@ -5,7 +5,7 @@ except ImportError:
     import tomli as tomllib
 from pathlib import Path
 
-CONFIG_FILE = Path.home() / ".ateru" / "xolo_config.toml"
+CONFIG_FILE = Path.home() / ".ateru" / "ateru_config.toml"
 
 
 def ensure_config_exists() -> dict:
@@ -16,8 +16,8 @@ def ensure_config_exists() -> dict:
     else:
         CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
         base = {
-            "title": {"name": "Xolo Global Configuration"},
-            "root": {"projects_root": str(Path.home() / "xolo_projects")},
+            "title": {"name": "ateru Global Configuration"},
+            "root": {"projects_root": str(Path.home() / "ateru_projects")},
             "apps": {},
         }
         with CONFIG_FILE.open("wb") as f:
@@ -25,14 +25,14 @@ def ensure_config_exists() -> dict:
         return base
 
 
-def read_xolo_config() -> Path:
+def read_ateru_config() -> Path:
     
     config = ensure_config_exists()
     root_path_str = config.get("root", {}).get("projects_root")
     if root_path_str:
         root_path = Path(root_path_str)
     else:
-        root_path = Path.home() / "xolo_projects"
+        root_path = Path.home() / "ateru_projects"
 
 
     root_path.mkdir(parents=True, exist_ok=True)

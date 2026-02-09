@@ -11,7 +11,7 @@ app = typer.Typer(help="start ateru app")
 @app.command()
 def manager():
     process = subprocess.Popen(
-        [sys.executable, "ateru/ui/windows/show_manager.py"],
+        [sys.executable, "src/ateru/ui/windows/show_manager.py"],
         stdout=None,
         stderr=None,
     )

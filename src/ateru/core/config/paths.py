@@ -8,10 +8,10 @@ def pipeline_path() -> Path:
     return pipeline_dir
 
 
-def resolve_xolo_path() -> Path:
-    xolo_dir: Path = Path.home() / ".ateru"
+def resolve_ateru_path() -> Path:
+    ateru_dir: Path = Path.home() / ".ateru"
 
-    return xolo_dir
+    return ateru_dir
 
 
 def resolve_project_paths(config: ProjectConfig) -> dict[str, Path]:

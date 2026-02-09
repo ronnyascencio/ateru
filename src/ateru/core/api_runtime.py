@@ -7,7 +7,7 @@ from ateru.core.dcc.base import DCCAdapterBase
 from ateru.core.dcc.factory import detect_dcc
 
 
-class XoloRuntime:
+class AteruRuntime:
     def __init__(self):
         # -------- Context --------
         self.project: Optional[str] = None

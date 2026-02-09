@@ -6,10 +6,10 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QObject
 
 from ateru.core.logging import events
-from ateru.core.api_runtime import XoloRuntime
+from ateru.core.api_runtime import AteruRuntime
 
 
-class XoloAssetManager(QMainWindow):
+class AteruAssetManager(QMainWindow):
     def __init__(self):
         super().__init__()
 
@@ -29,10 +29,10 @@ class XoloAssetManager(QMainWindow):
 
         self.setCentralWidget(self._ui)
         self.resize(self._ui.size())
-        self.setWindowTitle("Xolo Asset Manager")
+        self.setWindowTitle("Ateru Asset Manager")
 
         # ---------------- Runtime ----------------
-        self.runtime = XoloRuntime()
+        self.runtime = AteruRuntime()
         self.runtime.initialize()  # fire
 
         # ---------------- Buttons ----------------
@@ -64,7 +64,7 @@ class XoloAssetManager(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    window = XoloAssetManager()
+    window = AteruAssetManager()
     window.show()
     sys.exit(app.exec())
 
