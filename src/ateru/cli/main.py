@@ -12,7 +12,7 @@ app.add_typer(shot.app, name="shot")
 app.add_typer(scan.app, name="scan")
 app.add_typer(settings.app, name="settings")
 app.add_typer(start.app, name="start")
-# app.add_typer(version.app, name="version")
+
 
 
 if __name__ == "__main__":

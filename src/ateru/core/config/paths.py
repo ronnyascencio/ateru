@@ -9,7 +9,7 @@ def pipeline_path() -> Path:
 
 
 def resolve_ateru_path() -> Path:
-    ateru_dir: Path = Path.home() / "._ateru"
+    ateru_dir: Path = Path.home() / ".ateru"
 
     return ateru_dir
 

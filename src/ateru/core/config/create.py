@@ -10,7 +10,7 @@ import tomli
 from ateru.core.logging import events
 
 
-CONFIG_FILE = Path.home() / "._ateru" / "ateru_config.toml"
+CONFIG_FILE = Path.home() / ".ateru" / "ateru_config.toml"
 
 
 def write_project_config(project: Project):

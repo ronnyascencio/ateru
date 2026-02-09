@@ -1,4 +1,4 @@
-# _ateru/ui/windows/show_asset_manager.py
+# ateru/ui/windows/show_asset_manager.py
 import sys
 from pathlib import Path
 from PySide6.QtWidgets import QApplication, QMainWindow

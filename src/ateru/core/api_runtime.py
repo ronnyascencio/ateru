@@ -1,4 +1,4 @@
-# _ateru/core/api_runtime.py
+# ateru/core/api_runtime.py
 from typing import Optional
 from pathlib import Path
 

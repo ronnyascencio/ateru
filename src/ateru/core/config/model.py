@@ -53,8 +53,8 @@ class GlobalConfig(BaseModel):
 
 
 
-    logs_dir: Path = Field(default_factory=lambda: Path.home() / "._ateru" / "logs")
-    cache_dir: Path = Field(default_factory=lambda: Path.home() / "._ateru" / "cache")
+    logs_dir: Path = Field(default_factory=lambda: Path.home() / ".ateru" / "logs")
+    cache_dir: Path = Field(default_factory=lambda: Path.home() / ".ateru" / "cache")
 
 
     model_config = {

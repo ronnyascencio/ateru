@@ -359,7 +359,7 @@ class AteruManager(QMainWindow):
 
     def start_launcher(self):
         process = subprocess.Popen(
-            [sys.executable, "ui/show_launcher.py"],
+            [sys.executable, "src/ateru/ui/windows/show_launcher.py"],
             stdout=None,
             stderr=None,
         )
@@ -376,7 +376,7 @@ class AteruManager(QMainWindow):
 
     def start_settings(self):
         process = subprocess.Popen(
-            [sys.executable, "ui/show_settings.py"],
+            [sys.executable, "src/ateru/ui/windows/show_settings.py"],
             stdout=None,
             stderr=None,
         )

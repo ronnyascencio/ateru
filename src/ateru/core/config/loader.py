@@ -5,7 +5,7 @@ except ImportError:
     import tomli as tomllib
 from pathlib import Path
 
-CONFIG_FILE = Path.home() / "._ateru" / "ateru_config.toml"
+CONFIG_FILE = Path.home() / ".ateru" / "ateru_config.toml"
 
 
 def ensure_config_exists() -> dict:
@@ -16,7 +16,7 @@ def ensure_config_exists() -> dict:
     else:
         CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
         base = {
-            "title": {"name": "_ateru Global Configuration"},
+            "title": {"name": "ateru Global Configuration"},
             "root": {"projects_root": str(Path.home() / "ateru_projects")},
             "apps": {},
         }

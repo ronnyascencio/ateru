@@ -1,4 +1,4 @@
-# _ateru/core/dcc/factory.py
+# ateru/core/dcc/factory.py
 from ateru.core.dcc.nuke.adapter import NukeAdapter
 from ateru.core.dcc.blender.adapter import BlenderAdapter
 from ateru.core.dcc.gaffer.adapter import GafferAdapter
