@@ -4,8 +4,9 @@ import subprocess
 from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QObject, Qt
-from PySide6.QtGui import QColor, QBrush
+from PySide6.QtGui import QColor, QBrush, QIcon
 
+from ateru.ui.uix import ateru_rc
 from ateru.core.logging import events
 from ateru.core.config.utility import user_name
 from ateru.core.api import (
@@ -35,6 +36,9 @@ class AteruManager(QMainWindow):
         ui_file.close()
         if not self._ui:
             raise RuntimeError("UI could not be loaded")
+            
+        
+        self.setWindowIcon(QIcon(":/manager/icons/ateru.svg"))
 
         self.setCentralWidget(self._ui)
         self.resize(self._ui.size())

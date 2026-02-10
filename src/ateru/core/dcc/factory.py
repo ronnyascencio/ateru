@@ -1,26 +1,23 @@
-# ateru/core/dcc/factory.py
-from ateru.core.dcc.nuke.adapter import NukeAdapter
-from ateru.core.dcc.blender.adapter import BlenderAdapter
-from ateru.core.dcc.gaffer.adapter import GafferAdapter
-
-
 def detect_dcc():
     try:
         import nuke
+        from ateru.core.dcc.nuke.adapter import NukeAdapter
         return NukeAdapter()
     except ImportError:
         pass
 
     try:
         import bpy
+        from ateru.core.dcc.blender.adapter import BlenderAdapter
         return BlenderAdapter()
     except ImportError:
         pass
 
     try:
         import Gaffer
+        from ateru.core.dcc.gaffer.adapter import GafferAdapter
         return GafferAdapter()
     except ImportError:
         pass
 
-    raise RuntimeError("No supported DCC detected")
+    return None

@@ -11,10 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>XOLO Launcher</string>
+   <string>Ateru Launcher</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="applications-multimedia"/>
+   <iconset resource="ateru.qrc">
+    <normaloff>:/manager/icons/ateru.svg</normaloff>:/manager/icons/ateru.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -294,11 +295,14 @@
                    <item>
                     <widget class="QPushButton" name="nuke_pushButton">
                      <property name="styleSheet">
-                      <string notr="true">background-color: rgb(229, 165, 10);
-color: rgb(36, 31, 49);</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string>Nuke</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="ateru.qrc">
+                       <normaloff>:/manager/icons/nuke.svg</normaloff>:/manager/icons/nuke.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -315,11 +319,14 @@ color: rgb(36, 31, 49);</string>
                    <item>
                     <widget class="QPushButton" name="blender_pushButton">
                      <property name="styleSheet">
-                      <string notr="true">background-color: rgb(198, 70, 0);
-color: rgb(36, 31, 49);</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string>Blender</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="ateru.qrc">
+                       <normaloff>:/manager/icons/blender.svg</normaloff>:/manager/icons/blender.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -336,11 +343,14 @@ color: rgb(36, 31, 49);</string>
                    <item>
                     <widget class="QPushButton" name="gaffer_pushButton">
                      <property name="styleSheet">
-                      <string notr="true">background-color: darkRed;
-color: rgb(36, 31, 49);</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string>Gaffer</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="ateru.qrc">
+                       <normaloff>:/manager/icons/gaffer.svg</normaloff>:/manager/icons/gaffer.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -363,6 +373,8 @@ color: rgb(36, 31, 49);</string>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="ateru.qrc"/>
+ </resources>
  <connections/>
 </ui>

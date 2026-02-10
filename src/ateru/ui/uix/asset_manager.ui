@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>467</width>
-    <height>652</height>
+    <width>481</width>
+    <height>653</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Xolo Pipeline</string>
+   <string>Ateru Pipeline</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="ateru.qrc">
+    <normaloff>:/manager/icons/ateru.svg</normaloff>:/manager/icons/ateru.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -61,8 +65,8 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="xolo.qrc">
-                  <normaloff>:/manager/icons/open.png</normaloff>:/manager/icons/open.png</iconset>
+                 <iconset resource="ateru.qrc">
+                  <normaloff>:/manager/icons/open.svg</normaloff>:/manager/icons/open.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -95,8 +99,8 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="xolo.qrc">
-                  <normaloff>:/manager/icons/save.png</normaloff>:/manager/icons/save.png</iconset>
+                 <iconset resource="ateru.qrc">
+                  <normaloff>:/manager/icons/save.svg</normaloff>:/manager/icons/save.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -126,8 +130,8 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="xolo.qrc">
-                  <normaloff>:/manager/icons/read.png</normaloff>:/manager/icons/read.png</iconset>
+                 <iconset resource="ateru.qrc">
+                  <normaloff>:/manager/icons/read.svg</normaloff>:/manager/icons/read.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -166,8 +170,8 @@
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="xolo.qrc">
-                  <normaloff>:/manager/icons/publish.png</normaloff>:/manager/icons/publish.png</iconset>
+                 <iconset resource="ateru.qrc">
+                  <normaloff>:/manager/icons/publish.svg</normaloff>:/manager/icons/publish.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -363,6 +367,126 @@
                    <attribute name="title">
                     <string>assets</string>
                    </attribute>
+                   <layout class="QVBoxLayout" name="verticalLayout_13">
+                    <item>
+                     <widget class="QGroupBox" name="groupBox_5">
+                      <property name="title">
+                       <string>context</string>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_10">
+                       <property name="topMargin">
+                        <number>2</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>2</number>
+                       </property>
+                       <item>
+                        <layout class="QVBoxLayout" name="verticalLayout_11">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_8">
+                           <item>
+                            <widget class="QLabel" name="label_8">
+                             <property name="text">
+                              <string>project</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QComboBox" name="project_assets_loader_comboBox"/>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_9">
+                           <item>
+                            <widget class="QLabel" name="label_9">
+                             <property name="text">
+                              <string>asset</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QComboBox" name="asset_assets_loader_comboBox"/>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_10">
+                           <item>
+                            <widget class="QLabel" name="label_10">
+                             <property name="text">
+                              <string>task</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QComboBox" name="task_assets_loader_comboBox">
+                             <item>
+                              <property name="text">
+                               <string>modeling</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>lookdev</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>rigging</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>environment</string>
+                              </property>
+                             </item>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QGroupBox" name="groupBox_6">
+                      <property name="title">
+                       <string>files</string>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_12">
+                       <item>
+                        <widget class="QListView" name="files_assets_loader_listView"/>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_11">
+                      <item>
+                       <spacer name="horizontalSpacer_2">
+                        <property name="orientation">
+                         <enum>Qt::Orientation::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="assets_loader_open_pushButton">
+                        <property name="text">
+                         <string>open</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
                   </widget>
                  </widget>
                 </item>
@@ -408,7 +532,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>467</width>
+     <width>481</width>
      <height>33</height>
     </rect>
    </property>
@@ -416,7 +540,7 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
-  <include location="xolo.qrc"/>
+  <include location="ateru.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -1,9 +1,13 @@
 <RCC>
-  <qresource prefix="manager">
-    <file>icons/open.png</file>
-    <file>icons/publish.png</file>
-    <file>icons/read.png</file>
-    <file>icons/save.png</file>
-    <file>icons/settings.png</file>
+  <qresource prefix="/manager">
+    <file>icons/gaffer.svg</file>
+    <file>icons/blender.svg</file>
+    <file>icons/nuke.svg</file>
+    <file>icons/ateru.svg</file>
+    <file>icons/open.svg</file>
+    <file>icons/read.svg</file>
+    <file>icons/settings.svg</file>
+    <file>icons/publish.svg</file>
+    <file>icons/save.svg</file>
   </qresource>
 </RCC>

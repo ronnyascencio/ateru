@@ -2,7 +2,7 @@ import typer
 from ateru.core.api import set_software_paths, set_projects_root
 from ateru.core.logging import events
 
-app = typer.Typer(help="Create and manage projects")
+app = typer.Typer(help="Global settings for software and directories")
 
 
 @app.command()

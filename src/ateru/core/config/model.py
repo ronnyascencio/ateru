@@ -62,9 +62,9 @@ class GlobalConfig(BaseModel):
     }
 
 class SoftwareConfig(BaseModel):
-    nuke_path: Path
-    gaffer_path: Path
-    blender_path: Path
+    nuke: Path
+    gaffer: Path
+    blender: Path
 
 
 class Version(BaseModel):

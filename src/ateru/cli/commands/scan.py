@@ -1,7 +1,7 @@
 import typer
 from ateru.core.api import scan_projects, scan_shots
 from ateru.core.logging import events
-app = typer.Typer(help="Create and manage projects")
+app = typer.Typer(help="Scan projects in projects directory")
 
 
 @app.command()

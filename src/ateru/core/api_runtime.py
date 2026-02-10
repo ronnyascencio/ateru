@@ -4,7 +4,6 @@ from pathlib import Path
 
 from ateru.core import api
 from ateru.core.dcc.base import DCCAdapterBase
-from ateru.core.dcc.factory import detect_dcc
 
 
 class AteruRuntime:
@@ -21,8 +20,16 @@ class AteruRuntime:
     # INIT
     # =====================================================
     def initialize(self):
-        """Detect DCC automatically"""
-        self.dcc = detect_dcc()
+        """Detect DCC automatically, safe for launcher/UI"""
+        try:
+            from ateru.core.dcc.factory import detect_dcc
+            self.dcc = detect_dcc()
+        except ImportError:
+            
+            self.dcc = None
+        except RuntimeError:
+           
+            self.dcc = None
 
     # =====================================================
     # REQUIRE CONTEXT
@@ -79,22 +86,20 @@ class AteruRuntime:
     # SCENE ACTIONS (GENERIC)
     # =====================================================
     def open_scene(self):
-        self._ensure_dcc()
+        if not self.dcc:
+            raise RuntimeError("No DCC available to open scene")
         path = self._resolve_scene_path()
         self.dcc.open_scene(path)
 
     def save_scene(self):
-        self._ensure_dcc()
+        if not self.dcc:
+            raise RuntimeError("No DCC available to save scene")
         path = self._resolve_scene_path()
         self.dcc.save_scene(path)
 
     # =====================================================
     # INTERNAL HELPERS
     # =====================================================
-    def _ensure_dcc(self):
-        if not self.dcc:
-            raise RuntimeError("DCC not initialized")
-
     def _resolve_scene_path(self) -> Path:
         project = api.project_data(self.require_project())
 

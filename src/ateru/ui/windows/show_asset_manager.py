@@ -1,10 +1,10 @@
-# ateru/ui/windows/show_asset_manager.py
 import sys
 from pathlib import Path
 from PySide6.QtWidgets import QApplication, QMainWindow
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QObject
-
+from PySide6.QtGui import QIcon
+from ateru.ui.uix import ateru_rc
 from ateru.core.logging import events
 from ateru.core.api_runtime import AteruRuntime
 
@@ -27,6 +27,8 @@ class AteruAssetManager(QMainWindow):
         if not self._ui:
             raise RuntimeError("UI could not be loaded")
 
+        self.setWindowIcon(QIcon(":/manager/icons/ateru.svg"))
+
         self.setCentralWidget(self._ui)
         self.resize(self._ui.size())
         self.setWindowTitle("Ateru Asset Manager")
@@ -36,8 +38,8 @@ class AteruAssetManager(QMainWindow):
         self.runtime.initialize()  # fire
 
         # ---------------- Buttons ----------------
-        self.ui("scene_open_pushButton").clicked.connect(self.open_scene)
-        self.ui("scene_save_pushButton").clicked.connect(self.save_scene)
+        # self.ui("scene_open_pushButton").clicked.connect(self.open_scene)
+        # self.ui("scene_save_pushButton").clicked.connect(self.save_scene)
 
     # ---------------- UI Helper ----------------
     def ui(self, name):
@@ -60,6 +62,29 @@ class AteruAssetManager(QMainWindow):
             events.success("Scene saved")
         except Exception as e:
             events.error(str(e))
+
+
+""" dcc entry point """
+_app = None
+_window = None
+
+
+def show():
+    global _app, _window
+
+    _app = QApplication.instance()
+    if _app is None:
+        _app = QApplication(sys.argv)
+
+    if _window is None:
+        _window = AteruAssetManager()
+
+    _window.show()
+    _window.raise_()
+    _window.activateWindow()
+
+
+""" cli entry point """
 
 
 def main():
