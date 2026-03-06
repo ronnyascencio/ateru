@@ -43,7 +43,7 @@ name = "cz_conventional_commits"
 
 
 
-version = "0.1.0a25"
+version = "0.1.0a26"
 
 version_scheme = "pep440"
 tag_format = "v$version"
