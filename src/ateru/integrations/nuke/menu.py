@@ -1,11 +1,17 @@
 import nuke
+import importlib
 
 if nuke.GUI:
-    from ateru.ui.windows.show_manager import main
-    from ateru.ui.windows.show_asset_manager import show
+    import ateru.ui.dcc.nuke_panel as nuke_panel_module
+    from ateru.ui.windows.show_manager import main  # Manager sigue funcionando
 
     menu = nuke.menu("Nuke")
+    ateru_menu = menu.addMenu("Ateru")
 
-    menu.addCommand("ateru/Open Manager", "main()")
+    ateru_menu.addCommand("Open Manager", "main()")  # Manager antiguo
 
-    menu.addCommand("ateru/Pipeline", "show()")
+    def open_pipeline_panel():
+        importlib.reload(nuke_panel_module)  # recarga el módulo
+        nuke_panel_module.load_nuke_panel()  # luego llama a la función para abrir el panel
+
+    ateru_menu.addCommand("Open Pipeline Panel", open_pipeline_panel)

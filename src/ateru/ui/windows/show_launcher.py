@@ -49,6 +49,7 @@ class AteruLauncher(QMainWindow):
         """ Connections """
         self.ui("launcher_projects_comboBox").addItems(self.projects_listed())
         self.ui("nuke_pushButton").clicked.connect(self.nuke_launch)
+        self.ui("gaffer_pushButton").clicked.connect(self.gaffer_launch)
 
     """ UI helpers start"""
 
@@ -70,11 +71,27 @@ class AteruLauncher(QMainWindow):
     """ nuke launch start """
 
     def nuke_launch(self):
-        dcc_str: str = "nuke"
+        dcc_str = "nuke"
         executable = str(loader.read_ateru_config_apps(dcc_str))
-        launch(dcc=dcc_str, executable=executable)
+        bootstrap_script = Path(__file__).parent.parent / "dcc" / "nuke_panel.py"
+        launch(dcc=dcc_str, executable=executable, script=None)
 
     """ nuke launch ends """
+
+    """ start gaffer"""
+
+    def gaffer_launch(self):
+        dcc_str = "gaffer"
+        executable = str(loader.read_ateru_config_apps(dcc_str))
+        print(f" executable : {executable}")
+
+        launch(
+            dcc=dcc_str,
+            executable=executable,
+            script=None,
+        )
+
+    """ ends gaffer """
 
     """ Close """
 
@@ -82,8 +99,6 @@ class AteruLauncher(QMainWindow):
         events.success("[UI] process finished of Ateru launcher...")
         event.accept()
         QApplication.quit()
-
-
 
 
 def main():
@@ -96,4 +111,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
