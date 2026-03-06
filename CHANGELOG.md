@@ -1,3 +1,22 @@
+## v0.1.0a25 (2026-03-05)
+
+### Feat
+
+- **ui**: start migrating project manager to flet and dcc integrations with PySide6
+- **dcc**: initial dcc integrations develop
+- **vendor**: adding vendor dependeces for dcc usage PYTHONPATH
+- **ui**: adding icons to the UI
+
+### Fix
+
+- **core**: logging changed to build in python logging, config model in software change name , loader added load config for softwares paths
+- **core**: updaed set up windows for correct installation did not work in any terminal now it works
+- **core**: name app corrected in any terminal
+- **docs**: fix gist installation render
+- **docs**: fix installation gift load
+- **core**: code restructure  changing  folder structure  to src and avoid connflicts in the python creation module of the installation of ateru
+- **core**: fix set up windows and linux for get ateru module because of the reneaming
+
 ## v0.1.0a24 (2026-02-08)
 
 ### Feat

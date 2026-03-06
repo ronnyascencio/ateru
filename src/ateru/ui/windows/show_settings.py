@@ -4,7 +4,8 @@ from pathlib import Path
 from PySide6.QtWidgets import QApplication, QDialog
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QObject
-
+from PySide6.QtGui import QIcon
+from ateru.ui.uix import ateru_rc
 from ateru.core.logging import events
 from ateru.core.api import set_software_paths, set_projects_root
 
@@ -37,6 +38,7 @@ class AteruSettings(QDialog):
         self.setLayout(layout)
 
         # ---------- Window setup ----------
+        self.setWindowIcon(QIcon(":/manager/icons/ateru.svg"))
         self.setWindowTitle("Ateru Settings")
         self.resize(self._ui.size())
         self.setModal(True)

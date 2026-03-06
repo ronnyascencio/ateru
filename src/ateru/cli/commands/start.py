@@ -21,10 +21,11 @@ def manager():
     except KeyboardInterrupt:
         process.terminate()
 
+
 @app.command()
 def launcher():
     process = subprocess.Popen(
-        [sys.executable, "ateru/ui/windows/show_launcher.py"],
+        [sys.executable, "src/ateru/ui/windows/show_launcher.py"],
         stdout=None,
         stderr=None,
     )

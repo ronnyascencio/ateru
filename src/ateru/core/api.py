@@ -12,7 +12,7 @@ from ateru.core.shot.scan import list_shots
 from ateru.core.asset.scan import list_assets
 from ateru.core.config import loader, create, model
 from ateru.core.project.load import read_project_config, update_status
-
+import os
 from ateru.core.logging import events
 from pathlib import Path
 import uuid
@@ -150,12 +150,23 @@ def scan_assets(project_name: str):
     return assets
 
 
+
+""" env """
+
+
+def merge_pythonpath(env, new_path):
+    existing = env.get("PYTHONPATH", "")
+    if existing:
+        env["PYTHONPATH"] = new_path + os.pathsep + existing
+    else:
+        env["PYTHONPATH"] = new_path
+
 """ Global """
 
 
 def set_software_paths(nuke: Path, blender: Path, gaffer: Path):
     apps = model.SoftwareConfig(
-        nuke_path=nuke, blender_path=blender, gaffer_path=gaffer
+        nuke=nuke, blender=blender, gaffer=gaffer
     )
     create.write_global_config_software(apps)
 

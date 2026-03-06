@@ -4,8 +4,9 @@ import subprocess
 from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QObject, Qt
-from PySide6.QtGui import QColor, QBrush
+from PySide6.QtGui import QColor, QBrush, QIcon
 
+from ateru.ui.uix import ateru_rc
 from ateru.core.logging import events
 from ateru.core.config.utility import user_name
 from ateru.core.api import (
@@ -36,40 +37,49 @@ class AteruManager(QMainWindow):
         if not self._ui:
             raise RuntimeError("UI could not be loaded")
 
+        self.setWindowIcon(QIcon(":/manager/icons/ateru.svg"))
+
         self.setCentralWidget(self._ui)
         self.resize(self._ui.size())
         self.setWindowTitle("Ateru Pipeline Manager")
 
-        self.ui("status_progressBar").setVisible(False)
+        # self.ui("status_progressBar").setVisible(False)
 
-        self.progress = ProgressController(
-            ui=self.ui,
-            enable_fn=lambda: self.set_ui_enabled(True),
-            disable_fn=lambda: self.set_ui_enabled(False),
-            min_duration_ms=600,
-        )
+        # self.progress = ProgressController(
+        #     ui=self.ui,
+        #     enable_fn=lambda: self.set_ui_enabled(True),
+        #     disable_fn=lambda: self.set_ui_enabled(False),
+        #     min_duration_ms=600,
+        # )
 
         """ Connections """
 
         self.ui("user_label").setText(user_name())
-        self.ui("create_project_pushButton").clicked.connect(self.project_create)
-        self.ui("delete_project_pushButton").clicked.connect(self.project_delete)
-        self.ui("update_projects_pushButton").clicked.connect(self.refresh_projects)
-        self.ui("launcher_toolButton").clicked.connect(self.start_launcher)
-        self.ui("settings_toolButton").clicked.connect(self.start_settings)
+        self.config_panel = self.ui("configPanelWidget")
+        self.btn_close = self.ui("close_pipeline_config_button")
+        self.btn_open = self.ui("config_widget_open")
 
-        self.ui("projects_tableWidget").cellChanged.connect(self.on_table_cell_changed)
+        self.config_panel.setVisible(False)
+        self.btn_open.clicked.connect(lambda: self.config_panel.setVisible(True))
+        self.btn_close.clicked.connect(lambda: self.config_panel.setVisible(False))
+        # self.ui("create_project_pushButton").clicked.connect(self.project_create)
+        # self.ui("delete_project_pushButton").clicked.connect(self.project_delete)
+        # self.ui("update_projects_pushButton").clicked.connect(self.refresh_projects)
+        # self.ui("launcher_toolButton").clicked.connect(self.start_launcher)
+        # self.ui("settings_toolButton").clicked.connect(self.start_settings)
 
-        """ project tab"""
-        self.ui("projects_tableWidget").itemSelectionChanged.connect(self.project_info)
+        # self.ui("projects_tableWidget").cellChanged.connect(self.on_table_cell_changed)
 
-        """ shots tab """
-        self.ui("shots_project_comboBox").currentTextChanged.connect(self.refresh_shots)
-        self.ui("shots_project_comboBox").addItems(self.projects_listed())
-        self.ui("shot_create_pushButton").clicked.connect(self.shot_create)
+        # """ project tab"""
+        # self.ui("projects_tableWidget").itemSelectionChanged.connect(self.project_info)
 
-        """ assets tab"""
-        self.ui("assets_projects_comboBox").addItems(self.projects_listed())
+        # """ shots tab """
+        # self.ui("shots_project_comboBox").currentTextChanged.connect(self.refresh_shots)
+        # self.ui("shots_project_comboBox").addItems(self.projects_listed())
+        # self.ui("shot_create_pushButton").clicked.connect(self.shot_create)
+
+        # """ assets tab"""
+        # self.ui("assets_projects_comboBox").addItems(self.projects_listed())
 
     """ UI helpers start"""
 

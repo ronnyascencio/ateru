@@ -1,5 +1,4 @@
 name: GitHub Release
-
 on:
   push:
     tags:
@@ -10,7 +9,7 @@ permissions:
 
 jobs:
   release:
-    name: Create GitHub Release
+    name: Create GitHub Release and Mirror
     runs-on: ubuntu-latest
 
     steps:
@@ -20,6 +19,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+
+      - name: Mirror to Codeberg
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.CODEBERG_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan codeberg.org >> ~/.ssh/known_hosts
+          git remote add codeberg ssh://git@codeberg.org/ronnyascencio/ateru.git || true
+          git push codeberg --all
+          git push codeberg --tags
 
 
       - name: Set up Python
@@ -38,7 +48,7 @@ jobs:
         run: |
           echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
- 
+
       - name: Generate release notes
         id: changelog
         run: |
@@ -53,10 +63,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install hatchling
 
+
       - name: Build wheel
         run: python -m hatchling build
 
- 
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:

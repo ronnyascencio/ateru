@@ -14,6 +14,5 @@ app.add_typer(settings.app, name="settings")
 app.add_typer(start.app, name="start")
 
 
-
 if __name__ == "__main__":
-    app()
+    app(prog_name="ateru")

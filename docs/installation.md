@@ -56,7 +56,7 @@ scripts/set_up_windows.bat
 
 
 <p align="center">
-  <img src="docs/media/ateru_installation.gif" width="800" alt="Ateru installation demo">
+  <img src="media/ateru_installation.gif" width="800" alt="Ateru installation demo">
 </p>
 
 
