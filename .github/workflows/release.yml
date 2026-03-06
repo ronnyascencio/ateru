@@ -78,3 +78,5 @@ jobs:
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          
+          
