@@ -144,7 +144,7 @@ def main(page: ft.Page):
             controls=[
                 ft.Text("Details", weight="bold", color="#FFFEF7", size=14),
                 ft.Divider(color="white10"),
-                ft.Text("Sin seleccion", italic=True, color="grey400"),
+                ft.Text("Domi info", italic=True, color="grey400"),
             ]
         ),
         width=250,
