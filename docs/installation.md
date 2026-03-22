@@ -17,9 +17,13 @@ Linux:
 ```bash
 git clone [https://github.com/ronnyascencio/ateru](https://github.com/ronnyascencio/ateru.git)
 cd ateru
-chmod +x scripts/setup_env.sh
-./scripts/setup_env.sh
+chmod +x scripts/set_up_unix.sh
+./scripts/set_up_unix.sh
 ```
+<p align="center">
+  <img src="media/ateru_unix_installation.gif" width="800" alt="Ateru installation demo">
+</p>
+
 
 Windows:
 
@@ -31,27 +35,7 @@ cd ateru
 
 ![installation](docs/media/demo.gif)
 
-## Alternative: Manual with `uv`
 
-If you prefer to manage environments manually:
-
-1. Create and sync the virtual environment:
-
-```bash
-uv sync
-```
-
-2. Register environment variables:
-
-```bash
-on linux:
-
-source scripts/setup_env.sh
-
-on windows:
-scripts/set_up_windows.bat
-
-```
 
 
 
