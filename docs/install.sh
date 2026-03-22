@@ -22,10 +22,13 @@ for cmd in git curl; do
     fi
 done
 
+
+
 DEFAULT_DIR="$HOME/pipeline"
 
 echo ""
-read -p "Enter installation directory [default: $DEFAULT_DIR]: " INSTALL_DIR
+
+read -p "Enter installation directory [default: $DEFAULT_DIR]: " INSTALL_DIR </dev/tty
 
 
 INSTALL_DIR="${INSTALL_DIR:-$DEFAULT_DIR}"
@@ -38,7 +41,7 @@ echo "[+] Ateru will be installed in: $INSTALL_DIR"
 
 if [ -d "$INSTALL_DIR/ateru" ]; then
     echo "[!] Directory $INSTALL_DIR/ateru already exists."
-    read -p "Do you want to overwrite it? [y/N]: " OVERWRITE
+    read -p "Do you want to overwrite it? [y/N]: " OVERWRITE </dev/tty
     if [[ "$OVERWRITE" =~ ^[Yy]$ ]]; then
         rm -rf "$INSTALL_DIR/ateru"
     else
@@ -53,6 +56,7 @@ git clone --depth 1 https://github.com/ronnyascencio/ateru.git "$INSTALL_DIR/ate
 
 echo "[+] Running set_up_unix.sh..."
 bash "$INSTALL_DIR/ateru/scripts/set_up_unix.sh"
+
 
 echo ""
 echo "========================================="
