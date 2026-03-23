@@ -7,12 +7,12 @@ echo "========================================="
 echo ""
 
 # --------------------------------------------------
-# 1. Force copy mode (igual que Windows)
+# 1. Force copy mode
 # --------------------------------------------------
 export UV_LINK_MODE=copy
 
 # --------------------------------------------------
-# 2. Detect PIPELINE_ROOT (igual que %~dp0..)
+# 2. Detect PIPELINE_ROOT 
 # --------------------------------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PIPELINE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -22,7 +22,7 @@ export PIPELINE_ROOT
 echo "[+] PIPELINE_ROOT detected: $PIPELINE_ROOT"
 
 # --------------------------------------------------
-# 3. Persist environment variable (equivalente a setx)
+# 3. Persist environment variable
 # --------------------------------------------------
 case "$SHELL" in
     */zsh)  SHELL_RC="$HOME/.zshrc" ;;
